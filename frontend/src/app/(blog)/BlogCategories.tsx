@@ -89,9 +89,9 @@ const BlogCategories = ({ categories, activeSlug, topLevel=false }: any) => {
                             >
                                 <div className="flex items-center gap-2">
                                     {topLevel && (
-                                         <div className="w-[24px]">
-                                         🚀
-                                     </div>
+                                        <div className="w-[24px]">
+                                         <i className="devicon-mongodb-plain"></i>
+                                        </div>
                                     )}
 
                                     <p className={isActiveBlog ? "text-blue-600 font-medium" : ""} >

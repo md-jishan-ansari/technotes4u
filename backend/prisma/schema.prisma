@@ -59,7 +59,22 @@ model Blog {
   description   String?         // For both blog and Blog descriptions
   isPublished   Boolean         @default(false)
   viewCount     Int             @default(0)
+  sortOrder     Decimal?            // For sorting
+  iconImage     Json?
+  position      Json?
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }
+
+// iconImage
+// {
+//     "url": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/threedsmax/threedsmax-plain.svg",
+//     "darkUrl": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/threedsmax/threedsmax-original.svg"
+// }
+
+// position
+// {
+//   nextBlog: blogid,
+//   prevBlog: blogid,
+// }

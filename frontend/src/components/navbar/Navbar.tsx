@@ -51,7 +51,7 @@ const Navbar = async () => {
                 </Button>
 
                 <div
-                  className="hs-dropdown-menu transition-[opacity,margin] ease-in-out duration-[150ms] overflow-hidden hs-dropdown-open:opacity-100 opacity-0 sm:w-48 z-10 bg-white sm:shadow-md rounded-lg space-y-1 dark:bg-neutral-800 sm:dark:border dark:border-neutral-700 dark:divide-neutral-700 before:absolute top-full sm:border before:-top-5 before:start-0 before:w-full before:h-5 hidden"
+                  className="hs-dropdown-menu transition-[opacity,margin] ease-in-out duration-150 overflow-hidden hs-dropdown-open:opacity-100 opacity-0 sm:w-48 z-10 bg-white sm:shadow-md rounded-lg space-y-1 dark:bg-neutral-800 sm:dark:border dark:border-neutral-700 dark:divide-neutral-700 before:absolute top-full sm:border before:-top-5 before:start-0 before:w-full before:h-5 hidden"
                   role="menu"
                   aria-orientation="vertical"
                   aria-labelledby="hs-navbar-example-dropdown"

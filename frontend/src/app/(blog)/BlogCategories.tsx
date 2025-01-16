@@ -7,13 +7,13 @@ import {
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-  } from "@/src/sadcnComponents/ui/accordion"
+  } from "@/src/componentsSadcn/ui/accordion"
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
 
 const BlogCategories = ({ categories, activeSlug, topLevel=false }: any) => {
-    const [openCategories, setOpenCategories] = useState<string[]>([]);
+
     const router = useRouter();
 
     const activeParentMap = useMemo(() => {
@@ -33,6 +33,10 @@ const BlogCategories = ({ categories, activeSlug, topLevel=false }: any) => {
         buildParentMap(categories);
         return parentMap;
     }, [categories, activeSlug]);
+
+    const [openCategories, setOpenCategories] = useState<string[]>(() => {
+        return Array.from(activeParentMap);
+    });
 
     const handleCategoryClick = (categoryId: string) => {
 
@@ -61,13 +65,15 @@ const BlogCategories = ({ categories, activeSlug, topLevel=false }: any) => {
             const isActiveBlog = category.slug === activeSlug;
             const isActive = isActiveBlog || activeParentMap.has(category.id);
 
+            console.log(category.name, isActive);
+
             return (
                 <div key={category.id}>
                     <Accordion
                         type="single"
                         collapsible
                         className="w-full"
-                        defaultValue={isActive ? category.id : undefined}
+                        defaultValue={isActive ? category.id : ""}
                         value={openCategories.includes(category.id) ? category.id : ''}
                         onValueChange={(value) => handleCategoryClick(category.id)}
                     >
@@ -83,18 +89,22 @@ const BlogCategories = ({ categories, activeSlug, topLevel=false }: any) => {
                                 }
                                 text-sm
                                 text-muted-foreground hover:text-secondary-foreground
-                                ${isActiveBlog ? "hover:bg-blue-100" : "hover:bg-accent"}
+                                ${isActiveBlog ? "hover:bg-blue-400 hover:bg-opacity-15" : "hover:bg-secondary"}
                                 `}
                                 onClick={(e) => handleCategoryLinkClick(e, category.id, `/blog/${category.slug}`)}
                             >
                                 <div className="flex items-center gap-2">
-                                    {topLevel && (
-                                        <div className="w-[24px]">
-                                         <i className="devicon-mongodb-plain"></i>
+                                    {category.iconImage && (
+                                        <div className="w-[20px] flex items-center justify-center">
+
+                                            <Image src={category.iconImage.url} alt="icon" width={20} height={20} className="dark:hidden" />
+
+                                            <Image src={category.iconImage.darkUrl ? category.iconImage.darkUrl : category.iconImage.url} alt="icon" width={20} height={20} className="hidden dark:block" />
+
                                         </div>
                                     )}
 
-                                    <p className={isActiveBlog ? "text-blue-600 font-medium" : ""} >
+                                    <p className={isActiveBlog ? "text-link font-medium" : ""} >
                                         {category.name}
                                     </p>
                                 </div>
@@ -104,16 +114,16 @@ const BlogCategories = ({ categories, activeSlug, topLevel=false }: any) => {
                                         <div className={
                                             `p-1 rounded-full  transition-transform duration-200
                                             ${openCategories.includes(category.id) ? "" : "-rotate-90"}
-                                            ${isActiveBlog ? "hover:bg-blue-200" : "hover:bg-gray-200"}
+                                            ${isActiveBlog ? "hover:bg-blue-600 hover:bg-opacity-20" : "hover:bg-gray-400 hover:bg-opacity-20"}
                                         `}>
-                                            <IoIosArrowDown className={`${isActiveBlog ? "text-blue-600" : "text-neutral-500 dark:text-neutral-400"}`} />
+                                            <IoIosArrowDown className={`${isActiveBlog ? "text-link" : "text-neutral-500 dark:text-neutral-400"}`} />
                                         </div>
                                     )}
                                 </AccordionTrigger>
                             </div>
                             {category.children.length > 0 && (
                                 <AccordionContent>
-                                    <div className="ml-4 my-1 border-l">
+                                    <div className="ml-4 my-1 border-l ">
                                         <BlogCategories
                                             categories={category.children}
                                             activeSlug={activeSlug}

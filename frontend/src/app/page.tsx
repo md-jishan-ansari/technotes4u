@@ -7,7 +7,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/src/sadcnComponents/ui/accordion"
+} from "@/src/componentsSadcn/ui/accordion"
 
 export default async function Home() {
   const currentUser = await getCurrentUser();

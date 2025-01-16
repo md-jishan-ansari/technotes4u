@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Poppins } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import ReduxProvider from "../redux/ReduxProvider";
 import Navbar from "../components/navbar/Navbar";
 import Footer from "../components/footer/Footer";
 import ToastifyContainer from "../components/ToastifyContainer";
 import PrelineScript from "../components/ PrelineScript";
 
-
-const poppins = Poppins({subsets: ['latin'], weight: ['400', '500', '600', '700']});
+const inter = Inter({subsets: ['latin'], weight: ['400', '500', '600', '700']});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -31,15 +30,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${poppins.className} antialiased bg-background
-
-          // [&::-webkit-scrollbar]:w-2
-          // [&::-webkit-scrollbar-track]:bg-gray-100
-          // [&::-webkit-scrollbar-thumb]:bg-gray-300
-          // dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-          // dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
-
-        `}
+        className={`${inter.className} antialiased bg-background `}
       >
         <ReduxProvider>
           <ToastifyContainer />

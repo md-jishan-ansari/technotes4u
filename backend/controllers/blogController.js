@@ -48,6 +48,8 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
             slug: true,
             parentId: true,
             isBlog: true,
+            iconImage: true,
+            position: true
         }
     });
 
@@ -99,6 +101,67 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
         }
 
     });
+
+    // Sort function for categories at same level
+    const sortSameLevel = (categories) => {
+        if (!categories.length) return [];
+
+        const sorted = [];
+        const positionMap = new Map();
+
+        // Create position mapping
+        categories.forEach(category => {
+            if (category.position) {
+                if (!category.position.prevBlog) {
+                    // First item
+                    sorted.push(category);
+                }
+                positionMap.set(category.id, category);
+            }
+        });
+
+        // Build the sorted array
+        while (sorted.length < categories.length) {
+            const lastItem = sorted[sorted.length - 1];
+            if (!lastItem?.position?.nextBlog) {
+                // Add remaining unsorted items
+                categories.forEach(category => {
+                    if (!sorted.includes(category)) {
+                        sorted.push(category);
+                    }
+                });
+                break;
+            }
+
+            const nextItem = positionMap.get(lastItem.position.nextBlog);
+            if (nextItem && !sorted.includes(nextItem)) {
+                sorted.push(nextItem);
+            } else {
+                break;
+            }
+        }
+
+        return sorted;
+    };
+
+    // Sort children arrays
+    const sortChildren = (categories) => {
+        categories.forEach(category => {
+            if (category.children.length > 0) {
+                category.children = sortSameLevel(category.children);
+                sortChildren(category.children);
+            }
+        });
+    };
+
+    // Sort root categories and their children
+    const sortedRootCategories = sortSameLevel(rootCategories);
+    sortChildren(sortedRootCategories);
+
+    // Sort other category children
+    if (otherCategory.children.length > 0) {
+        otherCategory.children = sortSameLevel(otherCategory.children);
+    }
 
     res.status(200).json({
         success: true,

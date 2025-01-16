@@ -59,9 +59,8 @@ model Blog {
   description   String?         // For both blog and Blog descriptions
   isPublished   Boolean         @default(false)
   viewCount     Int             @default(0)
-  sortOrder     Decimal?            // For sorting
+  sortOrder     Int?            // For sorting
   iconImage     Json?
-  position      Json?
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt

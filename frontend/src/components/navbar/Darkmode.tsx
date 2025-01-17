@@ -24,29 +24,10 @@ const Darkmode = () => {
   return (
     <div>
       <button
-        className="
-          bg-black
-          dark:bg-white
-          text-white
-          dark:text-black
-          border-2
-          rounded-[12px]
-          w-[40px]
-          h-[24px]
-          p-[2px]
-          relative
-        "
+        className="hover:bg-secondary p-2 rounded-full"
         onClick={() => dispatch(changeTheme())}
       >
-        <div className="
-          absolute
-          top-[3px]
-          left-[2px]
-          dark:left-[16px]
-          transition-all
-        ">
-        {theme == 'dark' ? <MdLightMode /> : <MdDarkMode />}
-        </div>
+        {theme == 'dark' ? <MdLightMode size={20} /> : <MdDarkMode size={20} />}
       </button>
     </div>
   )

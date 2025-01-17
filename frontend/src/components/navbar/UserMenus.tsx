@@ -1,33 +1,75 @@
-'use client';
-import React, { useState } from 'react'
-import Button from '../Button'
+"use client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/src/componentsSadcn/ui/dropdown-menu"
+import Button from "../Button"
+import Avatar from "../Avatar"
+import { IoMdArrowDropdown } from "react-icons/io"
+import { Link } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { signOut } from "next-auth/react";
 
-import { signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { SafeUser } from '@/src/types/types';
-import MenuItem from './MenuItem';
-import { toast } from 'react-toastify';
-
-const UserMenus = ({currentUser}: {currentUser: SafeUser | null}) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const router = useRouter();
-
-  const togleOpen = () => {
-    setIsOpen(!isOpen);
-  }
-
-
+const UserMenus2 = ({currentUser}: any) => {
+    const router = useRouter()
   return (
-    <div>
-      <MenuItem onClick={() => { togleOpen(); router.push('/orders') }} >Your Orders</MenuItem>
+    <DropdownMenu>
 
-      <MenuItem onClick={() => { togleOpen(); router.push('/admin') }} >Admin Dashboard</MenuItem>
+      <DropdownMenuTrigger asChild>
+        <Button
+            variant="secondaryOutline"
+            size="sm"
+            rounded="rounded-3xl"
+            isLoading={false}
+            type="button"
+            id="hs-navbar-example-dropdown"
+        >
+            <Avatar image={currentUser?.image} size={24} />
+            <IoMdArrowDropdown size={24} />
+        </Button>
+      </DropdownMenuTrigger>
 
-      <hr />
+      <DropdownMenuContent className="w-56">
 
-      <MenuItem onClick={() => signOut()}>Logout</MenuItem>
-    </div>
+        <DropdownMenuItem onClick={() => router.push("/blog/other")}>
+            Blogs
+        </DropdownMenuItem>
+
+        <DropdownMenuItem>
+            Billing
+            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+        </DropdownMenuItem>
+
+        <DropdownMenuSub>
+            <DropdownMenuSubTrigger>Invite users</DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem>Email</DropdownMenuItem>
+                <DropdownMenuItem>Message</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>More...</DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+        </DropdownMenuSub>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem  onClick={() => signOut()}>
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
-export default UserMenus
+export default UserMenus2;

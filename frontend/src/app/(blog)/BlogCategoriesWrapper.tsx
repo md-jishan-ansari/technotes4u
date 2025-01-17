@@ -32,17 +32,19 @@ const BlogCategoriesWrapper = () => {
     <>
       <Button
         variant="secondary"
+        size="sm"
         className="
           fixed
           top-[75px]
-          left-[-4px]
           z-5
-          opacity-50
+          left-[-4px]
           md:hidden
+          bg-opacity-50
+          rounded-s-none
         "
         onClick={toggelCategorySidebar}
       >
-        <FaArrowRight size={24} />
+        <FaArrowRight size={16} />
       </Button>
 
 
@@ -50,15 +52,21 @@ const BlogCategoriesWrapper = () => {
         w-full
         md:min-w-[300px]
         md:max-w-[350px]
-        md:sticky top-[68px]
-        h-[calc(100vh-68px)]
-
+        h-[100vh]
+        md:h-[calc(100vh-68px)]
         overflow-y-auto
+
+        bg-background
         border
         border-t-0
         dark:border-neutral-700
 
         fixed
+        z-[100]
+        md:z-40
+        md:sticky
+        top-0
+        md:top-[68px]
         transition-[left]
         duration-300
         max-w-[450px]
@@ -81,7 +89,7 @@ const BlogCategoriesWrapper = () => {
           "
           onClick={toggelCategorySidebar}
         >
-          <IoMdClose size="24" />
+          <IoMdClose size="20" />
         </div>
 
         <div className="py-4 px-2">

@@ -10,9 +10,10 @@ const Container: React.FC<Props> = ({children}) => {
         max-w-[1920px]
         w-full
         mx-auto
-        px-20
+        px-2
+        py-5
         lg:px-6
-        sm:px-2
+        xl:px-20
     ">
         {children}
     </div>

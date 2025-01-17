@@ -8,6 +8,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/src/componentsSadcn/ui/accordion"
+import Container from "../components/Container";
+import FormWrap from "../components/FormWrap";
 
 export default async function Home() {
   const currentUser = await getCurrentUser();
@@ -18,17 +20,9 @@ export default async function Home() {
     <>
     <div className="h-[200vh]">
 
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="item-1">
-          <div className="flex items-center justify-between">
-            <p>Name</p>
-            <AccordionTrigger></AccordionTrigger>
-          </div>
-          <AccordionContent>
-            Yes. It adheres to the WAI-ARIA design pattern.
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      <Container>
+        <FormWrap maxwidth="1000px">FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm FormForm </FormWrap>
+      </Container>
 
     </div>
 

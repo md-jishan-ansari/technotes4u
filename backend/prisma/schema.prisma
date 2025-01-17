@@ -72,8 +72,3 @@ model Blog {
 //     "darkUrl": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/threedsmax/threedsmax-original.svg"
 // }
 
-// position
-// {
-//   nextBlog: blogid,
-//   prevBlog: blogid,
-// }

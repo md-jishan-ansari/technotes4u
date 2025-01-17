@@ -1,6 +1,6 @@
 import React from 'react'
 
-const FormWrap = ({children}: {children: React.ReactNode}) => {
+const FormWrap = ({children, maxwidth="650px"}: {children: React.ReactNode, maxwidth?: string}) => {
   return (
     <div className="
         min-h-fit
@@ -9,20 +9,19 @@ const FormWrap = ({children}: {children: React.ReactNode}) => {
         justify-center
         items-center
         pb-12
-        pt-24
+        pt-20
     ">
-        <div className="
-            max-w-[650px]
+        <div style={{maxWidth: maxwidth}} className={`
             w-fit
             flex
             flex-col
             gap-6
             items-center
-            shadow-xl
+            shadow-sm
             shadow-slate-200
             rounded-md
             overflow-hidden
-        ">
+        `}>
             {children}
         </div>
     </div>

@@ -56,6 +56,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           inline-flex items-center justify-center
           transition-all duration-200
           font-medium
+          outline-none
           active:outline-none
           focus:outline-none
           disabled:opacity-50 disabled:cursor-not-allowed

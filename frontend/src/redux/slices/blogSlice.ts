@@ -11,6 +11,7 @@ const blogSlice = createSlice({
   name: 'blog',
   initialState: {
     categories: [],
+    categorylist: [],
     activeSlug: null,
     loading: false,
     error: null
@@ -27,6 +28,7 @@ const blogSlice = createSlice({
     .addCase(fetchCategories.fulfilled, (state, action) => {
       state.loading = false;
       state.categories = action.payload?.categories;
+      state.categorylist = action.payload?.categorylist;
     })
     .addCase(fetchCategories.rejected, (state, action) => {
       state.loading = false;

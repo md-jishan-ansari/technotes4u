@@ -1,6 +1,5 @@
-import Link from 'next/link';
-import React, { useMemo, useState } from 'react'
-import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io';
+
+import { IoIosArrowDown } from 'react-icons/io';
 
 import {
     Accordion,
@@ -10,37 +9,13 @@ import {
   } from "@/src/componentsSadcn/ui/accordion"
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ChevronDown } from 'lucide-react';
 
-const BlogCategories = ({ categories, activeSlug, topLevel=false }: any) => {
+const BlogCategories = ({ categories, activeSlug, openCategories, setOpenCategories, topLevel=false }: any) => {
 
     const router = useRouter();
 
-    const activeParentMap = useMemo(() => {
-        const parentMap = new Set<string>();
-
-        const buildParentMap = (cats: any[], parentIds: string[] = []) => {
-            cats.forEach(cat => {
-                if (cat.slug === activeSlug) {
-                    parentIds.forEach(id => parentMap.add(id));
-                }
-                if (cat.children.length) {
-                    buildParentMap(cat.children, [...parentIds, cat.id]);
-                }
-            });
-        };
-
-        buildParentMap(categories);
-        return parentMap;
-    }, [categories, activeSlug]);
-
-    const [openCategories, setOpenCategories] = useState<string[]>(() => {
-        return Array.from(activeParentMap);
-    });
-
     const handleCategoryClick = (categoryId: string) => {
-
-        setOpenCategories(prev =>
+        setOpenCategories((prev: any) =>
             prev.includes(categoryId)
                 ? prev.filter(id => id !== categoryId)
                 : [...prev, categoryId]
@@ -63,9 +38,6 @@ const BlogCategories = ({ categories, activeSlug, topLevel=false }: any) => {
     return (
         categories.map((category: any) => {
             const isActiveBlog = category.slug === activeSlug;
-            const isActive = isActiveBlog || activeParentMap.has(category.id);
-
-            console.log(category.name, isActive);
 
             return (
                 <div key={category.id}>
@@ -73,7 +45,7 @@ const BlogCategories = ({ categories, activeSlug, topLevel=false }: any) => {
                         type="single"
                         collapsible
                         className="w-full"
-                        defaultValue={isActive ? category.id : ""}
+                        defaultValue={""}
                         value={openCategories.includes(category.id) ? category.id : ''}
                         onValueChange={(value) => handleCategoryClick(category.id)}
                     >
@@ -127,6 +99,8 @@ const BlogCategories = ({ categories, activeSlug, topLevel=false }: any) => {
                                         <BlogCategories
                                             categories={category.children}
                                             activeSlug={activeSlug}
+                                            openCategories={openCategories}
+                                            setOpenCategories={setOpenCategories}
                                         />
                                     </div>
                                 </AccordionContent>

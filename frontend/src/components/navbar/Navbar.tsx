@@ -5,7 +5,7 @@ import getCurrentUser from '@/src/actions/getCurrentUser';
 import Darkmode from './Darkmode';
 import Button from '../Button';
 import { RxHamburgerMenu } from "react-icons/rx";
-import UserMenus from './UserMenus';
+import NavbarMenus from './NavbarMenus';
 const redressed = Redressed({
   weight: ['400'],
   subsets: ['latin'],
@@ -33,31 +33,8 @@ const Navbar = async () => {
           <div className="flex gap-5 flex-row items-center justify-end mt-0 ps-5">
             <Darkmode />
 
-            {currentUser ? (
-              <UserMenus currentUser={currentUser} />
-            ) : (
-              <>
-                <Link href="/sign-in" >
-                  <Button
-                    variant="primaryGhost"
-                    size="sm"
-                    rounded="rounded-3xl"
-                  >
-                    Sign In
-                  </Button>
-                </Link>
+            <NavbarMenus currentUser={currentUser} />
 
-                <Link href="/sign-up" >
-                  <Button
-                    variant="dangerOutline"
-                    size="sm"
-                    rounded="rounded-3xl"
-                  >
-                    Sign Up
-                  </Button>
-                </Link>
-              </>
-            )}
           </div>
         </div>
       </nav>

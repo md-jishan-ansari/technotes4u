@@ -1,28 +1,49 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { IoMdClose } from 'react-icons/io'
 import { FaArrowRight } from "react-icons/fa";
 import Button from '@/src/components/Button';
 import BlogCategories from './BlogCategories';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchCategories } from '@/src/redux/slices/blogSlice';
+import { useSelector } from 'react-redux';
 
 const BlogCategoriesWrapper = () => {
   const [isOpen, setIsOpen] = useState(true);
-  const dispatch = useDispatch();
+  const [openCategories, setOpenCategories] = useState<string[]>([]);
+
 
   const { categories, loading, activeSlug } = useSelector((state: any) => state.blog);
 
+  const activeParentMap = useMemo(() => {
+    const parentMap = new Set<string>();
+
+    const buildParentMap = (cats: any[], parentIds: string[] = []) => {
+      for (const cat of cats) {
+        if (cat.slug === activeSlug) {
+          parentIds.forEach(id => parentMap.add(id));
+          setOpenCategories(prev => [...prev, cat.id]);
+          return true; // Found the active category, stop traversing
+        }
+        if (cat.children.length) {
+          const found = buildParentMap(cat.children, [...parentIds, cat.id]);
+          if (found) return true; // Propagate the "found" status up the recursion
+        }
+      }
+      return false; // Active category not found in this branch
+    };
+
+    buildParentMap(categories);
+    return parentMap;
+  }, [categories, activeSlug]);
 
   useEffect(() => {
-    dispatch(fetchCategories());
-  }, [dispatch]);
+    if(categories ) {
+      setOpenCategories(prev => [...prev, ...Array.from(activeParentMap)]);
+    }
+  }, [categories]);
 
   if (loading) {
     return <div className="text-center">Loading categories...</div>;
   }
-
-  console.log({ categories });
 
   const toggelCategorySidebar = () => {
     setIsOpen(!isOpen);
@@ -93,7 +114,14 @@ const BlogCategoriesWrapper = () => {
         </div>
 
         <div className="py-4 px-2">
-          {categories.length > 0 && <BlogCategories categories={categories} activeSlug={activeSlug} topLevel={true} />}
+          {categories.length > 0 &&
+          <BlogCategories
+            categories={categories}
+            activeSlug={activeSlug}
+            openCategories={openCategories}
+            setOpenCategories={setOpenCategories}
+            topLevel={true}
+          />}
         </div>
       </div>
     </>

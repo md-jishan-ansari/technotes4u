@@ -2,15 +2,66 @@ import prisma from "../db/db.config.js";
 import CatchAsync from "../utils/CatchAsync.js";
 import jwt from 'jsonwebtoken';
 
+const getAvailableSortOrder = async (predecessorid) => {
+
+    let predecessorblog = await prisma.blog.findFirst({
+        where: {
+            id: predecessor
+        }
+    });
+
+    if (!predecessorblog) {
+        return res.status(400).json({
+            success: false,
+            message: "predecessor blog not found"
+        });
+    }
+
+    let successorblog = await prisma.blog.findFirst({
+        where: {
+            sortOrder: {
+                gt: predecessorblog.sortOrder
+            }
+        },
+        orderBy: {
+            sortOrder: 'asc'
+        }
+    });
+
+    let sortOrder = Number((predecessorblog.sortOrder + successorblog.sortOrder) / 2);
+
+    let blogavailable = await prisma.blog.findFirst({
+        where: {
+            sortOrder: sortOrder
+        }
+    })
+
+    if (blogavailable) {
+        sortOrder = sortOrder + 1;
+    }
+
+    return sortOrder;
+
+}
 
 export const createBlog = CatchAsync(async (req, res, next) => {
     // Get blog data from request body
-    const { name, description, isBlog=false, parentId=null } = req.body;
+    const {
+        name,
+        predecessor,
+        parent=null,
+        iconType,
+        icon,
+        darkIcon
+    } = req.body;
 
-    // make slug by using name
+
+    console.log(req.body);
+
+    // // make slug by using name
     const slug = name.toLowerCase().replace(/\s+/g, '-');
 
-    // Validate required fields
+    // // Validate required fields
     if (!name) {
         return res.status(400).json({
             success: false,
@@ -18,13 +69,24 @@ export const createBlog = CatchAsync(async (req, res, next) => {
         });
     }
 
-    // Create blog object
+    let iconImage = null;
+
+    if (iconType === "url") {
+        iconImage = {
+            "url": icon,
+            "darkUrl": darkIcon
+        }
+    }
+
+    let sortOrder = getAvailableSortOrder(predecessor);
+
+    // // Create blog object
     const blog = {
         name,
         slug,
-        description: description || "",
-        isBlog,
-        parentId
+        parentId: parent,
+        iconImage: iconImage,
+        sortOrder
     };
 
     const blogData = await prisma.blog.create({
@@ -66,7 +128,7 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
     // Create a map for faster lookups
     const categoryMap = new Map();
 
-    let otherCategory = "";
+    let topCategory;
 
     // First pass: create map of all categories
     allCategories.forEach(category => {
@@ -76,11 +138,11 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
             children: []
         }
 
-        if (category.slug === 'other') {
-            otherCategory = categoryData
+        if (category.slug === "top") {
+            topCategory = category;
+        } else {
+            categoryMap.set(category.id, categoryData);
         }
-
-        categoryMap.set(category.id, categoryData);
 
     });
 
@@ -90,18 +152,13 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
     categoryMap.forEach(category => {
 
         // Early return for root categories that aren't blogs
-        if (!category.parentId && !category.isBlog) {
+        if (!category.parentId || category.parentId === topCategory.id) {
             rootCategories.push(category);
             return;
         }
 
-        // Handle blog entries
-        if (!category.parentId && category.isBlog) {
-            otherCategory.children.push(category);
-            return;
-        }
-
         const parent = categoryMap.get(category.parentId);
+
         if (parent) {
             parent.children.push(category);
         } else if (category.isBlog) {
@@ -114,7 +171,8 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        categories: rootCategories
+        categories: rootCategories,
+        categorylist: allCategories
     });
 });
 

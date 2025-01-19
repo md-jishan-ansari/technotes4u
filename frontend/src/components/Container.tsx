@@ -11,7 +11,7 @@ const Container: React.FC<Props> = ({children}) => {
         w-full
         mx-auto
         px-2
-        py-5
+        py-3
         lg:px-6
         xl:px-20
     ">

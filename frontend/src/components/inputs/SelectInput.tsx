@@ -18,12 +18,14 @@ import React, { useEffect, useState } from 'react'
 
 const SelectInput = ({ form, name, label, placeholder, description, inputlists, defaultSet=false, className }: any) => {
     const [open, setOpen] = useState(false)
-    const [inputDisplay, setInputDisplay] = useState()
+    const [inputDisplay, setInputDisplay] = useState("")
 
     useEffect(() => {
-        const predecessor = form.getValues(name);
-        if (!predecessor) {
+        const inputvalue = form.getValues(name);
+        if (!inputvalue) {
             setInputDisplay("");
+        } else {
+            setInputDisplay(inputlists.filter((item: any) => item.value === inputvalue)[0]?.label);
         }
     }, [form.watch(name)]);
 
@@ -55,7 +57,6 @@ const SelectInput = ({ form, name, label, placeholder, description, inputlists, 
                                         <div
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                setInputDisplay("")
                                                 field.onChange("")
                                             }}
                                             className="flex items-center justify-center cursor-pointer h-full w-9 absolute right-8 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-75"
@@ -80,7 +81,6 @@ const SelectInput = ({ form, name, label, placeholder, description, inputlists, 
                                                 key={input.value}
                                                 onSelect={() => {
                                                     field.onChange(input.value)
-                                                    setInputDisplay(input.label)
                                                     setOpen(false)
                                                 }}
                                                 className="cursor-pointer"

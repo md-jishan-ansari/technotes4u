@@ -21,6 +21,7 @@ import { useEffect, useState } from "react"
 import SelectInput from "@/src/components/inputs/SelectInput"
 import { useSelector } from "react-redux"
 import axios from "axios"
+import { useSearchParams } from "next/navigation"
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -35,42 +36,71 @@ const FormSchema = z.object({
 
 
 
-const WriteBlog = ({params}: any) => {
+const WriteBlog = () => {
   const { categorylist } = useSelector((state: any) => state.blog);
   const [parentCategories, setParentCategories] = useState([]);
   const [predecessors, setPredecessors] = useState([]);
-
-  console.log({params});
+  const searchParams = useSearchParams()
+  const blogid = searchParams.get('blogid')
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       username: "",
+      name: "",
+      parent: "",
+      predecessor: "",
+      iconType: "",
+      icon: "",
+      darkIcon: ""
     }
   })
 
   useEffect(() => {
     if (categorylist.length > 0) {
-      const categories = categorylist.map((category: any) => ({
-        label: category?.name,
-        value: category?.id
-      }));
-      setParentCategories(categories);
+      const categories = [];
+        for (let i = 0; i < categorylist.length; i++) {
+          if(categorylist[i].id !== blogid) {
+            categories.push({
+                label: categorylist[i].name,
+                value: categorylist[i].id
+            });
+          }
+        }
+        setParentCategories(categories);
     }
   }, [categorylist]);
 
+  // Add this new useEffect to fetch and set data when blogid exists
+  useEffect(() => {
+    if (blogid && categorylist.length > 0) {
+      let currentCategory = categorylist.filter(category => category.id === blogid);
+      console.log({currentCategory});
+      form.setValue('name', currentCategory[0].name);
+      form.setValue('parent', currentCategory[0].parentId);
+    }
+  }, [searchParams, categorylist]);
+
   useEffect(() => {
     const parentValue = form.watch('parent');
-    const filteredPredecessors = categorylist
-      .filter(category =>
-        parentValue
-          ? (category.id === parentValue || category.parentId === parentValue)
-          : !category.parentId
-      )
-      .map(category => ({
-        value: category.id,
-        label: category.name
-      }));
+    const filteredPredecessors = [];
+
+    for (let i = 0; i < categorylist.length; i++) {
+        const category = categorylist[i];
+        if (parentValue && category.id != blogid) {
+            if (category.id === parentValue || category.parentId === parentValue) {
+                filteredPredecessors.push({
+                    value: category.id,
+                    label: category.name
+                });
+            }
+        } else if (!category.parentId && category.id != blogid) {
+            filteredPredecessors.push({
+                value: category.id,
+                label: category.name
+            });
+        }
+    }
 
     setPredecessors(filteredPredecessors);
   }, [form.watch('parent'), categorylist]);
@@ -83,16 +113,29 @@ const WriteBlog = ({params}: any) => {
   }, [form.watch('parent')]);
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-    axios({
-      method: 'post',
-      url: process.env.NEXT_PUBLIC_BACKEND_URL  + '/api/blog/create',
-      data
-    }).then((res) => {
-       console.log(res);
-    }).catch((error: any) => {
-        console.log(error);
-    });
+
+    if(blogid) {
+      axios({
+        method: 'post',
+        url: process.env.NEXT_PUBLIC_BACKEND_URL  + '/api/blog/editcategory?blogid=' + blogid,
+        data
+      }).then((res) => {
+         console.log(res);
+      }).catch((error: any) => {
+          console.log(error);
+      });
+    } else {
+      axios({
+        method: 'post',
+        url: process.env.NEXT_PUBLIC_BACKEND_URL  + '/api/blog/createcategory',
+        data
+      }).then((res) => {
+         console.log(res);
+      }).catch((error: any) => {
+          console.log(error);
+      });
+    }
+
   }
 
   return (
@@ -102,8 +145,9 @@ const WriteBlog = ({params}: any) => {
           <FormField
             control={form.control}
             name="name"
+            disabled={!!blogid}
             render={({ field }) => (
-              <FormItem >
+              <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input placeholder="shadcn" {...field} />
@@ -123,8 +167,12 @@ const WriteBlog = ({params}: any) => {
             placeholder="Select a blog"
             description="Select parent blog"
             inputlists={parentCategories}
-            defaultSet={true}
+            defaultSet={!blogid}
           />
+
+          {blogid && (
+              <p className="text-red-500 dark:text-red-900 lg:col-span-2 mt-3">If you don't want to change below field for this category than leave it empty</p>
+          )}
 
           <SelectInput
             form={form}

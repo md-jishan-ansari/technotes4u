@@ -9,6 +9,8 @@ import {
   } from "@/src/componentsSadcn/ui/accordion"
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Pencil } from 'lucide-react';
+import Link from 'next/link';
 
 const BlogCategories = ({ categories, activeSlug, openCategories, setOpenCategories, topLevel=false }: any) => {
 
@@ -24,6 +26,13 @@ const BlogCategories = ({ categories, activeSlug, openCategories, setOpenCategor
 
     const handleCategoryLinkClick = (e, categoryId: string, url: string) => {
         const target = e.target as HTMLElement;
+
+        // Check if click target is the pencil icon or its parent link
+        if (target.closest('a[href^="/admin/write/category"]')) {
+            e.stopPropagation();
+            return;
+        }
+
         const accordionTrigger = target.closest('.accordion-trigger');
         if (!accordionTrigger) {
             setOpenCategories(prev =>
@@ -80,6 +89,16 @@ const BlogCategories = ({ categories, activeSlug, openCategories, setOpenCategor
                                         {category.name}
                                     </p>
                                 </div>
+
+                                <Link target="_blank" href={`/admin/write/category/?blogid=${category.id}`}
+                                    className={
+                                            `p-1 rounded-full  ml-auto mr-2
+                                            ${isActiveBlog ? "hover:bg-blue-600 hover:bg-opacity-20" : "hover:bg-gray-400 hover:bg-opacity-20"}
+                                        `}
+                                >
+                                    <Pencil className={`${isActiveBlog ? "text-link" : "text-neutral-500 dark:text-neutral-400"} w-3 h-3`} />
+
+                                </Link>
 
                                 <AccordionTrigger>
                                     {category.children.length > 0 && (

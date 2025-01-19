@@ -64,7 +64,7 @@ const NavbarMenus = ({ currentUser }: any) => {
             <DropdownMenuSubTrigger>Admin</DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
-                <Link href="/admin/writeblog">
+                <Link href="/admin/write/category">
                   <DropdownMenuItem>Write blog </DropdownMenuItem>
                 </Link>
                 <DropdownMenuItem>Message</DropdownMenuItem>

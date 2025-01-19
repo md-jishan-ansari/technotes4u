@@ -1,9 +1,11 @@
 import express from 'express';
-import { createBlog, getAllCategories, tokenVarify } from '../controllers/blogController.js';
+import { createBlogCategory, editBlogCategory, getAllCategories, tokenVarify } from '../controllers/blogController.js';
 
 const router = express.Router();
 
-router.post("/create", createBlog);
+router.post("/createcategory", createBlogCategory);
+
+router.post("/editcategory", editBlogCategory);
 
 router.get('/getallcategories', getAllCategories);
 

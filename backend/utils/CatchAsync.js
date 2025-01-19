@@ -1,6 +1,11 @@
 const CatchAsync = (fn) => {
-    return (req, res, next) => {
-        Promise.resolve(fn(req, res, next)).catch(next);
+    return async (req, res, next) => {
+        try {
+            const result = await fn(req, res, next);
+            return result;
+        } catch (error) {
+            next(error);
+        }
     }
 }
 

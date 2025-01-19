@@ -2,20 +2,50 @@ import prisma from "../db/db.config.js";
 import CatchAsync from "../utils/CatchAsync.js";
 import jwt from 'jsonwebtoken';
 
-const getAvailableSortOrder = async (predecessorid) => {
+export const resetBlogSortOrders = CatchAsync(async () => {
 
-    let predecessorblog = await prisma.blog.findFirst({
+        // Get all blogs ordered by current sortOrder
+        const blogs = await prisma.blog.findMany({
+            orderBy: {
+                sortOrder: 'asc'
+            }
+        });
+
+        // Update each blog with new sortOrder values
+        const updates = blogs.map((blog, index) => {
+            const newSortOrder = (index + 1) * 10000;
+            return prisma.blog.update({
+                where: { id: blog.id },
+                data: { sortOrder: newSortOrder }
+            });
+        });
+
+        await prisma.$transaction(updates);
+
+        return true;
+});
+
+const getAvailableSortOrder = CatchAsync(async (req, res, next) => {
+
+    let predecessorid = req.predecessorid;
+    let predecessorblog;
+
+    if (!predecessorid) {
+        predecessorblog = await prisma.blog.findFirst({
+            orderBy: {
+                sortOrder: 'desc'
+            }
+        });
+
+        return predecessorblog.sortOrder + 10000;
+    }
+
+
+    predecessorblog = await prisma.blog.findFirst({
         where: {
-            id: predecessor
+            id: predecessorid
         }
     });
-
-    if (!predecessorblog) {
-        return res.status(400).json({
-            success: false,
-            message: "predecessor blog not found"
-        });
-    }
 
     let successorblog = await prisma.blog.findFirst({
         where: {
@@ -28,6 +58,10 @@ const getAvailableSortOrder = async (predecessorid) => {
         }
     });
 
+    if (!successorblog) {
+        return predecessorblog.sortOrder + 10000;
+    }
+
     let sortOrder = Number((predecessorblog.sortOrder + successorblog.sortOrder) / 2);
 
     let blogavailable = await prisma.blog.findFirst({
@@ -37,14 +71,20 @@ const getAvailableSortOrder = async (predecessorid) => {
     })
 
     if (blogavailable) {
-        sortOrder = sortOrder + 1;
+        let isReseted = await resetBlogSortOrders();
+        if(!isReseted){
+            return false
+        }
+
+        sortOrder = await getAvailableSortOrder(req, res, next);
     }
 
+    console.log("inside", {sortOrder});
+
     return sortOrder;
+});
 
-}
-
-export const createBlog = CatchAsync(async (req, res, next) => {
+export const createBlogCategory = CatchAsync(async (req, res, next) => {
     // Get blog data from request body
     const {
         name,
@@ -55,10 +95,7 @@ export const createBlog = CatchAsync(async (req, res, next) => {
         darkIcon
     } = req.body;
 
-
-    console.log(req.body);
-
-    // // make slug by using name
+    // make slug by using name
     const slug = name.toLowerCase().replace(/\s+/g, '-');
 
     // // Validate required fields
@@ -78,7 +115,9 @@ export const createBlog = CatchAsync(async (req, res, next) => {
         }
     }
 
-    let sortOrder = getAvailableSortOrder(predecessor);
+    req.predecessorid = predecessor;
+
+    let sortOrder = await getAvailableSortOrder(req, res, next);
 
     // // Create blog object
     const blog = {
@@ -91,6 +130,78 @@ export const createBlog = CatchAsync(async (req, res, next) => {
 
     const blogData = await prisma.blog.create({
         data: blog
+    });
+
+
+    res.status(201).json({
+        success: true,
+        message: "Blog created successfully",
+        blog: blogData
+    })
+});
+export const editBlogCategory = CatchAsync(async (req, res, next) => {
+    // Get blog data from request body
+    const {
+        predecessor,
+        parent=null,
+        iconType,
+        icon,
+        darkIcon
+    } = req.body;
+
+    // console.log(req.body)
+
+    const blogid = req.query.blogid;
+
+    const blog = await prisma.blog.findUnique({
+        where: {
+            id: blogid
+        }
+    });
+
+    if (!blog) {
+        return res.status(404).json({
+            success: false,
+            message: "Blog not found"
+        });
+    }
+
+    const updatedBlogData = {
+        parentId: parent,
+    }
+
+    if (iconType === "url") {
+        let previousIconImage = blog.iconImage;
+        if (previousIconImage) {
+            if(icon) {
+                previousIconImage["url"] = icon;
+            }
+            if(darkIcon) {
+                previousIconImage.darkUrl = darkIcon;
+            }
+        } else {
+            previousIconImage = {
+                "url": icon,
+                "darkUrl": darkIcon
+            }
+        }
+        updatedBlogData["iconImage"] = previousIconImage;
+    }
+
+    if (predecessor) {
+        req.predecessorid = predecessor;
+        console.log("predecessor", predecessor);
+        const newSortOrder = await getAvailableSortOrder(req, res, next);
+        updatedBlogData["sortOrder"] = newSortOrder;
+    }
+
+    console.log({updatedBlogData})
+
+    const blogData = await prisma.blog.update({
+        where: {
+            id: blogid
+        },
+        data: updatedBlogData
     });
 
 
@@ -172,7 +283,8 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
     res.status(200).json({
         success: true,
         categories: rootCategories,
-        categorylist: allCategories
+        categorylist: allCategories,
+        categoryMap: categoryMap,
     });
 });
 

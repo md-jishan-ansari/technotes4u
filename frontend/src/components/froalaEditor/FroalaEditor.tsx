@@ -96,11 +96,11 @@ const FroalaEditor = ({setBlogContent, blogContent}: any) => {
                 "96",
               ],
 
-              inlineStyles: {
-                'Medium': 'font-weight: 500',
-                'Bold': 'font-weight: 700',
-                'Extra Bold': 'font-weight: 800',
-              },
+              // inlineStyles: {
+              //   'Medium': 'font-weight: 500',
+              //   'Bold': 'font-weight: 700',
+              //   'Extra Bold': 'font-weight: 800',
+              // },
 
             // Add paragraphFormat configuration
               paragraphFormat: {
@@ -121,7 +121,7 @@ const FroalaEditor = ({setBlogContent, blogContent}: any) => {
                     "fontFamily",
                     "fontSize",
                     "bold",
-                    'inlineStyle',
+                    // 'inlineStyle',
                     'lineHeight',
                     "italic",
                     "underline",
@@ -142,7 +142,6 @@ const FroalaEditor = ({setBlogContent, blogContent}: any) => {
                     "alignCenter",
                     "alignRight",
                     "alignJustify",
-                    "|",
                     "formatOL",
                     "formatUL",
                     "outdent",
@@ -179,8 +178,30 @@ const FroalaEditor = ({setBlogContent, blogContent}: any) => {
               videoDefaultDisplay: "block",
 
               // Basic image upload
-              imageUploadURL: "/api/upload-image",
+              imageUploadURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/upload-image`,
               imageUploadMethod: "POST",
+              // Add image deletion handler
+              events: {
+                'image.removed': function ($img: any) {
+                  const imageUrl = $img.attr('src');
+
+                  // Call backend API to delete the image
+                  fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/delete-image`, {
+                    method: 'DELETE',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ imageUrl }),
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    console.log('Image deleted successfully:', data);
+                  })
+                  .catch(error => {
+                    console.error('Error deleting image:', error);
+                  });
+                }
+              },
 
               // Additional Features
               charCounterCount: true,

@@ -1,8 +1,11 @@
 import prisma from "../db/db.config.js";
 import CatchAsync from "../utils/CatchAsync.js";
 import jwt from 'jsonwebtoken';
+import path from 'path';
+import { promises as fsPromises } from 'fs';
 
-export const resetBlogSortOrders = CatchAsync(async () => {
+
+export const resetBlogSortOrders = CatchAsync(async (req, res, next) => {
 
         // Get all blogs ordered by current sortOrder
         const blogs = await prisma.blog.findMany({
@@ -82,6 +85,19 @@ const getAvailableSortOrder = CatchAsync(async (req, res, next) => {
     console.log("inside", {sortOrder});
 
     return sortOrder;
+});
+
+export const uploadBlogImage = CatchAsync(async (req, res, next) => {
+    return res.status(200).json({
+        link: req.link
+    });
+});
+
+export const deleteBlogImage = CatchAsync(async (req, res, next) => {
+    return res.status(200).json({
+        success: true,
+        message: "Image deleted successfully"
+    });
 });
 
 export const createBlogCategory = CatchAsync(async (req, res, next) => {

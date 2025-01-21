@@ -14,6 +14,8 @@ import globalErrorHandler from './middleware/errorController.js';
 import AppError from './utils/appError.js';
 import prisma from './db/db.config.js';
 
+import fileUpload from 'express-fileupload';
+
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -30,6 +32,8 @@ app.use(cors({
 // setup static folder
 // It will make available directly all the files which is avaialble in public folder  like if we want to access about.html then we can access it by localhost:8000/about
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(fileUpload());
 
 // Body parser middleware
 // app.use(express.json({ limit: '10kb' })); // if body is larger than 10kb than not accepted

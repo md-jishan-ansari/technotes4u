@@ -71,10 +71,10 @@ const BlogCategoriesWrapper = () => {
 
       <div className={`
         w-full
-        md:min-w-[300px]
-        md:max-w-[350px]
+        md:w-[350px]
+        max-w-[450px]
+
         h-[100vh]
-        md:h-[calc(100vh-68px)]
         overflow-y-auto
 
         bg-background
@@ -85,19 +85,19 @@ const BlogCategoriesWrapper = () => {
         fixed
         z-[100]
         md:z-40
-        md:sticky
         top-0
-        md:top-[68px]
+        let-0
+        pt-0
+        md:pt-[68px]
         transition-[left]
         duration-300
-        max-w-[450px]
 
         flex
         flex-col
 
         ${isOpen ?
           " left-[0%]"
-          : "left-[-100%]"
+          : "left-[-100%] md:left-[0%] "
         }
 
     `}>

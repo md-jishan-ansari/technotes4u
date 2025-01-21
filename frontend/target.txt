@@ -1,0 +1,17 @@
+Home Page:
+
+    Eye-catching design with a clear blog title and tagline.
+    Featured posts section.
+
+Interactive Features:
+
+    Code snippets with syntax highlighting (e.g., Prism.js).
+    Option to embed GitHub Gists or other third-party tools.
+
+Analytics:
+
+    Integrate Google Analytics or similar tools to track visitors.
+
+About Page:
+
+    Highlight your journey and skills.

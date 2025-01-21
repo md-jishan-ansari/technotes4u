@@ -1,12 +1,13 @@
 import React from 'react'
 
 interface Props {
-    children: React.ReactNode
+    children: React.ReactNode,
+    className?: string
 }
 
-const Container: React.FC<Props> = ({children}) => {
+const Container: React.FC<Props> = ({children, className=""}) => {
   return (
-    <div className="
+    <div className={`
         max-w-[1920px]
         w-full
         mx-auto
@@ -14,7 +15,8 @@ const Container: React.FC<Props> = ({children}) => {
         py-3
         lg:px-6
         xl:px-20
-    ">
+        ${className}
+    `}>
         {children}
     </div>
   )

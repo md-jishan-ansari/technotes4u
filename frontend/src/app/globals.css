@@ -104,3 +104,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.fr-box.fr-basic.fr-top .fr-wrapper {
+  height: calc(100vh - 220px);
+  overflow: auto;
+}
+
+@media screen and (max-width: 1340px) {
+  .fr-box.fr-basic.fr-top .fr-wrapper {
+    height: calc(100vh - 260px);
+  }
+}

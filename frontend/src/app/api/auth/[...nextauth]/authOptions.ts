@@ -35,34 +35,51 @@ export const authOptions: AuthOptions = {
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
+        name: { label: "Name", type: "text" },
+        confirmPassword: { label: "Confirm Password", type: "password" },
+        action: { label: "Action", type: "text" }
       },
       async authorize(credentials) {
         try {
-          const response = await fetch(`${BACKEND_URL}/api/auth/signin`, {
+          const isRegister = credentials?.action === 'register';
+          const endpoint = isRegister ? '/api/auth/register' : '/api/auth/signin';
+
+          const payload = isRegister
+            ? {
+                name: credentials.name,
+                email: credentials.email,
+                password: credentials.password,
+                confirmPassword: credentials.confirmPassword
+              }
+            : {
+                email: credentials?.email,
+                password: credentials?.password
+              };
+
+          const response = await fetch(`${BACKEND_URL}${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(credentials),
+            body: JSON.stringify(payload),
           });
 
           if (!response.ok) {
-            throw new Error('Invalid credentials');
+            throw new Error(isRegister ? 'Registration failed' : 'Invalid credentials');
           }
 
           const user = await response.json();
 
           if (!user) {
-            return null; // Explicitly return null if no user object
+            return null;
           }
 
           addApiTokenToCookies(user.authtoken);
-
           return user;
         } catch (error) {
-          console.error('Credentials sign-in error:', error);
+          console.error('Auth error:', error);
           return null;
         }
       }
-    }),
+    })
   ],
   events: {
     async signIn({ user, account }) {

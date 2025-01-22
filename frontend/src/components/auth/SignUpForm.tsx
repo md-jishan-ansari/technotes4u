@@ -3,13 +3,21 @@ import React, { useEffect } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import InputFields from '../inputs/InputFields';
 import Link from 'next/link';
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { SafeUser } from '@/src/types/types';
 import Button from '../Button';
+
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormMessage,
+  } from "@/src/componentsSadcn/ui/form"
+import { Input } from '@/src/componentsSadcn/ui/input';
 
 const formSchema = z
     .object({
@@ -50,15 +58,12 @@ const SignUpForm:React.FC<signUpFormProps> = ({currentUser}) => {
         }
     }, []);
 
-    const {
-        register,
-        handleSubmit,
-        // setError,
-        formState: { errors, isSubmitting }
-    } = useForm<FormData>({
+    const form = useForm<FormData>({
         defaultValues: {
+            name: '',
             email: '',
             password: '',
+            confirmPassword: ''
         },
         resolver: zodResolver(formSchema)
     });
@@ -68,31 +73,24 @@ const SignUpForm:React.FC<signUpFormProps> = ({currentUser}) => {
     // }
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
-        const {name, email, password} = data;
-        axios({
-            method: 'post',
-            url: '/api/register',
-            data: {
-                name,
-                email,
-                password
+        const {name, email, password, confirmPassword} = data;
+        console.log({data});
+
+        signIn('credentials', {
+            name,
+            email,
+            password,
+            confirmPassword,
+            action: "register",
+            redirect: false
+        }).then((callback) => {
+            if(callback?.ok) {
+                router.push('/');
+                router.refresh();
             }
-        }).then(() => {
-            signIn('credentials', {
-                email,
-                password,
-                redirect: false
-            }).then((callback) => {
-                if(callback?.ok) {
-                    router.push('/');
-                    router.refresh();
-                }
-                if(callback?.error) {
-                    console.log(callback.error);
-                }
-            });
-        }).catch((error: any) => {
-            console.log(error);
+            if(callback?.error) {
+                console.log(callback.error);
+            }
         });
     }
 
@@ -105,66 +103,81 @@ const SignUpForm:React.FC<signUpFormProps> = ({currentUser}) => {
   return (
     <>
         <h3 className="text-slate-800 dark:text-white text-3xl text-center font-semibold mb-2">Sign Up</h3>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
 
-            <div>
-                <InputFields
-                    label="Name"
-                    register={register}
-                    errors={errors}
+                <FormField
+                    control={form.control}
                     name="name"
-                    placeholder="Enter your Name"
+                    render={({ field }) => (
+                        <FormItem>
+                            <p className="text-sm mb-[4px]">Name</p>
+                            <FormControl>
+                                <Input className="!mt-[2px]" placeholder="Enter your Name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
                 />
-            </div>
 
-            <div className="mt-4">
-                <InputFields
-                    label="Email"
-                    register={register}
-                    errors={errors}
+                <FormField
+                    control={form.control}
                     name="email"
-                    placeholder="Enter your email"
+                    render={({ field }) => (
+                        <FormItem className="mt-3">
+                            <p className="text-sm mb-[4px]">Email</p>
+                            <FormControl>
+                                <Input className="!mt-[2px]" placeholder="Enter your email" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
                 />
-            </div>
 
-            <div className="mt-4">
-                <InputFields
-                    label="Password"
-                    register={register}
-                    errors={errors}
-                    type="password"
+                <FormField
+                    control={form.control}
                     name="password"
-                    placeholder="Enter your password"
+                    render={({ field }) => (
+                        <FormItem className="mt-3">
+                            <p className="text-sm mb-[4px]">Password</p>
+                            <FormControl>
+                                <Input className="!mt-[2px]" type="password" placeholder="Enter your password" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
                 />
-            </div>
 
-            <div className="mt-4">
-                <InputFields
-                    label="Confirm Password"
-                    register={register}
-                    errors={errors}
-                    type="password"
+                <FormField
+                    control={form.control}
                     name="confirmPassword"
-                    placeholder="Enter your password again"
+                    render={({ field }) => (
+                        <FormItem className="mt-3">
+                            <p className="text-sm mb-[4px]">Confirm Password</p>
+                            <FormControl>
+                                <Input className="!mt-[2px]" type="password" placeholder="Enter your password again" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
                 />
-            </div>
 
+                <div className="mt-6">
+                    {form.formState.errors.root && <p className='text-red-600'>{form.formState.errors.root.message}</p>}
 
-            <div className="mt-6">
-                {errors.root && <p className='text-red-600'>{errors.root.message}</p>}
-
-                <Button
-                    variant="dark"
-                    size="md"
-                    rounded="rounded-lg"
-                    isLoading={false}
-                    fullWidth
-                    type="submit"
-                >
-                    {isSubmitting ? "Submitting..." : "Sign Up" }
-                </Button>
-            </div>
-        </form>
+                    <Button
+                        variant="dark"
+                        size="md"
+                        rounded="rounded-lg"
+                        isLoading={false}
+                        fullWidth
+                        type="submit"
+                    >
+                        {form.formState.isSubmitting ? "Submitting..." : "Sign Up" }
+                    </Button>
+                </div>
+            </form>
+        </Form>
 
         <div className="flex items-center gap-2 my-3 text-slate-600">
             <div className="w-full border-b-[1px] border-slate-400" />

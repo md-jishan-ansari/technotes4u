@@ -8,8 +8,7 @@ const FormWrap = ({children, maxwidth="650px"}: {children: React.ReactNode, maxw
         flex
         justify-center
         items-center
-        pb-12
-        pt-20
+        p-12
     ">
         <div style={{maxWidth: maxwidth}} className={`
             w-fit
@@ -17,7 +16,7 @@ const FormWrap = ({children, maxwidth="650px"}: {children: React.ReactNode, maxw
             flex-col
             gap-6
             items-center
-            shadow-sm
+            shadow-xl
             shadow-slate-200
             rounded-md
             overflow-hidden

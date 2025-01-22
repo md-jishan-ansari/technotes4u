@@ -11,7 +11,7 @@ const signToken = (id) => {
 };
 
 export const register = CatchAsync(async (req, res, next) => {
-  const { email, name, password } = req.body;
+  const { email, name, password, confirmPassword } = req.body;
 
   const existingUser = await prisma.user.findUnique({
     where: {

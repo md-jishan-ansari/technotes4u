@@ -9,7 +9,7 @@ const AuthLayout: React.FC<authLayoutProps> = ({ children }) => {
 
   return (
     <FormWrap>
-        <div className="max-w-xl p-8 md:p-4 bg-slate-200 dark:bg-background">
+        <div className="w-[400px] p-8 md:p-4 shadow-xl ">
             {children}
         </div>
     </FormWrap>

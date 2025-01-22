@@ -3,7 +3,6 @@ import React, { useEffect } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import InputFields from '../inputs/InputFields';
 
 import Link from 'next/link';
 
@@ -12,6 +11,15 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Button from '../Button';
 import { SafeUser } from '@/src/types/types';
+
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormMessage,
+  } from "@/src/componentsSadcn/ui/form"
+import { Input } from '@/src/componentsSadcn/ui/input';
 
 const formSchema = z.object({
     email: z
@@ -40,12 +48,7 @@ const SignInForm:React.FC<signInFormProps> = ({currentUser}) => {
         }
     }, []);
 
-    const {
-        register,
-        handleSubmit,
-        // setError,
-        formState: { errors, isSubmitting }
-    } = useForm<FormData>({
+    const form = useForm<FormData>({
         defaultValues: {
             email: '',
             password: '',
@@ -80,48 +83,56 @@ const SignInForm:React.FC<signInFormProps> = ({currentUser}) => {
   return (
     <>
         <h3 className="text-slate-800 dark:text-white text-3xl text-center font-semibold mb-2">Sign In</h3>
-        <form onSubmit={handleSubmit(onSubmit)}>
-
-            <div>
-                <InputFields
-                    label="Email"
-                    register={register}
-                    errors={errors}
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+                <FormField
+                    control={form.control}
                     name="email"
-                    placeholder="Enter your email"
+                    render={({ field }) => (
+                        <FormItem >
+                            <p  className="text-sm mb-[4px]">Email</p>
+                            <FormControl>
+                                <Input className="!mt-[2px]" placeholder="Enter your email" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
                 />
-            </div>
 
-            <div className="mt-4">
-                <InputFields
-                    label="Password"
-                    register={register}
-                    errors={errors}
-                    type="password"
+                <FormField
+                    control={form.control}
                     name="password"
-                    placeholder="Enter your password"
+                    render={({ field }) => (
+                        <FormItem className="mt-3">
+                            <p className="text-sm mb-[4px]">Password</p>
+                            <FormControl>
+                                <Input className="!mt-[2px]" type="password" placeholder="Enter your password" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
                 />
-            </div>
 
 
-            <div className="mt-6">
-                {errors.root && <p className='text-red-600'>{errors.root.message}</p>}
-                <Button
-                    variant="dark"
-                    size="md"
-                    rounded="rounded-lg"
-                    isLoading={false}
-                    fullWidth
-                    type="submit"
-                >
-                    {isSubmitting ? "Submitting..." : "Sign In" }
-                </Button>
+                <div className="mt-6">
+                    {form.formState.errors.root && <p className='text-red-600'>{form.formState.errors.root.message}</p>}
+                    <Button
+                        variant="dark"
+                        size="md"
+                        rounded="rounded-lg"
+                        isLoading={false}
+                        fullWidth
+                        type="submit"
+                    >
+                        {form.formState.isSubmitting ? "Submitting..." : "Sign In" }
+                    </Button>
 
 
-            </div>
+                </div>
 
 
-        </form>
+            </form>
+        </Form>
 
         <div className="flex items-center gap-2 my-3 text-slate-600">
             <div className="w-full border-b-[1px] border-slate-400" />

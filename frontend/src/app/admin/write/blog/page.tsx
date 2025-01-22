@@ -45,7 +45,7 @@ const page = () => {
                 </nav>
             </Container>
         </div>
-        <div className="fixed top-[110px] left-0 w-full overflow-auto">
+        <div className="prose dark:prose-invert lg:prose-xl fixed top-[110px] left-0 w-full overflow-auto max-w-full">
             <Container>
                 <FroalaEditor blogContent={blogContent} setBlogContent={setBlogContent} />
             </Container>

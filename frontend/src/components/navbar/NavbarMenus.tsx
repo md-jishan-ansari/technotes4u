@@ -17,12 +17,17 @@ import { IoMdArrowDropdown } from "react-icons/io"
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
-import { useDispatch } from 'react-redux';
 import { fetchCategories } from '@/src/redux/slices/blogSlice';
 import { useEffect } from "react";
+import { SafeUser } from "@/src/types/types";
+import { useAppDispatch } from "@/src/redux/hooks";
 
-const NavbarMenus = ({ currentUser }: any) => {
-  const dispatch = useDispatch();
+interface NavbarMenusProps {
+    currentUser?: SafeUser | null;
+}
+
+const NavbarMenus:React.FC<NavbarMenusProps> = ({ currentUser }) => {
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchCategories());

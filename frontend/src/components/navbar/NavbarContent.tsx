@@ -1,14 +1,17 @@
 "use client";
 
-import Link from 'next/link';;
-import getCurrentUser from '@/src/actions/getCurrentUser';
+import Link from 'next/link';
 import Darkmode from './Darkmode';
-import Button from '../Button';
 import { RxHamburgerMenu } from "react-icons/rx";
 import NavbarMenus from './NavbarMenus';
 import { useEffect, useState } from 'react';
+import { SafeUser } from '@/src/types/types';
 
-const NavbarContent = ({ currentUser }: any) => {
+interface NavbarContentProps {
+    currentUser?: SafeUser | null;
+}
+
+const NavbarContent:React.FC<NavbarContentProps> = ({ currentUser }) => {
     const [show, setShow] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 

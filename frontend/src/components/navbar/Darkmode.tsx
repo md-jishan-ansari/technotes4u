@@ -7,10 +7,11 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeTheme, setThemeFromLocalStorage } from "../../redux/slices/themeSlice";
 import { toast } from 'react-toastify';
+import { RootState } from '@/src/redux/store';
 
 const Darkmode = () => {
   const dispatch = useDispatch();
-  const theme = useSelector(state => state?.theme?.theme)
+  const theme = useSelector((state:RootState) => state?.theme?.theme)
   let pathname = usePathname();
   pathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 

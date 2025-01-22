@@ -42,7 +42,7 @@ const WriteBlog = () => {
   const [parentCategories, setParentCategories] = useState([]);
   const [predecessors, setPredecessors] = useState([]);
   const searchParams = useSearchParams()
-  let [blogid, setblogid] = useState(searchParams.get('blogid'));
+  let [blogId, setblogId] = useState(searchParams.get('blogId'));
 
   const router = useRouter();
 
@@ -60,10 +60,10 @@ const WriteBlog = () => {
   })
 
   useEffect(() => {
-    if (categorylist.length > 0) {
+    if (categorylist?.length > 0) {
       const categories = [];
         for (let i = 0; i < categorylist.length; i++) {
-          if(categorylist[i].id !== blogid) {
+          if(categorylist[i].id !== blogId) {
             categories.push({
                 label: categorylist[i].name,
                 value: categorylist[i].id
@@ -74,16 +74,16 @@ const WriteBlog = () => {
     }
   }, [categorylist]);
 
-  // Add this new useEffect to fetch and set data when blogid exists
+  // Add this new useEffect to fetch and set data when blogId exists
   useEffect(() => {
-    if (blogid && categorylist.length > 0) {
-      let currentCategory = categorylist.filter(category => category.id === blogid);
+    if (blogId && categorylist?.length > 0) {
+      let currentCategory = categorylist.filter(category => category.id === blogId);
       console.log({currentCategory});
       if(currentCategory.length > 0) {
         form.setValue('name', currentCategory[0].name);
         form.setValue('parent', currentCategory[0].parentId);
       } else {
-        setblogid(null);
+        setblogId(null);
       }
     }
   }, [searchParams, categorylist]);
@@ -92,16 +92,16 @@ const WriteBlog = () => {
     const parentValue = form.watch('parent');
     const filteredPredecessors = [];
 
-    for (let i = 0; i < categorylist.length; i++) {
+    for (let i = 0; i < categorylist?.length; i++) {
         const category = categorylist[i];
-        if (parentValue && category.id != blogid) {
+        if (parentValue && category.id != blogId) {
             if (category.id === parentValue || category.parentId === parentValue) {
                 filteredPredecessors.push({
                     value: category.id,
                     label: category.name
                 });
             }
-        } else if (!category.parentId && category.id != blogid) {
+        } else if (!category.parentId && category.id != blogId) {
             filteredPredecessors.push({
                 value: category.id,
                 label: category.name
@@ -122,21 +122,21 @@ const WriteBlog = () => {
   function onSubmit(data: z.infer<typeof FormSchema>) {
 
     let url = "";
-    if (blogid) {
-      url = process.env.NEXT_PUBLIC_BACKEND_URL + '/api/blog/editcategory?blogid=' + blogid;
+    if (blogId) {
+      url = process.env.NEXT_PUBLIC_BACKEND_URL + '/api/blog/editcategory?blogId=' + blogId;
     } else {
       url = process.env.NEXT_PUBLIC_BACKEND_URL + '/api/blog/createcategory';
     }
 
     axios({
       method: 'post',
-      url: process.env.NEXT_PUBLIC_BACKEND_URL + '/api/blog/editcategory?blogid=' + blogid,
+      url: url,
       data
     }).then((res) => {
       console.log(res);
 
       form.reset();
-      router.push("/admin/write/blog?blogid=" + res.data.blog.id);
+      router.push("/admin/write/blog?blogId=" + res.data.blog.id);
 
     }).catch((error: any) => {
       console.log(error);
@@ -152,7 +152,7 @@ const WriteBlog = () => {
             <FormField
               control={form.control}
               name="name"
-              disabled={!!blogid}
+              disabled={!!blogId}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
@@ -174,10 +174,10 @@ const WriteBlog = () => {
               placeholder="Select a blog"
               description="Select parent blog"
               inputlists={parentCategories}
-              defaultSet={!blogid}
+              defaultSet={!blogId}
             />
 
-            {blogid && (
+            {blogId && (
                 <p className="text-red-500 dark:text-red-900 lg:col-span-2 mt-3">If you don't want to change below field for this category than leave it empty</p>
             )}
 

@@ -40,6 +40,10 @@ const getAvailableSortOrder = CatchAsync(async (req, res, next) => {
             }
         });
 
+        if (!predecessorblog) {
+            return 10000;
+        }
+
         return predecessorblog.sortOrder + 10000;
     }
 
@@ -81,8 +85,6 @@ const getAvailableSortOrder = CatchAsync(async (req, res, next) => {
 
         sortOrder = await getAvailableSortOrder(req, res, next);
     }
-
-    console.log("inside", {sortOrder});
 
     return sortOrder;
 });
@@ -165,13 +167,11 @@ export const editBlogCategory = CatchAsync(async (req, res, next) => {
         darkIcon
     } = req.body;
 
-    // console.log(req.body)
-
-    const blogid = req.query.blogid;
+    const blogId = req.query.blogId;
 
     const blog = await prisma.blog.findUnique({
         where: {
-            id: blogid
+            id: blogId
         }
     });
 
@@ -206,16 +206,13 @@ export const editBlogCategory = CatchAsync(async (req, res, next) => {
 
     if (predecessor) {
         req.predecessorid = predecessor;
-        console.log("predecessor", predecessor);
         const newSortOrder = await getAvailableSortOrder(req, res, next);
         updatedBlogData["sortOrder"] = newSortOrder;
     }
 
-    console.log({updatedBlogData})
-
     const blogData = await prisma.blog.update({
         where: {
-            id: blogid
+            id: blogId
         },
         data: updatedBlogData
     });
@@ -236,7 +233,6 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
             name: true,
             slug: true,
             parentId: true,
-            isBlog: true,
             iconImage: true,
         },
         orderBy: [
@@ -288,8 +284,6 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
 
         if (parent) {
             parent.children.push(category);
-        } else if (category.isBlog) {
-            otherCategory.children.push(category);
         } else {
             rootCategories.push(category);
         }
@@ -301,6 +295,144 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
         categories: rootCategories,
         categorylist: allCategories,
         categoryMap: categoryMap,
+    });
+});
+
+export const saveToDraft = CatchAsync(async (req, res, next) => {
+    const {
+        content
+    } = req.body;
+
+    const blogId = req.query.blogId;
+
+    const blog = await prisma.blog.findUnique({
+        where: {
+            id: blogId
+        }
+    });
+
+    if (!blog) {
+        return res.status(404).json({
+            success: false,
+            message: "Blog not found"
+        });
+    }
+
+    const updatedBlog = await prisma.blog.update({
+        where: {
+            id: blogId
+        },
+        data: {
+            draftContent: content
+        }
+    });
+
+    res.status(200).json({
+        success: true,
+        message: "Draft saved successfully",
+        blog: updatedBlog
+    });
+});
+
+export const publishDraft = CatchAsync(async (req, res, next) => {
+    const {
+        content
+    } = req.body;
+
+    const blogId = req.query.blogId;
+
+    const blog = await prisma.blog.findUnique({
+        where: {
+            id: blogId
+        }
+    });
+
+    if (!blog) {
+        return res.status(404).json({
+            success: false,
+            message: "Blog not found"
+        });
+    }
+
+    const updatedBlog = await prisma.blog.update({
+        where: {
+            id: blogId
+        },
+        data: {
+            content: content,
+            draftContent: content,
+            isPublished: true
+        }
+    });
+
+    res.status(200).json({
+        success: true,
+        message: "Draft published successfully",
+        blog: updatedBlog
+    });
+});
+
+export const unpublishBlog = CatchAsync(async (req, res, next) => {
+
+
+    const blogId = req.query.blogId;
+
+    const blog = await prisma.blog.findUnique({
+        where: {
+            id: blogId
+        }
+    });
+
+    if (!blog) {
+        return res.status(404).json({
+            success: false,
+            message: "Blog not found"
+        });
+    }
+
+    const updatedBlog = await prisma.blog.update({
+        where: {
+            id: blogId
+        },
+        data: {
+            isPublished: false
+        }
+    });
+
+    res.status(200).json({
+        success: true,
+        message: "unpublished successfully",
+        blog: updatedBlog
+    });
+});
+export const getSingleBlog = CatchAsync(async (req, res, next) => {
+
+
+    const blogId = req.query.blogId;
+    const slug = req.query.slug;
+
+    console.log(blogId, slug)
+
+    const blog = await prisma.blog.findFirst({
+        where: {
+            OR: [
+                { id: blogId },
+                { slug: slug }
+            ]
+        }
+    });
+
+    if (!blog) {
+        return res.status(404).json({
+            success: false,
+            message: "Blog not found"
+        });
+    }
+
+    res.status(200).json({
+        success: true,
+        message: "unpublished successfully",
+        blog: blog
     });
 });
 

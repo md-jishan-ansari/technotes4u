@@ -12,14 +12,8 @@ import React, { useEffect } from 'react'
 const FroalaEditor = ({setBlogContent, blogContent}: any) => {
 
     useEffect(() => {
-        const savedContent = localStorage.getItem('froalaContent');
-        setBlogContent(savedContent || '');
-    }, []);
-
-    useEffect(() => {
         require('froala-editor/css/froala_style.min.css');
         require('froala-editor/css/froala_editor.pkgd.min.css');
-        require('froala-editor/css/themes/dark.min.css');
 
         require('froala-editor/js/plugins/paragraph_format.min.js');
         require('froala-editor/js/plugins/line_height.min.js');
@@ -111,6 +105,7 @@ const FroalaEditor = ({setBlogContent, blogContent}: any) => {
                 H4: "Heading 4",
                 H5: "Heading 5",
                 H6: "Heading 6",
+                PRE: 'Code'
               },
 
               // Toolbar Configuration
@@ -121,7 +116,6 @@ const FroalaEditor = ({setBlogContent, blogContent}: any) => {
                     "fontFamily",
                     "fontSize",
                     "bold",
-                    // 'inlineStyle',
                     'lineHeight',
                     "italic",
                     "underline",
@@ -170,6 +164,10 @@ const FroalaEditor = ({setBlogContent, blogContent}: any) => {
 
               // Add paragraphFormatSelection: true to enable format selection
               paragraphFormatSelection: true,
+              paragraphDefaultSelection: 'Normal',
+              htmlAllowedTags: ['.*'],
+              htmlAllowedAttrs: ['.*'],
+
 
               // Video configuration
               videoInsertButtons: ["videoByURL", "videoEmbed"],

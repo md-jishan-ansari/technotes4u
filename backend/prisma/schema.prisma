@@ -21,6 +21,7 @@ model User {
   image         String?
   password      String?
   accounts      Account[]
+  blogs         Blog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -48,22 +49,36 @@ model Account {
 }
 
 model Blog {
-  id            String          @id @default(cuid())
-  name          String          @unique
-  slug          String          @unique
-  parentId      String?
-  children      Blog[]          @relation("BlogToBlog")
-  parent        Blog?           @relation("BlogToBlog", fields: [parentId], references: [id], onDelete: SetNull)
-  isBlog        Boolean         @default(false)
-  content       String?         // For blog content
-  description   String?         // For both blog and Blog descriptions
-  isPublished   Boolean         @default(false)
-  viewCount     Int             @default(0)
-  sortOrder     Int?            // For sorting
+  // Primary identifier
+  id            String    @id @default(cuid())
+
+  // Core fields
+  name          String    @unique
+  slug          String    @unique
+  description   String?   // For both blog and Blog descriptions
+  content       String?   // For blog content
+  draftContent  String?   // For draftblog content
+
+  // Status and metadata
+  isFeatured    Boolean   @default(false)
+  isPublished   Boolean   @default(false)
+  isMdxEditor   Boolean   @default(true)
+  viewCount     Int       @default(0)
+  sortOrder     Int?      // For sorting
   iconImage     Json?
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  // Relationships
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Self-referential relationship
+  parentId      String?
+  parent        Blog?     @relation("BlogToBlog", fields: [parentId], references: [id], onDelete: SetNull)
+  children      Blog[]    @relation("BlogToBlog")
+
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 // iconImage

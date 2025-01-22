@@ -8,8 +8,9 @@ const Blog = ({params}: {params: {slug: string}}) => {
     <>
       <ActiveBlog slug={params.slug} /> {/* This is only for setting active blog slug to states or anyting else data which is needed for the blog page */}
 
+
       <div className="p-4">
-        <FroalaBlog />
+        <FroalaBlog blogtype="blog" slug={params?.slug} />
       </div>
     </>
   )

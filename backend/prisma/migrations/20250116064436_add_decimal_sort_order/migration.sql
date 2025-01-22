@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Blog" ALTER COLUMN "sortOrder" SET DATA TYPE DECIMAL(65,30);

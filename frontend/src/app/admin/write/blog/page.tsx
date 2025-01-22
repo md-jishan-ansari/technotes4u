@@ -2,16 +2,24 @@
 import Button from '@/src/components/Button'
 import Container from '@/src/components/Container'
 import FroalaEditor from '@/src/components/froalaEditor/FroalaEditor'
-import axios from 'axios';
+import { Blog } from '@/src/types/types'
+// import { useAppDispatch } from '@/src/redux/hooks'
+import axios, { AxiosError }  from 'axios';
 import { useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback  } from 'react'
+import { toast } from 'react-toastify';
 
-const page = () => {
+interface ApiErrorResponse {
+    message: string;
+}
+
+const WriteBlogPage = () => {
     const [blogContent, setBlogContent] = React.useState('');
     const searchParams = useSearchParams()
-    let [blogId, setblogId] = useState(searchParams.get('blogid'));
+    let [blogId, setblogId] = useState<string | null>(searchParams.get('blogid'));
 
-    const handleblog = async (action: string) => {
+
+    const handleblog = useCallback(async (action: 'save-to-draft' | 'publish-draft' | 'unpublish-blog') => {
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/${action}/?blogId=${blogId}`, {
                 content: blogContent,
@@ -20,16 +28,26 @@ const page = () => {
         } catch (error) {
             console.error('Error saving blog:', error);
         }
-    };
+    }, [blogId, blogContent]);
 
-    useEffect(() => {
-        if(blogId) {
-            axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/getblog?blogId=${blogId}`)
-            .then((res) => {
-                setBlogContent(res.data.blog.draftContent);
-            })
+    const fetchBlogContent = useCallback(async () => {
+        if (!blogId) return
+
+        try {
+            const response = await axios.get<{ blog: Blog }>(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/getblog?blogId=${blogId}`
+            )
+            setBlogContent(response.data.blog.draftContent || '')
+        } catch (error) {
+            const err = error as AxiosError<ApiErrorResponse>
+            toast.error(err.response?.data?.message || 'Failed to fetch blog content')
+            console.error('Error fetching blog:', err)
         }
     }, [blogId])
+
+    useEffect(() => {
+        fetchBlogContent()
+    }, [fetchBlogContent])
 
   return (
     <div>
@@ -54,4 +72,4 @@ const page = () => {
   )
 }
 
-export default page
+export default WriteBlogPage

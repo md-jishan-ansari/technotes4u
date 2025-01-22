@@ -9,3 +9,7 @@ export const store = configureStore({
     blog: blogSlice
   },
 });
+
+// Add these type exports
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch

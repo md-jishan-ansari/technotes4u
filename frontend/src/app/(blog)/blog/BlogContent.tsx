@@ -1,19 +1,30 @@
 "use client";
 import FroalaBlog from '@/src/components/froalaEditor/FroalaBlog';
 import { useAppDispatch } from '@/src/redux/hooks';
-import { setActiveSlug } from '@/src/redux/slices/blogSlice';
-import React, { useEffect } from 'react'
+import { fetchSingleBlog, setActiveSlug } from '@/src/redux/slices/blogSlice';
+import React, { useEffect, useState } from 'react'
 
 const BlogContent = ({slug}: {slug: string}) => {
+    const [blog, setBlog] = useState<any>();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         dispatch(setActiveSlug({slug}));
     }, []);
 
+    useEffect(() => {
+        if(slug) {
+            dispatch(fetchSingleBlog(slug))
+                .unwrap()
+                .then((blogData) => {
+                    setBlog(blogData);
+                });
+        }
+    }, [slug, dispatch]);
+
     return (
         <div className="p-4">
-            <FroalaBlog blogtype="blog" slug={slug} />
+            <FroalaBlog blog={blog} slug={slug} />
         </div>
     )
 }

@@ -66,7 +66,10 @@ const BlogCategoriesWrapper = () => {
 
   useEffect(() => {
     if (categories) {
-      setOpenCategories(prev => Array.from(new Set([...prev, ...Array.from(activeParentMap)])))
+      setOpenCategories(prev => {
+        const newSet = new Set([...prev, ...Array.from(activeParentMap)])
+        return Array.from(newSet)
+      })
     }
   }, [categories, activeParentMap])
 
@@ -91,9 +94,7 @@ const BlogCategoriesWrapper = () => {
   console.log({openCategories});
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      {loading ? (
-        <LoadingFallback />
-      ) : (
+
         <>
           <Button
             variant="secondary"
@@ -133,7 +134,6 @@ const BlogCategoriesWrapper = () => {
             </div>
           </div>
         </>
-      )}
     </ErrorBoundary>
   )
 }

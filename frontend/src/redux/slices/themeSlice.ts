@@ -1,19 +1,21 @@
 
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-const applyTheme = (theme: string) => {
-  if (theme === "dark") {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
+type ThemeState = {
+  theme: 'light' | 'dark'
+};
+
+const applyTheme = (theme: 'light' | 'dark'): void => {
+  document.documentElement.classList.toggle('dark', theme === 'dark');
+};
+
+const initialState: ThemeState = {
+  theme: 'light'
 };
 
 const themeSlice = createSlice({
   name: 'theme',
-  initialState: {
-    theme: "light",
-  },
+  initialState,
   reducers: {
     changeTheme: (state) => {
       state.theme = state.theme === "light" ? "dark" : "light";
@@ -22,9 +24,9 @@ const themeSlice = createSlice({
       applyTheme(state.theme);
     },
     setThemeFromLocalStorage: (state) => {
-      const theme = localStorage.getItem('theme');
-      if (theme) {
-        state.theme = theme;
+      const savedTheme = localStorage.getItem('theme') as ThemeState['theme'] | null;
+      if (savedTheme && ['light', 'dark'].includes(savedTheme)) {
+        state.theme = savedTheme;
         applyTheme(state.theme);
       }
     }

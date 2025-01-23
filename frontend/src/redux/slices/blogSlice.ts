@@ -1,11 +1,13 @@
 
 import { createSlice, createAsyncThunk, PayloadAction  } from '@reduxjs/toolkit';
-import { Category } from '@/src/types/types';
+import { Blog, Category } from '@/src/types/types';
 import axios from 'axios';
+import { blogApi } from '@/src/actions/services/api';
 
 interface BlogState {
   categories: any;
   categorylist: Category[];
+  blogs: Blog[];
   activeSlug: string | null;
   loading: boolean;
   error: string | null;
@@ -14,6 +16,7 @@ interface BlogState {
 const initialState: BlogState = {
   categories: [],
   categorylist: [],
+  blogs: [],
   activeSlug: null,
   loading: false,
   error: null
@@ -25,18 +28,28 @@ interface CategoriesResponse {
   categorylist: Category[];
 }
 
-export const fetchCategories = createAsyncThunk<CategoriesResponse>("fetchCategories", async () => {
-  return axios({
-    method: 'get',
-    url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/getallcategories`,
-  })
-  .then((response) => {
+export const fetchCategories = createAsyncThunk<CategoriesResponse>(
+  "fetchCategories",
+  async () => {
+    const response = await blogApi.getAllCategories();
     return response.data;
-  })
-  .catch((error) => {
-    throw new Error('Failed to fetch categories');
-  });
-});
+  }
+);
+
+export const fetchActiveBlog = createAsyncThunk(
+  'blog/fetchActiveBlog',
+  async (slug: string, { getState }) => {
+    const state = getState() as { blog: BlogState };
+    const existingBlog = state.blog.blogs.find(blog => blog.slug === slug);
+
+    if (existingBlog) {
+      return existingBlog;
+    }
+
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/getblog?slug=${slug}`);
+    return response.data.blog;
+  }
+);
 
 const blogSlice = createSlice({
   name: 'blog',
@@ -44,7 +57,7 @@ const blogSlice = createSlice({
   reducers: {
     setActiveSlug: (state, action: PayloadAction<{ slug: string }>) => {
       state.activeSlug = action.payload.slug;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchCategories.pending, (state) => {
@@ -60,9 +73,29 @@ const blogSlice = createSlice({
     .addCase(fetchCategories.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || 'An error occurred';
+    })
+    .addCase(fetchActiveBlog.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchActiveBlog.fulfilled, (state, action) => {
+      state.loading = false;
+      if (!state.blogs.some(blog => blog.slug === action.payload.slug)) {
+        state.blogs.push(action.payload);
+      }
+      state.error = null;
+    })
+    .addCase(fetchActiveBlog.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || 'Failed to fetch blog';
     });
-  }
+  },
+
+
 });
 
-export const { setActiveSlug } = blogSlice.actions;
+export const {
+  setActiveSlug
+} = blogSlice.actions;
+
 export default blogSlice.reducer;

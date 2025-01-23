@@ -34,10 +34,10 @@ const CategoryIcon = memo(({ iconImage }: { iconImage: IconImage }) => (
     </div>
 ));
 
-const EditButton = memo(({ isActiveBlog, categoryId }: { isActiveBlog: boolean, categoryId: string }) => (
+const EditButton = memo(({ isActiveBlog, slug }: { isActiveBlog: boolean, slug: string }) => (
     <Link
         target="_blank"
-        href={`/admin/write/category/?blogid=${categoryId}`}
+        href={`/admin/write/category/?slug=${slug}`}
         className={`p-1 rounded-full ml-auto mr-2 ${
             isActiveBlog ? "hover:bg-blue-600 hover:bg-opacity-20" : "hover:bg-gray-400 hover:bg-opacity-20"
         }`}
@@ -116,7 +116,7 @@ const BlogCategories: React.FC<BlogCategoriesProps> = ({
                                     </p>
                                 </div>
 
-                                <EditButton isActiveBlog={isActiveBlog} categoryId={category.id} />
+                                <EditButton isActiveBlog={isActiveBlog} slug={category.slug} />
 
                                 <AccordionTrigger>
                                     {category.children.length > 0 && (

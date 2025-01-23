@@ -22,6 +22,7 @@ const FroalaEditor = ({setBlogContent, blogContent}: any) => {
         require('froala-editor/js/plugins/fullscreen.min.js');
         require('froala-editor/js/plugins/inline_style.min.js');
         require('froala-editor/js/plugins/video.min.js');
+        require('froala-editor/js/plugins/video.min.js');
 
         require('froala-editor/js/plugins/font_family.min.js');
         require('froala-editor/js/plugins/font_size.min.js');

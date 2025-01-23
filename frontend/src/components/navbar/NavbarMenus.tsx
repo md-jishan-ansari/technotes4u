@@ -21,6 +21,7 @@ import { fetchCategories } from '@/src/redux/slices/blogSlice';
 import { useEffect } from "react";
 import { SafeUser } from "@/src/types/types";
 import { useAppDispatch } from "@/src/redux/hooks";
+import { isAdmin } from "@/src/lib/utils";
 
 interface NavbarMenusProps {
     currentUser?: SafeUser | null;
@@ -36,56 +37,67 @@ const NavbarMenus:React.FC<NavbarMenusProps> = ({ currentUser }) => {
 
   return (
     currentUser ? (
-      <DropdownMenu>
-
-        <DropdownMenuTrigger asChild>
+      <>
+        <Link href="/admin/write/category">
           <Button
-            variant="secondaryOutline"
+            variant="secondaryGhost"
             size="sm"
-            rounded="rounded-3xl"
-            isLoading={false}
-            type="button"
-            id="hs-navbar-example-dropdown"
           >
-            <Avatar image={currentUser?.image} size={24} />
-            <IoMdArrowDropdown size={24} />
+            Write
           </Button>
-        </DropdownMenuTrigger>
+        </Link>
 
-        <DropdownMenuContent className="w-56">
 
-          <Link href="/blog/category1">
-            <DropdownMenuItem >
-              Blogs
+        <DropdownMenu>
+
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="secondaryOutline"
+              size="sm"
+              rounded="rounded-3xl"
+              isLoading={false}
+              type="button"
+              id="hs-navbar-example-dropdown"
+            >
+              <Avatar image={currentUser?.image} size={24} />
+              <IoMdArrowDropdown size={24} />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="w-56">
+
+            <Link href="/blog/category1">
+              <DropdownMenuItem >
+                Blogs
+              </DropdownMenuItem>
+            </Link>
+
+            <DropdownMenuItem>
+              Billing
+              <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
             </DropdownMenuItem>
-          </Link>
 
-          <DropdownMenuItem>
-            Billing
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-          </DropdownMenuItem>
+            {isAdmin(currentUser) && (
+              <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Admin</DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem>Message</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>More...</DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+              </DropdownMenuSub>
+            )}
 
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Admin</DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <Link href="/admin/write/category">
-                  <DropdownMenuItem>Write blog </DropdownMenuItem>
-                </Link>
-                <DropdownMenuItem>Message</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>More...</DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+            <DropdownMenuSeparator />
 
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem onClick={() => signOut()}>
-            Log out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+            <DropdownMenuItem onClick={() => signOut()}>
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </>
     ) : (
       <>
         <Link href="/sign-in" >

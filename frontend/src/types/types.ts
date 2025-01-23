@@ -3,6 +3,7 @@ export type User = {
     email?: string | null;
     image?: string | null;
     authtoken?: string;
+    role?: Role;
 }
 
 export type SafeUser = User
@@ -37,4 +38,9 @@ export type Blog = Category & {
     content?: string | null;
     draftContent?: string | null;
     isMdxEditor: boolean;
+}
+
+export enum Role {
+    ADMIN = "ADMIN",
+    USER = "USER",
 }

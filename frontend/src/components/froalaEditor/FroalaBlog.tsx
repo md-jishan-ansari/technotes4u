@@ -13,7 +13,7 @@ const FroalaBlog = ({blog, slug}: {blog: Blog, slug?: string}) => {
     return (
         <div className="prose dark:prose-invert lg:prose-xl mx-auto p-4 w-full max-w-full">
             <div className="flex">
-                    <Link className='ml-auto' href={`/admin/write/blog/?blogid=${blog?.id}`} >Edit</Link>
+                    <Link className='ml-auto' href={`/admin/write/blog/?slug=${blog?.slug}`} >Edit</Link>
             </div>
             <div
                 className="max-w-none fr-view"

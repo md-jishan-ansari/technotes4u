@@ -15,16 +15,14 @@ export const blogApi = {
 
   createCategory: (data: any) => axios.post(`${BASE_URL}/api/blog/createcategory`, data),
 
-  editCategory: (blogId: string, data: any) => axios.post(`${BASE_URL}/api/blog/editcategory?blogid=${blogId}`, data),
+  editCategory: (slug: string, data: any) => axios.post(`${BASE_URL}/api/blog/editcategory?slug=${slug}`, data),
 
   // Blog Content APIs
-  getBlog: (blogId: string) => axios.get<{blog: Blog}>(`${BASE_URL}/api/blog/getblog?blogid=${blogId}`),
+  saveToDraft: (slug: string, content: string) => axios.post(`${BASE_URL}/api/blog/save-to-draft/?slug=${slug}`, {content}),
 
-  saveToDraft: (blogId: string, content: string) => axios.post(`${BASE_URL}/api/blog/save-to-draft/?blogid=${blogId}`, {content}),
+  publishDraft: (slug: string, content: string) => axios.post(`${BASE_URL}/api/blog/publish-draft/?slug=${slug}`, {content}),
 
-  publishDraft: (blogId: string, content: string) => axios.post(`${BASE_URL}/api/blog/publish-draft/?blogid=${blogId}`, {content}),
-
-  unpublishBlog: (blogId: string, content: string) => axios.post(`${BASE_URL}/api/blog/unpublish-blog/?blogid=${blogId}`, {content}),
+  unpublishBlog: (slug: string, content: string) => axios.post(`${BASE_URL}/api/blog/unpublish-blog/?slug=${slug}`, {content}),
 
   // Image APIs
   uploadImage: (formData: FormData) => axios.post(`${BASE_URL}/api/blog/upload-image`, formData),

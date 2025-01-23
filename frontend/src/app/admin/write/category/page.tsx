@@ -46,7 +46,9 @@ const WriteBlog = () => {
 
   const searchParams = useSearchParams()
   let [blogId, setblogId] = useState(searchParams.get('blogid'));
+  let [slug, setSlug] = useState(searchParams.get('slug'));
   const router = useRouter();
+
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -64,34 +66,34 @@ const WriteBlog = () => {
   useEffect(() => {
     if (categorylist?.length > 0) {
       const categories = categorylist
-        .filter(category => category.id !== blogId)
+        .filter(category => category.slug !== slug)
         .map(category => ({
           label: category.name,
           value: category.id
         }));
       setParentCategories(categories);
     }
-  }, [categorylist, blogId]);
+  }, [categorylist, slug]);
 
   // Add this new useEffect to fetch and set data when blogId exists
   useEffect(() => {
-    if (blogId && categorylist?.length > 0) {
-      const currentCategory = categorylist.find(category => category.id === blogId);
+    if (slug && categorylist?.length > 0) {
+      const currentCategory = categorylist.find(category => category.slug === slug);
 
       if (currentCategory) {
         form.setValue('name', currentCategory.name);
         form.setValue('parent', currentCategory.parentId || '');
       } else {
-        setblogId(null);
+        setSlug(null);
       }
     }
-  }, [searchParams, categorylist, form, blogId]);
+  }, [searchParams, categorylist, form, slug]);
 
   useEffect(() => {
     const parentValue = form.watch('parent');
     const filteredPredecessors = categorylist
       ?.filter(category => {
-        if (category.id === blogId) return false;
+        if (category.slug === slug) return false;
         if (parentValue) {
           return category.id === parentValue || category.parentId === parentValue;
         }
@@ -103,7 +105,7 @@ const WriteBlog = () => {
       }));
 
     setPredecessors(filteredPredecessors || []);
-  }, [form.watch('parent'), categorylist, blogId]);
+  }, [form.watch('parent'), categorylist, slug]);
 
   useEffect(() => {
     const parentValue = form.getValues('parent');
@@ -114,16 +116,16 @@ const WriteBlog = () => {
 
   const onSubmit = useCallback(async (data: FormValues) => {
     try {
-      const res = blogId
-        ? await blogApi.editCategory(blogId, data)
+      const res = slug
+        ? await blogApi.editCategory(slug, data)
         : await blogApi.createCategory(data);
 
       form.reset();
-      router.push(`/admin/write/blog?blogid=${res.data.blog.id}`);
+      router.push(`/admin/write/blog?slug=${res.data.blog.slug}`);
     } catch (error) {
       console.error(error);
     }
-  }, [blogId, form, router]);
+  }, [slug, form, router]);
 
   return (
     <Container>
@@ -133,7 +135,7 @@ const WriteBlog = () => {
             <FormField
               control={form.control}
               name="name"
-              disabled={!!blogId}
+              disabled={!!slug}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
@@ -155,10 +157,10 @@ const WriteBlog = () => {
               placeholder="Select a blog"
               description="Select parent blog"
               inputlists={parentCategories}
-              defaultSet={!blogId}
+              defaultSet={!slug}
             />
 
-            {blogId && (
+            {slug && (
               <p className="text-red-500 dark:text-red-900 lg:col-span-2 mt-3">
                 If you don't want to change below field for this category than leave it empty
               </p>

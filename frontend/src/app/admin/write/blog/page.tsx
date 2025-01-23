@@ -7,6 +7,8 @@ import { blogApi } from '@/src/redux/actions/services/api'
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState, useCallback  } from 'react'
 import { toast } from 'react-toastify';
+import { useAppDispatch } from '@/src/redux/hooks';
+import { fetchSingleBlog } from '@/src/redux/slices/blogSlice';
 
 interface ApiErrorResponse {
     message: string;
@@ -15,23 +17,24 @@ interface ApiErrorResponse {
 const WriteBlogPage = () => {
     const [blogContent, setBlogContent] = React.useState('');
     const searchParams = useSearchParams()
-    let [blogId, setblogId] = useState<string | null>(searchParams.get('blogid'));
+    let [slug, setSlug] = useState<string | null>(searchParams.get('slug'));
+    const dispatch = useAppDispatch();
 
 
     const handleblog = useCallback(async (action: 'save-to-draft' | 'publish-draft' | 'unpublish-blog') => {
-        if (!blogId) return;
+        if (!slug) return;
 
         try {
             let response;
             switch (action) {
                 case 'save-to-draft':
-                    response = await blogApi.saveToDraft(blogId, blogContent);
+                    response = await blogApi.saveToDraft(slug, blogContent);
                     break;
                 case 'publish-draft':
-                    response = await blogApi.publishDraft(blogId, blogContent);
+                    response = await blogApi.publishDraft(slug, blogContent);
                     break;
                 case 'unpublish-blog':
-                    response = await blogApi.unpublishBlog(blogId, blogContent);
+                    response = await blogApi.unpublishBlog(slug, blogContent);
                     break;
             }
             toast.success('Action completed successfully');
@@ -39,19 +42,25 @@ const WriteBlogPage = () => {
             toast.error('Failed to perform action');
             console.error('Error handling blog:', error);
         }
-    }, [blogId, blogContent]);
+    }, [slug, blogContent]);
 
     const fetchBlogContent = useCallback(async () => {
-        if (!blogId) return;
+        if (!slug) return;
 
         try {
-            const response = await blogApi.getBlog(blogId);
-            setBlogContent(response.data.blog.draftContent || '');
+
+            dispatch(fetchSingleBlog(slug))
+                    .unwrap()
+                    .then((blogData) => {
+                        setBlogContent(blogData.draftContent);
+                    }
+                );
+
         } catch (error) {
             toast.error('Failed to fetch blog content');
             console.error('Error fetching blog:', error);
         }
-    }, [blogId]);
+    }, [slug]);
 
     useEffect(() => {
         fetchBlogContent()

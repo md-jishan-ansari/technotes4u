@@ -4,12 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useCallback, useEffect, useState } from "react"
-import { useSelector } from "react-redux"
+import { useAppSelector } from "@/src/redux/hooks"
 import { useRouter, useSearchParams } from "next/navigation"
 import axios from "axios"
-
-import { RootState } from '@/src/redux/store'
-import { Category } from '@/src/types/types'
 
 import {
   Form,
@@ -43,12 +40,12 @@ type FormValues = z.infer<typeof FormSchema>;
 
 
 const WriteBlog = () => {
-  const { categorylist } = useSelector((state: RootState) => state.blog);
+  const { categorylist } = useAppSelector(state => state.blog);
   const [parentCategories, setParentCategories] = useState<Array<{ label: string, value: string }>>([]);
   const [predecessors, setPredecessors] = useState<Array<{ label: string, value: string }>>([]);
 
   const searchParams = useSearchParams()
-  let [blogId, setblogId] = useState(searchParams.get('blogId'));
+  let [blogId, setblogId] = useState(searchParams.get('blogid'));
   const router = useRouter();
 
   const form = useForm<FormValues>({
@@ -118,13 +115,13 @@ const WriteBlog = () => {
   const onSubmit = useCallback(async (data: FormValues) => {
 
     const url = blogId
-      ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/editcategory?blogId=${blogId}`
+      ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/editcategory?blogid=${blogId}`
       : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/createcategory`;
 
     try {
       const res = await axios.post(url, data);
       form.reset();
-      router.push(`/admin/write/blog?blogId=${res.data.blog.id}`);
+      router.push(`/admin/write/blog?blogid=${res.data.blog.id}`);
     } catch (error) {
       console.error(error);
     }

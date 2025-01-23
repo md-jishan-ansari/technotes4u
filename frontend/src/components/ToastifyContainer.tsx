@@ -3,12 +3,11 @@
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
+import { useAppSelector } from '../redux/hooks';
 
 export default function ToastifyContainer() {
     const [toasterTheme, setToasterTheme] = useState('colored');
-    const theme = useSelector((state: RootState) => state.theme.theme)
+    const theme = useAppSelector(state => state.theme.theme)
 
     useEffect(() => {
         if (theme === 'dark') {

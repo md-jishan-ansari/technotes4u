@@ -21,7 +21,7 @@ const WriteBlogPage = () => {
 
     const handleblog = useCallback(async (action: 'save-to-draft' | 'publish-draft' | 'unpublish-blog') => {
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/${action}/?blogId=${blogId}`, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/${action}/?blogid=${blogId}`, {
                 content: blogContent,
             });
             console.log('Saved successfully:', response.data);
@@ -35,7 +35,7 @@ const WriteBlogPage = () => {
 
         try {
             const response = await axios.get<{ blog: Blog }>(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/getblog?blogId=${blogId}`
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/getblog?blogid=${blogId}`
             )
             setBlogContent(response.data.blog.draftContent || '')
         } catch (error) {

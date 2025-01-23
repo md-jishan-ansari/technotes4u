@@ -37,7 +37,7 @@ const CategoryIcon = memo(({ iconImage }: { iconImage: IconImage }) => (
 const EditButton = memo(({ isActiveBlog, categoryId }: { isActiveBlog: boolean, categoryId: string }) => (
     <Link
         target="_blank"
-        href={`/admin/write/category/?blogId=${categoryId}`}
+        href={`/admin/write/category/?blogid=${categoryId}`}
         className={`p-1 rounded-full ml-auto mr-2 ${
             isActiveBlog ? "hover:bg-blue-600 hover:bg-opacity-20" : "hover:bg-gray-400 hover:bg-opacity-20"
         }`}

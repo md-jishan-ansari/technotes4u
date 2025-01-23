@@ -4,14 +4,12 @@ import { usePathname } from 'next/navigation';
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useEffect } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
 import { changeTheme, setThemeFromLocalStorage } from "../../redux/slices/themeSlice";
-import { toast } from 'react-toastify';
-import { RootState } from '@/src/redux/store';
+import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 
 const Darkmode = () => {
-  const dispatch = useDispatch();
-  const theme = useSelector((state:RootState) => state?.theme?.theme)
+  const dispatch = useAppDispatch();
+  const theme = useAppSelector(state => state?.theme?.theme)
   let pathname = usePathname();
   pathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 

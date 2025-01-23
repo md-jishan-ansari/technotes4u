@@ -1,11 +1,11 @@
 "use client";
 
+import { useAppDispatch } from "@/src/redux/hooks";
 import { setActiveSlug } from "@/src/redux/slices/blogSlice";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 
 const ActiveBlog = ({slug}: {slug: string}) => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         dispatch(setActiveSlug({slug}));

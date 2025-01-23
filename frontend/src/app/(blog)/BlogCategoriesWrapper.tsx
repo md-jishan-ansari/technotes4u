@@ -3,11 +3,9 @@ import React, { useEffect, useMemo, useState, Suspense, useCallback } from 'reac
 import { IoMdClose } from 'react-icons/io'
 import { FaArrowRight } from "react-icons/fa";
 import Button from '@/src/components/Button';
-import { useSelector } from 'react-redux';
 
-// Add proper type for Redux state
-import { RootState } from '@/src/redux/store';
 import { ErrorBoundary } from 'react-error-boundary'
+import { useAppSelector } from '@/src/redux/hooks';
 
 const BlogCategories = React.lazy(() => import('./BlogCategories'))
 const MemoizedBlogCategories = React.memo(BlogCategories)
@@ -42,8 +40,7 @@ const BlogCategoriesWrapper = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [openCategories, setOpenCategories] = useState<string[]>([]);
 
-
-  const { categories, loading, activeSlug } = useSelector((state: RootState) => state.blog);
+  const { categories, loading, activeSlug } = useAppSelector(state => state.blog);
 
   const activeParentMap = useMemo(() => {
     const parentMap = new Set<string>()

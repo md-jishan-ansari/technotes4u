@@ -167,7 +167,7 @@ export const editBlogCategory = CatchAsync(async (req, res, next) => {
         darkIcon
     } = req.body;
 
-    const blogId = req.query.blogId;
+    const blogId = req.query.blogid;
 
     const blog = await prisma.blog.findUnique({
         where: {
@@ -232,8 +232,14 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
             id: true,
             name: true,
             slug: true,
+            description: true,
             parentId: true,
             iconImage: true,
+            isPublished: true,
+            isFeatured: true,
+            viewCount: true,
+            createdAt: true,
+            updatedAt: true,
         },
         orderBy: [
             {
@@ -294,7 +300,6 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
         success: true,
         categories: rootCategories,
         categorylist: allCategories,
-        categoryMap: categoryMap,
     });
 });
 
@@ -303,7 +308,7 @@ export const saveToDraft = CatchAsync(async (req, res, next) => {
         content
     } = req.body;
 
-    const blogId = req.query.blogId;
+    const blogId = req.query.blogid;
 
     const blog = await prisma.blog.findUnique({
         where: {
@@ -339,7 +344,7 @@ export const publishDraft = CatchAsync(async (req, res, next) => {
         content
     } = req.body;
 
-    const blogId = req.query.blogId;
+    const blogId = req.query.blogid;
 
     const blog = await prisma.blog.findUnique({
         where: {
@@ -375,7 +380,7 @@ export const publishDraft = CatchAsync(async (req, res, next) => {
 export const unpublishBlog = CatchAsync(async (req, res, next) => {
 
 
-    const blogId = req.query.blogId;
+    const blogId = req.query.blogid;
 
     const blog = await prisma.blog.findUnique({
         where: {
@@ -408,7 +413,7 @@ export const unpublishBlog = CatchAsync(async (req, res, next) => {
 export const getSingleBlog = CatchAsync(async (req, res, next) => {
 
 
-    const blogId = req.query.blogId;
+    const blogId = req.query.blogid;
     const slug = req.query.slug;
 
     console.log(blogId, slug)

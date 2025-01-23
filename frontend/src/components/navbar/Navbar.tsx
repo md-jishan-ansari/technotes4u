@@ -1,5 +1,5 @@
 
-import getCurrentUser from '@/src/actions/getCurrentUser';
+import getCurrentUser from '@/src/redux/actions/getCurrentUser';
 import NavbarContent from './NavbarContent';
 const Navbar = async () => {
   const currentUser = await getCurrentUser();

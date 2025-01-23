@@ -1,5 +1,6 @@
 "use client";
 
+import { blogApi } from '@/src/redux/actions/services/api';
 import dynamic from 'next/dynamic';
 
 const FroalaEditorComponent = dynamic(
@@ -183,17 +184,9 @@ const FroalaEditor = ({setBlogContent, blogContent}: any) => {
                 'image.removed': function ($img: any) {
                   const imageUrl = $img.attr('src');
 
-                  // Call backend API to delete the image
-                  fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/delete-image`, {
-                    method: 'DELETE',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ imageUrl }),
-                  })
-                  .then(response => response.json())
-                  .then(data => {
-                    console.log('Image deleted successfully:', data);
+                  blogApi.deleteImage(imageUrl)
+                  .then(response => {
+                    console.log('Image deleted successfully:', response.data);
                   })
                   .catch(error => {
                     console.error('Error deleting image:', error);

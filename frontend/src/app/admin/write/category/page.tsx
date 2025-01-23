@@ -6,7 +6,6 @@ import { z } from "zod"
 import { useCallback, useEffect, useState } from "react"
 import { useAppSelector } from "@/src/redux/hooks"
 import { useRouter, useSearchParams } from "next/navigation"
-import axios from "axios"
 
 import {
   Form,
@@ -22,6 +21,7 @@ import { Input } from "@/src/componentsSadcn/ui/input"
 import Button from "@/src/components/Button"
 import SelectInput from "@/src/components/inputs/SelectInput"
 import Container from "@/src/components/Container"
+import { blogApi } from "@/src/redux/actions/services/api"
 
 const ICON_TYPES = ['url', 'image', ''] as const;
 
@@ -113,13 +113,11 @@ const WriteBlog = () => {
   }, [form.watch('parent')]);
 
   const onSubmit = useCallback(async (data: FormValues) => {
-
-    const url = blogId
-      ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/editcategory?blogid=${blogId}`
-      : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/createcategory`;
-
     try {
-      const res = await axios.post(url, data);
+      const res = blogId
+        ? await blogApi.editCategory(blogId, data)
+        : await blogApi.createCategory(data);
+
       form.reset();
       router.push(`/admin/write/blog?blogid=${res.data.blog.id}`);
     } catch (error) {

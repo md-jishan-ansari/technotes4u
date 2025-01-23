@@ -1,5 +1,5 @@
 
-import getCurrentUser from "@/src/actions/getCurrentUser";
+import getCurrentUser from "@/src/redux/actions/getCurrentUser";
 import SignInForm from "@/src/components/auth/SignInForm";
 import { Metadata } from "next";
 

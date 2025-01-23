@@ -1,5 +1,5 @@
+import { authOptions } from "@/src/app/api/auth/[...nextauth]/authOptions";
 import { getServerSession } from "next-auth";
-import { authOptions } from '../app/api/auth/[...nextauth]/authOptions';
 import { cookies } from 'next/headers';
 
 export async function getSessionData() {

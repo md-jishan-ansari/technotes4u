@@ -3,8 +3,7 @@ import Button from '@/src/components/Button'
 import Container from '@/src/components/Container'
 import FroalaEditor from '@/src/components/froalaEditor/FroalaEditor'
 import { Blog } from '@/src/types/types'
-// import { useAppDispatch } from '@/src/redux/hooks'
-import axios, { AxiosError }  from 'axios';
+import { blogApi } from '@/src/redux/actions/services/api'
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState, useCallback  } from 'react'
 import { toast } from 'react-toastify';
@@ -20,30 +19,39 @@ const WriteBlogPage = () => {
 
 
     const handleblog = useCallback(async (action: 'save-to-draft' | 'publish-draft' | 'unpublish-blog') => {
+        if (!blogId) return;
+
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/${action}/?blogid=${blogId}`, {
-                content: blogContent,
-            });
-            console.log('Saved successfully:', response.data);
+            let response;
+            switch (action) {
+                case 'save-to-draft':
+                    response = await blogApi.saveToDraft(blogId, blogContent);
+                    break;
+                case 'publish-draft':
+                    response = await blogApi.publishDraft(blogId, blogContent);
+                    break;
+                case 'unpublish-blog':
+                    response = await blogApi.unpublishBlog(blogId, blogContent);
+                    break;
+            }
+            toast.success('Action completed successfully');
         } catch (error) {
-            console.error('Error saving blog:', error);
+            toast.error('Failed to perform action');
+            console.error('Error handling blog:', error);
         }
     }, [blogId, blogContent]);
 
     const fetchBlogContent = useCallback(async () => {
-        if (!blogId) return
+        if (!blogId) return;
 
         try {
-            const response = await axios.get<{ blog: Blog }>(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/getblog?blogid=${blogId}`
-            )
-            setBlogContent(response.data.blog.draftContent || '')
+            const response = await blogApi.getBlog(blogId);
+            setBlogContent(response.data.blog.draftContent || '');
         } catch (error) {
-            const err = error as AxiosError<ApiErrorResponse>
-            toast.error(err.response?.data?.message || 'Failed to fetch blog content')
-            console.error('Error fetching blog:', err)
+            toast.error('Failed to fetch blog content');
+            console.error('Error fetching blog:', error);
         }
-    }, [blogId])
+    }, [blogId]);
 
     useEffect(() => {
         fetchBlogContent()

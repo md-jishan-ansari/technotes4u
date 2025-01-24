@@ -4,8 +4,8 @@ import prisma from "../db/db.config.js";
 import AppError from "../utils/appError.js";
 import jwt from "jsonwebtoken";
 
-const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+const signToken = (user) => {
+  return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
@@ -33,7 +33,7 @@ export const register = CatchAsync(async (req, res, next) => {
     },
   });
 
-  user.authtoken = signToken(user.id);
+  user.authtoken = signToken(user);
 
   res.status(200).json(user);
 });
@@ -61,7 +61,7 @@ export const signIn = CatchAsync(async (req, res, next) => {
       throw new AppError("Invalid credentials", 401);
     }
 
-    user.authtoken = signToken(user.id);
+    user.authtoken = signToken(user);
 
     res.status(200).json(user);
 });
@@ -115,7 +115,7 @@ export const oAuthSignIn = CatchAsync(async (req, res, next) => {
       throw new AppError("Failed to process OAuth sign-in", 500);
     });
 
-    user.authtoken = signToken(user.id);
+    user.authtoken = signToken(user);
 
     res.json(user);
 });

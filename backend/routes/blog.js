@@ -6,10 +6,9 @@ import {
   tokenVarify,
   uploadBlogImage,
   deleteBlogImage,
-  saveToDraft,
   publishDraft,
-  unpublishBlog,
   getSingleBlog,
+  updateBlog,
 } from "../controllers/blogController.js";
 import { imageupload, deleteimage } from "../middleware/imageController.js";
 
@@ -21,9 +20,9 @@ router.post("/editcategory", editBlogCategory);
 
 router.get("/getallcategories", getAllCategories);
 
-router.post("/save-to-draft", saveToDraft);
-router.post("/publish-draft", publishDraft);
-router.post("/unpublish-blog", unpublishBlog);
+router.patch("/publish-draft", publishDraft);
+
+router.patch("/updateBlog", updateBlog);
 
 router.get("/getblog", getSingleBlog);
 

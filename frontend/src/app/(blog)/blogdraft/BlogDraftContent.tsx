@@ -2,10 +2,9 @@
 import FroalaBlog from '@/src/components/froalaEditor/FroalaBlog';
 import { useAppDispatch } from '@/src/redux/hooks';
 import { fetchSingleBlog, setActiveSlug } from '@/src/redux/slices/blogSlice';
-import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 
-const BlogContent = ({slug}: {slug: string}) => {
+const BlogDraftContent = ({slug}: {slug: string}) => {
     const [blog, setBlog] = useState<any>();
     const dispatch = useAppDispatch();
 
@@ -25,14 +24,9 @@ const BlogContent = ({slug}: {slug: string}) => {
 
     return (
         <div className="p-4">
-            <div className="flex justify-end gap-4">
-                    <Link href={`/blogdraft/${slug}`} >
-                    View Draft</Link>
-                    <Link href={`/admin/write/blog/?slug=${slug}`} >Edit</Link>
-            </div>
-            <FroalaBlog blogContent={blog?.content} slug={slug} />
+            <FroalaBlog blogContent={blog?.draftContent} slug={slug} />
         </div>
     )
 }
 
-export default BlogContent
+export default BlogDraftContent

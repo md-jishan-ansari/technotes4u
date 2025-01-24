@@ -44,3 +44,8 @@ export enum Role {
     ADMIN = "ADMIN",
     USER = "USER",
 }
+
+export enum Editor {
+    RichEditor = "RichEditor",
+    MdxEditor = "MdxEditor",
+}

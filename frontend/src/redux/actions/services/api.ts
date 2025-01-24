@@ -18,11 +18,9 @@ export const blogApi = {
   editCategory: (slug: string, data: any) => axios.post(`${BASE_URL}/api/blog/editcategory?slug=${slug}`, data),
 
   // Blog Content APIs
-  saveToDraft: (slug: string, content: string) => axios.post(`${BASE_URL}/api/blog/save-to-draft/?slug=${slug}`, {content}),
+  publishDraft: (slug: string, content: string) => axios.patch(`${BASE_URL}/api/blog/publish-draft/?slug=${slug}`, {content}),
 
-  publishDraft: (slug: string, content: string) => axios.post(`${BASE_URL}/api/blog/publish-draft/?slug=${slug}`, {content}),
-
-  unpublishBlog: (slug: string, content: string) => axios.post(`${BASE_URL}/api/blog/unpublish-blog/?slug=${slug}`, {content}),
+  updateBlog: (slug: string, blogContext: any) => axios.patch(`${BASE_URL}/api/blog/updateBlog/?slug=${slug}`, {blogContext}),
 
   // Image APIs
   uploadImage: (formData: FormData) => axios.post(`${BASE_URL}/api/blog/upload-image`, formData),

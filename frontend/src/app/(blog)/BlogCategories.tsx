@@ -22,7 +22,7 @@ interface BlogCategoriesProps {
 }
 
 const CategoryIcon = memo(({ iconImage }: { iconImage: IconImage }) => (
-    <div className="w-[20px] flex items-center justify-center">
+    <div className="w-[20px] min-w-[20px] flex items-center justify-center">
         <Image src={iconImage.url} alt="icon" width={20} height={20} className="dark:hidden" />
         <Image
             src={iconImage.darkUrl || iconImage.url}
@@ -36,7 +36,6 @@ const CategoryIcon = memo(({ iconImage }: { iconImage: IconImage }) => (
 
 const EditButton = memo(({ isActiveBlog, slug }: { isActiveBlog: boolean, slug: string }) => (
     <Link
-        target="_blank"
         href={`/admin/write/category/?slug=${slug}`}
         className={`p-1 rounded-full ml-auto mr-2 ${
             isActiveBlog ? "hover:bg-blue-600 hover:bg-opacity-20" : "hover:bg-gray-400 hover:bg-opacity-20"
@@ -97,7 +96,7 @@ const BlogCategories: React.FC<BlogCategoriesProps> = ({
                             <div
                                 className={`flex items-center justify-between
                                 cursor-pointer
-                                px-2 py-[0.4rem] rounded-md
+                                px-2 rounded-md
                                 my-0.5
                                 ${topLevel ?
                                         "" :
@@ -109,16 +108,16 @@ const BlogCategories: React.FC<BlogCategoriesProps> = ({
                                 `}
                                 onClick={(e) => handleCategoryLinkClick(e, category.id, `/blog/${category.slug}`)}
                             >
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 py-[0.4rem]">
                                     {category.iconImage && <CategoryIcon iconImage={category.iconImage} />}
-                                    <p className={isActiveBlog ? "text-link font-medium" : ""}>
+                                    <p className={`line-clamp-2 ${isActiveBlog ? "text-link font-medium" : ""}`}>
                                         {category.name}
                                     </p>
                                 </div>
 
                                 <EditButton isActiveBlog={isActiveBlog} slug={category.slug} />
 
-                                <AccordionTrigger>
+                                <AccordionTrigger className="min-w-6">
                                     {category.children.length > 0 && (
                                         <div className={
                                             `p-1 rounded-full  transition-transform duration-200

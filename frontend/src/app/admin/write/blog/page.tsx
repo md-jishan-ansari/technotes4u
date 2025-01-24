@@ -2,23 +2,53 @@
 import Button from '@/src/components/Button'
 import Container from '@/src/components/Container'
 import FroalaEditor from '@/src/components/froalaEditor/FroalaEditor'
-import { Blog } from '@/src/types/types'
+import { Blog, Editor } from '@/src/types/types'
 import { blogApi } from '@/src/redux/actions/services/api'
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState, useCallback  } from 'react'
 import { toast } from 'react-toastify';
 import { useAppDispatch } from '@/src/redux/hooks';
 import { fetchSingleBlog } from '@/src/redux/slices/blogSlice';
+import Link from 'next/link';
+
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+  } from "@/src/componentsSadcn/ui/select"
 
 interface ApiErrorResponse {
     message: string;
 }
 
+interface BlogContext {
+    editor: Editor;
+    draftContent?: string;
+    content?: string;
+    isPublished?: boolean;
+}
+
+
 const WriteBlogPage = () => {
+    const [editor, setEditor] = useState<Editor>(Editor.RichEditor);
+    const [blog, setBlog] = useState<Blog | null>(null);
     const [blogContent, setBlogContent] = React.useState('');
     const searchParams = useSearchParams()
     let [slug, setSlug] = useState<string | null>(searchParams.get('slug'));
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        setSlug(searchParams.get('slug'));
+    }, [searchParams])
+
+    // Add this handler function
+    const handleSelectEditor = (value: string) => {
+        setEditor(value as Editor);
+    };
 
 
     const handleblog = useCallback(async (action: 'save-to-draft' | 'publish-draft' | 'unpublish-blog') => {
@@ -26,20 +56,27 @@ const WriteBlogPage = () => {
 
         try {
             let response;
+            let blogContext:BlogContext = {
+                editor,
+            };
             switch (action) {
                 case 'save-to-draft':
-                    response = await blogApi.saveToDraft(slug, blogContent);
+                    blogContext["draftContent"] = blogContent;
                     break;
                 case 'publish-draft':
-                    response = await blogApi.publishDraft(slug, blogContent);
+                    blogContext["draftContent"] = blogContent;
+                    blogContext["content"] = blogContent;
                     break;
                 case 'unpublish-blog':
-                    response = await blogApi.unpublishBlog(slug, blogContent);
+                    blogContext["isPublished"] = false;
                     break;
             }
+
+            response = await blogApi.updateBlog(slug, blogContext);
+
             toast.success('Action completed successfully');
-        } catch (error) {
-            toast.error('Failed to perform action');
+        } catch (error: any) {
+            toast.error(error.message);
             console.error('Error handling blog:', error);
         }
     }, [slug, blogContent]);
@@ -52,6 +89,8 @@ const WriteBlogPage = () => {
             dispatch(fetchSingleBlog(slug))
                     .unwrap()
                     .then((blogData) => {
+                        setEditor(blogData.editor);
+                        setBlog(blogData);
                         setBlogContent(blogData.draftContent);
                     }
                 );
@@ -68,21 +107,44 @@ const WriteBlogPage = () => {
 
   return (
     <div>
-        <div className="sticky top-0 left-0 flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-secondary text-sm">
+        <div className="sticky top-0 left-0 flex flex-wrap sm:justify-start sm:flex-nowrap w-full text-sm">
             <Container>
                 <nav className="w-full mx-auto sm:flex sm:items-center sm:justify-between">
-                    <a className="flex-none font-semibold text-xl text-black focus:outline-none focus:opacity-80 dark:text-white" href="#" aria-label="Brand">Brand</a>
-                    <div className="flex flex-row items-center gap-5 mt-5 pb-2 overflow-x-auto sm:justify-end sm:mt-0 sm:ps-5 sm:pb-0 sm:overflow-x-visible [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
+                    <div className="flex items-center gap-2">
+                        <p className='text-lg font-semibold max-w-[500px] line-clamp-1'>{blog?.name}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <Select onValueChange={handleSelectEditor} value={editor}>
+                            <SelectTrigger className="w-[180px] border-black dark:border-white">
+                                <SelectValue placeholder="Select Editor" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Editors</SelectLabel>
+                                    <SelectItem value={Editor.RichEditor}>Rich Editor</SelectItem>
+                                    <SelectItem value={Editor.MdxEditor}>MDX Editor</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                        <Link target="_blank" href={`/blogdraft/${slug}`}>
+                            <Button variant="primaryGhost" size="sm" >
+                                Preview Draft
+                            </Button>
+                        </Link>
                         <Button variant="primary" size="sm" onClick={() => handleblog("save-to-draft")} > Save to Draft </Button>
                         <Button variant="primary" size="sm" onClick={() => handleblog("publish-draft")} > Publish </Button>
-                        <Button variant="primary" size="sm" onClick={() => handleblog("unpublish-blog")} > Unpublish </Button>
+                        <Button variant="danger" size="sm" onClick={() => handleblog("unpublish-blog")} > Unpublish </Button>
                     </div>
                 </nav>
             </Container>
         </div>
         <div className="prose dark:prose-invert lg:prose-xl fixed top-[110px] left-0 w-full overflow-auto max-w-full">
             <Container>
-                <FroalaEditor blogContent={blogContent} setBlogContent={setBlogContent} />
+                {editor === Editor.RichEditor ? (
+                    <FroalaEditor blogContent={blogContent} setBlogContent={setBlogContent} />
+                ) : (
+                    <div>MDX Editor</div>
+                )}
             </Container>
         </div>
     </div>

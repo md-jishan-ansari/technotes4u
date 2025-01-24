@@ -22,6 +22,7 @@ import Button from "@/src/components/Button"
 import SelectInput from "@/src/components/inputs/SelectInput"
 import Container from "@/src/components/Container"
 import { blogApi } from "@/src/redux/actions/services/api"
+import { toast } from "react-toastify"
 
 const ICON_TYPES = ['url', 'image', ''] as const;
 
@@ -38,17 +39,14 @@ const FormSchema = z.object({
 
 type FormValues = z.infer<typeof FormSchema>;
 
-
 const WriteBlog = () => {
   const { categorylist } = useAppSelector(state => state.blog);
   const [parentCategories, setParentCategories] = useState<Array<{ label: string, value: string }>>([]);
   const [predecessors, setPredecessors] = useState<Array<{ label: string, value: string }>>([]);
 
   const searchParams = useSearchParams()
-  let [blogId, setblogId] = useState(searchParams.get('blogid'));
   let [slug, setSlug] = useState(searchParams.get('slug'));
   const router = useRouter();
-
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -61,6 +59,18 @@ const WriteBlog = () => {
       darkIcon: ""
     }
   })
+
+  useEffect(() => {
+    setSlug(searchParams.get('slug'));
+    form.reset({
+      name: "",
+      parent: "",
+      predecessor: "",
+      iconType: "",
+      icon: "",
+      darkIcon: ""
+    });
+  }, [searchParams])
 
 
   useEffect(() => {
@@ -86,7 +96,10 @@ const WriteBlog = () => {
       } else {
         setSlug(null);
       }
+    } else {
+      form.setValue('name', '');
     }
+
   }, [searchParams, categorylist, form, slug]);
 
   useEffect(() => {
@@ -112,25 +125,30 @@ const WriteBlog = () => {
     if (parentValue) {
       form.setValue('predecessor', '');
     }
-  }, [form.watch('parent')]);
+  }, [form.watch('parent'), slug]);
 
-  const onSubmit = useCallback(async (data: FormValues) => {
+  const handleSubmit = useCallback(async (data: FormValues, shouldNavigate: boolean = false) => {
     try {
       const res = slug
         ? await blogApi.editCategory(slug, data)
         : await blogApi.createCategory(data);
 
-      form.reset();
-      router.push(`/admin/write/blog?slug=${res.data.blog.slug}`);
+      toast.success("Category saved successfully");
+
+      if (shouldNavigate) {
+        form.reset();
+        router.push(`/admin/write/blog?slug=${res.data.blog.slug}`);
+      }
     } catch (error) {
       console.error(error);
     }
   }, [slug, form, router]);
 
+
   return (
     <Container>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-4 gap-x-12">
             <FormField
               control={form.control}
@@ -251,9 +269,37 @@ const WriteBlog = () => {
             )}
 
           </div>
-          <div className="mt-6 max-w-[300px] ml-auto">
-            <Button type="submit" fullWidth variant="dark" >Next</Button>
-          </div>
+          {slug ? (
+            <div className="flex gap-3 mt-6 max-w-[500px] ml-auto">
+              <Button
+                type="button"
+                fullWidth
+                variant="dark"
+                onClick={form.handleSubmit((data) => handleSubmit(data, false))}
+              >
+                Save
+              </Button>
+              <Button
+                type="button"
+                fullWidth
+                variant="dark"
+                onClick={form.handleSubmit((data) => handleSubmit(data, true))}
+              >
+                Save & Next
+              </Button>
+            </div>
+          ) : (
+            <div className="mt-6 max-w-[300px] ml-auto">
+              <Button
+                type="button"
+                fullWidth
+                variant="dark"
+                onClick={form.handleSubmit((data) => handleSubmit(data, true))}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </Container>

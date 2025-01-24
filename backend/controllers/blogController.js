@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 import path from 'path';
 import { promises as fsPromises } from 'fs';
 
-
 export const resetBlogSortOrders = CatchAsync(async (req, res, next) => {
 
         // Get all blogs ordered by current sortOrder
@@ -168,10 +167,14 @@ export const editBlogCategory = CatchAsync(async (req, res, next) => {
     } = req.body;
 
     const blogId = req.query.blogid;
+    const slug = req.query.slug;
 
-    const blog = await prisma.blog.findUnique({
+    const blog = await prisma.blog.findFirst({
         where: {
-            id: blogId
+            OR: [
+                { id: blogId },
+                { slug: slug }
+            ]
         }
     });
 
@@ -212,7 +215,7 @@ export const editBlogCategory = CatchAsync(async (req, res, next) => {
 
     const blogData = await prisma.blog.update({
         where: {
-            id: blogId
+            id: blog.id
         },
         data: updatedBlogData
     });
@@ -303,52 +306,17 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
     });
 });
 
-export const saveToDraft = CatchAsync(async (req, res, next) => {
-    const {
-        content
-    } = req.body;
-
-    const blogId = req.query.blogid;
-
-    const blog = await prisma.blog.findUnique({
-        where: {
-            id: blogId
-        }
-    });
-
-    if (!blog) {
-        return res.status(404).json({
-            success: false,
-            message: "Blog not found"
-        });
-    }
-
-    const updatedBlog = await prisma.blog.update({
-        where: {
-            id: blogId
-        },
-        data: {
-            draftContent: content
-        }
-    });
-
-    res.status(200).json({
-        success: true,
-        message: "Draft saved successfully",
-        blog: updatedBlog
-    });
-});
-
 export const publishDraft = CatchAsync(async (req, res, next) => {
-    const {
-        content
-    } = req.body;
 
     const blogId = req.query.blogid;
+    const slug = req.query.slug;
 
-    const blog = await prisma.blog.findUnique({
+    const blog = await prisma.blog.findFirst({
         where: {
-            id: blogId
+            OR: [
+                { id: blogId },
+                { slug: slug }
+            ]
         }
     });
 
@@ -359,13 +327,13 @@ export const publishDraft = CatchAsync(async (req, res, next) => {
         });
     }
 
+
     const updatedBlog = await prisma.blog.update({
         where: {
-            id: blogId
+            id: blog.id
         },
         data: {
-            content: content,
-            draftContent: content,
+            content: blog.draftContent,
             isPublished: true
         }
     });
@@ -377,14 +345,20 @@ export const publishDraft = CatchAsync(async (req, res, next) => {
     });
 });
 
-export const unpublishBlog = CatchAsync(async (req, res, next) => {
+
+
+export const updateBlog = CatchAsync(async (req, res, next) => {
 
 
     const blogId = req.query.blogid;
+    const slug = req.query.slug;
 
-    const blog = await prisma.blog.findUnique({
+    const blog = await prisma.blog.findFirst({
         where: {
-            id: blogId
+            OR: [
+                { id: blogId },
+                { slug: slug }
+            ]
         }
     });
 
@@ -395,13 +369,13 @@ export const unpublishBlog = CatchAsync(async (req, res, next) => {
         });
     }
 
+    const {blogContext} = req. body
+
     const updatedBlog = await prisma.blog.update({
         where: {
-            id: blogId
+            id: blog.id
         },
-        data: {
-            isPublished: false
-        }
+        data: blogContext
     });
 
     res.status(200).json({
@@ -410,13 +384,12 @@ export const unpublishBlog = CatchAsync(async (req, res, next) => {
         blog: updatedBlog
     });
 });
+
 export const getSingleBlog = CatchAsync(async (req, res, next) => {
 
 
     const blogId = req.query.blogid;
     const slug = req.query.slug;
-
-    console.log(blogId, slug)
 
     const blog = await prisma.blog.findFirst({
         where: {

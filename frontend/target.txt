@@ -20,12 +20,7 @@ About Page:
 
 
 blog editor ke data ko session me store kerna h
-set proper editor types
+
 
 make a navbarheight variable and use it everywhere
 
-save to draft,
-publish
-and unpublish
-
-make it all three common

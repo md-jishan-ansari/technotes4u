@@ -21,14 +21,14 @@ interface BlogCategoriesProps {
     topLevel?: boolean;
 }
 
-const CategoryIcon = memo(({ iconImage }: { iconImage: IconImage }) => (
-    <div className="w-[20px] min-w-[20px] flex items-center justify-center">
-        <Image src={iconImage.url} alt="icon" width={20} height={20} className="dark:hidden" />
+export const CategoryIcon = memo(({ iconImage, size=20 }: { iconImage: IconImage, size?: number }) => (
+    <div className={`w-[${size}px] min-w-[${size}px] flex items-center justify-center`}>
+        <Image src={iconImage.url} alt="icon" width={size} height={size} className="dark:hidden" />
         <Image
             src={iconImage.darkUrl || iconImage.url}
             alt="icon"
-            width={20}
-            height={20}
+            width={size}
+            height={size}
             className="hidden dark:block"
         />
     </div>
@@ -73,6 +73,12 @@ const BlogCategories: React.FC<BlogCategoriesProps> = ({
 
         const accordionTrigger = target.closest('.accordion-trigger');
         if (!accordionTrigger) {
+            // If Ctrl/Cmd key is pressed, open in new tab
+            if (e.ctrlKey || e.metaKey) {
+                window.open(url, '_blank');
+                return;
+            }
+
             setOpenCategories(openCategories.includes(categoryId) ? openCategories: [...openCategories, categoryId])
             router.push(url);
         }

@@ -11,6 +11,8 @@ import { useAppDispatch } from '@/src/redux/hooks';
 import { fetchSingleBlog } from '@/src/redux/slices/blogSlice';
 import Link from 'next/link';
 
+import { MdOutlinePublish, MdOutlineUnpublished, MdDrafts, MdOutlineRemoveRedEye  } from "react-icons/md";
+
 import {
     Select,
     SelectContent,
@@ -128,12 +130,13 @@ const WriteBlogPage = () => {
                         </Select>
                         <Link target="_blank" href={`/blogdraft/${slug}`}>
                             <Button variant="primaryGhost" size="sm" >
+                                <MdOutlineRemoveRedEye size="16" className="mr-1" />
                                 Preview Draft
                             </Button>
                         </Link>
-                        <Button variant="primary" size="sm" onClick={() => handleblog("save-to-draft")} > Save to Draft </Button>
-                        <Button variant="primary" size="sm" onClick={() => handleblog("publish-draft")} > Publish </Button>
-                        <Button variant="danger" size="sm" onClick={() => handleblog("unpublish-blog")} > Unpublish </Button>
+                        <Button variant="primary" size="sm" onClick={() => handleblog("save-to-draft")} > <MdDrafts size="16" className="mr-1" /> Save to Draft </Button>
+                        <Button variant="primary" size="sm" onClick={() => handleblog("publish-draft")} > <MdOutlinePublish size="16" className="mr-1" /> Publish </Button>
+                        <Button variant="danger" size="sm" onClick={() => handleblog("unpublish-blog")} > <MdOutlineUnpublished size="16" className="mr-1" />  Unpublish </Button>
                     </div>
                 </nav>
             </Container>

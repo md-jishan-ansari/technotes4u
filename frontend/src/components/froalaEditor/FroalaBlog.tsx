@@ -10,8 +10,7 @@ const FroalaBlog = ({blogContent, slug}: {blogContent: string, slug?: string}) =
     }, []);
 
     return (
-        <div className="prose dark:prose-invert lg:prose-xl mx-auto p-4 w-full max-w-full">
-
+        <div className="prose dark:prose-invert lg:prose-xl w-full max-w-full">
             <div
                 className="max-w-none fr-view"
                 dangerouslySetInnerHTML={{ __html: blogContent || "" }}

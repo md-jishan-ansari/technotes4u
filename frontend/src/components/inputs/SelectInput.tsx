@@ -45,11 +45,20 @@ const SelectInput = ({ form, name, label, placeholder, description, inputlists, 
                     <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger asChild>
                             <FormControl>
-                                <div className="relative">
+                                <div className="relative"
+                                    tabIndex={open ? 0 : -1}  // Only make it tabbable when open
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            setOpen(true);
+                                        }
+                                    }}
+                                >
                                     <Input
                                         placeholder={placeholder}
                                         value={inputDisplay}
                                         readOnly
+                                        tabIndex={open ? -1 : 0}
                                         style={{ cursor: 'pointer' }}
                                         className={`${ open ? "ring-1 ring-neutral-950 dark:ring-neutral-300": "focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"}`}
                                     />

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useCallback, useEffect, useState } from "react"
-import { useAppSelector } from "@/src/redux/hooks"
+import { useAppDispatch, useAppSelector } from "@/src/redux/hooks"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import {
@@ -23,6 +23,7 @@ import SelectInput from "@/src/components/inputs/SelectInput"
 import Container from "@/src/components/Container"
 import { blogApi } from "@/src/redux/actions/services/api"
 import { toast } from "react-toastify"
+import { fetchCategories } from "@/src/redux/slices/blogSlice"
 
 const ICON_TYPES = ['url', 'image', ''] as const;
 
@@ -43,6 +44,7 @@ const WriteBlog = () => {
   const { categorylist } = useAppSelector(state => state.blog);
   const [parentCategories, setParentCategories] = useState<Array<{ label: string, value: string }>>([]);
   const [predecessors, setPredecessors] = useState<Array<{ label: string, value: string }>>([]);
+    const dispatch = useAppDispatch();
 
   const searchParams = useSearchParams()
   let [slug, setSlug] = useState(searchParams.get('slug'));
@@ -135,6 +137,7 @@ const WriteBlog = () => {
 
       toast.success("Category saved successfully");
 
+      dispatch(fetchCategories());
       if (shouldNavigate) {
         form.reset();
         router.push(`/admin/write/blog?slug=${res.data.blog.slug}`);

@@ -23,6 +23,8 @@ import { SafeUser } from "@/src/types/types";
 import { useAppDispatch } from "@/src/redux/hooks";
 import { isAdmin } from "@/src/lib/utils";
 
+import { SiLibreofficewriter } from "react-icons/si";
+
 interface NavbarMenusProps {
     currentUser?: SafeUser | null;
 }
@@ -43,6 +45,7 @@ const NavbarMenus:React.FC<NavbarMenusProps> = ({ currentUser }) => {
             variant="secondaryGhost"
             size="sm"
           >
+            <SiLibreofficewriter size="16" className="mr-1" />
             Write
           </Button>
         </Link>

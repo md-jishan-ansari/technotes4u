@@ -1,0 +1,23 @@
+# this-means-I-can-use-various-blog-now
+
+```js
+export function getPostBySlug(slug: string, folderPath: string): Post {
+  const filePath = path.join(process.cwd(), folderPath, `${slug}.mdx`);
+  const fileContents = fs.readFileSync(filePath, 'utf-8');
+  const { content } = matter(fileContents);
+
+  return {
+    slug,
+    meta: {
+      readingTime: readingTime(content)
+    },
+    content
+  };
+}
+
+export function getAllPosts(folderPath: string): Post[] {
+  const slugs = getPostSlugs(path.join(process.cwd(), folderPath));
+  return slugs.map(slug => getPostBySlug(slug.replace(/\.mdx$/, ''), folderPath));
+}
+
+```

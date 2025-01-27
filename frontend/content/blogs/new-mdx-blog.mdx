@@ -1,0 +1,16 @@
+```jsx showLineNumbers
+  const categoriesContent = useMemo(() => (
+    categories.length > 0 && (
+      <Suspense fallback={<LoadingFallback />}>
+        <MemoizedBlogCategories
+          categories={categories}
+          activeSlug={activeSlug}
+          openCategories={openCategories}
+          setOpenCategories={setOpenCategories}
+          topLevel={true}
+        />
+      </Suspense>
+    )
+  ), [categories, activeSlug, openCategories]);
+```
+

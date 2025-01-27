@@ -3,6 +3,27 @@
 import { blogApi } from '@/src/redux/actions/services/api';
 import dynamic from 'next/dynamic';
 
+// CSS imports
+// import 'froala-editor/css/froala_style.min.css';
+// import 'froala-editor/css/froala_editor.pkgd.min.css';
+
+// // Plugin imports
+// import 'froala-editor/js/plugins/paragraph_format.min.js';
+// import 'froala-editor/js/plugins/line_height.min.js';
+// import 'froala-editor/js/plugins/word_paste.min.js';
+// import 'froala-editor/js/plugins/fullscreen.min.js';
+// import 'froala-editor/js/plugins/inline_style.min.js';
+// import 'froala-editor/js/plugins/video.min.js';
+// import 'froala-editor/js/plugins/font_family.min.js';
+// import 'froala-editor/js/plugins/font_size.min.js';
+// import 'froala-editor/js/plugins/colors.min.js';
+// import 'froala-editor/js/plugins/image.min.js';
+// import 'froala-editor/js/plugins/link.min.js';
+// import 'froala-editor/js/plugins/lists.min.js';
+// import 'froala-editor/js/plugins/align.min.js';
+// import 'froala-editor/js/plugins/file.min.js';
+// import 'froala-editor/js/plugins/table.min.js';
+
 const FroalaEditorComponent = dynamic(
   () => import('react-froala-wysiwyg'),
   { ssr: false }
@@ -13,26 +34,25 @@ import React, { useEffect } from 'react'
 const FroalaEditor = ({setBlogContent, blogContent}: any) => {
 
     useEffect(() => {
-        require('froala-editor/css/froala_style.min.css');
-        require('froala-editor/css/froala_editor.pkgd.min.css');
+        // Load CSS and plugins only on the client side
+        import('froala-editor/css/froala_style.min.css');
+        import('froala-editor/css/froala_editor.pkgd.min.css');
 
-        require('froala-editor/js/plugins/paragraph_format.min.js');
-        require('froala-editor/js/plugins/line_height.min.js');
-        require('froala-editor/js/plugins/word_paste.min.js');
-        require('froala-editor/js/plugins/fullscreen.min.js');
-        require('froala-editor/js/plugins/inline_style.min.js');
-        require('froala-editor/js/plugins/video.min.js');
-        require('froala-editor/js/plugins/video.min.js');
-
-        require('froala-editor/js/plugins/font_family.min.js');
-        require('froala-editor/js/plugins/font_size.min.js');
-        require('froala-editor/js/plugins/colors.min.js');
-        require('froala-editor/js/plugins/image.min.js');
-        require('froala-editor/js/plugins/link.min.js');
-        require('froala-editor/js/plugins/lists.min.js');
-        require('froala-editor/js/plugins/align.min.js');
-        require('froala-editor/js/plugins/file.min.js');
-        require('froala-editor/js/plugins/table.min.js');
+        import('froala-editor/js/plugins/paragraph_format.min.js');
+        import('froala-editor/js/plugins/line_height.min.js');
+        import('froala-editor/js/plugins/word_paste.min.js');
+        import('froala-editor/js/plugins/fullscreen.min.js');
+        import('froala-editor/js/plugins/inline_style.min.js');
+        import('froala-editor/js/plugins/video.min.js');
+        import('froala-editor/js/plugins/font_family.min.js');
+        import('froala-editor/js/plugins/font_size.min.js');
+        import('froala-editor/js/plugins/colors.min.js');
+        import('froala-editor/js/plugins/image.min.js');
+        import('froala-editor/js/plugins/link.min.js');
+        import('froala-editor/js/plugins/lists.min.js');
+        import('froala-editor/js/plugins/align.min.js');
+        import('froala-editor/js/plugins/file.min.js');
+        import('froala-editor/js/plugins/table.min.js');
 
     }, []);
 

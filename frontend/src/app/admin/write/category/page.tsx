@@ -47,7 +47,7 @@ const WriteBlog = () => {
     const dispatch = useAppDispatch();
 
   const searchParams = useSearchParams()
-  let [slug, setSlug] = useState(searchParams.get('slug'));
+  const [slug, setSlug] = useState(searchParams.get('slug'));
   const router = useRouter();
 
   const form = useForm<FormValues>({
@@ -183,7 +183,7 @@ const WriteBlog = () => {
 
             {slug && (
               <p className="text-red-500 dark:text-red-900 lg:col-span-2 mt-3">
-                If you don't want to change below field for this category than leave it empty
+                If you don&apos;t want to change below field for this category than leave it empty
               </p>
             )}
 
@@ -310,3 +310,5 @@ const WriteBlog = () => {
 }
 
 export default WriteBlog;
+
+

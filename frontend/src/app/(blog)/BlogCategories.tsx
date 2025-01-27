@@ -11,7 +11,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/src/componentsSadcn/ui/accordion"
-import { Category, IconImage } from '@/src/types/types';
+import { Category, Editor, IconImage } from '@/src/types/types';
 
 interface BlogCategoriesProps {
     categories: Category[];
@@ -22,7 +22,7 @@ interface BlogCategoriesProps {
 }
 
 export const CategoryIcon = memo(({ iconImage, size=20 }: { iconImage: IconImage, size?: number }) => (
-    <div className={`w-[${size}px] min-w-[${size}px] flex items-center justify-center`}>
+    <div style={{width: size, minWidth: size}} className={`w-[flex items-center justify-center`}>
         <Image src={iconImage.url} alt="icon" width={size} height={size} className="dark:hidden" />
         <Image
             src={iconImage.darkUrl || iconImage.url}
@@ -33,6 +33,7 @@ export const CategoryIcon = memo(({ iconImage, size=20 }: { iconImage: IconImage
         />
     </div>
 ));
+CategoryIcon.displayName = 'CategoryIcon';
 
 const EditButton = memo(({ isActiveBlog, slug }: { isActiveBlog: boolean, slug: string }) => (
     <Link
@@ -44,7 +45,7 @@ const EditButton = memo(({ isActiveBlog, slug }: { isActiveBlog: boolean, slug: 
         <Pencil className={`${isActiveBlog ? "text-link" : "text-neutral-500 dark:text-neutral-400"} w-3 h-3`} />
     </Link>
 ));
-
+EditButton.displayName = 'EditButton';
 
 const BlogCategories: React.FC<BlogCategoriesProps> = ({
     categories,
@@ -64,11 +65,18 @@ const BlogCategories: React.FC<BlogCategoriesProps> = ({
         );
     }, [setOpenCategories, openCategories]);
 
-    const handleCategoryLinkClick = useCallback((e: React.MouseEvent, categoryId: string, url: string) => {
+    const handleCategoryLinkClick = useCallback((e: React.MouseEvent, categoryId: string, category: Category) => {
         const target = e.target as HTMLElement;
         if (target.closest('a[href^="/admin/write/category"]')) {
             e.stopPropagation();
             return;
+        }
+
+        let url = "";
+        if (category.editor === Editor.RichEditor) {
+            url = `/blog/${category.slug}`;
+        } else {
+            url = `/bigblog/${category.slug}`;
         }
 
         const accordionTrigger = target.closest('.accordion-trigger');
@@ -96,7 +104,7 @@ const BlogCategories: React.FC<BlogCategoriesProps> = ({
                         className="w-full"
                         defaultValue=""
                         value={openCategories.includes(category.id) ? category.id : ''}
-                        onValueChange={(value) => handleCategoryClick(category.id)}
+                        onValueChange={() => handleCategoryClick(category.id)}
                     >
                         <AccordionItem value={category.id}>
                             <div
@@ -112,7 +120,7 @@ const BlogCategories: React.FC<BlogCategoriesProps> = ({
                                 text-muted-foreground hover:text-secondary-foreground
                                 ${isActiveBlog ? "hover:bg-blue-400 hover:bg-opacity-15" : "hover:bg-secondary"}
                                 `}
-                                onClick={(e) => handleCategoryLinkClick(e, category.id, `/blog/${category.slug}`)}
+                                onClick={(e) => handleCategoryLinkClick(e, category.id, category)}
                             >
                                 <div className="flex items-center gap-2 py-[0.4rem]">
                                     {category.iconImage && <CategoryIcon iconImage={category.iconImage} />}

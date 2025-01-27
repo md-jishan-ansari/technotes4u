@@ -10,8 +10,18 @@ import { toast } from 'react-toastify';
 import { useAppDispatch } from '@/src/redux/hooks';
 import { fetchSingleBlog } from '@/src/redux/slices/blogSlice';
 import Link from 'next/link';
+import dynamic from "next/dynamic";
 
 import { MdOutlinePublish, MdOutlineUnpublished, MdDrafts, MdOutlineRemoveRedEye  } from "react-icons/md";
+
+const MDEditor = dynamic(
+    () => import("@uiw/react-markdown-editor").then((mod) => mod.default),
+    {
+      ssr: false,
+      loading: () => <div>Loading editor...</div> // Add a loading state
+    }
+  );
+
 
 import {
     Select,
@@ -22,10 +32,7 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/src/componentsSadcn/ui/select"
-
-interface ApiErrorResponse {
-    message: string;
-}
+import axios from 'axios';
 
 interface BlogContext {
     editor: Editor;
@@ -39,49 +46,89 @@ const WriteBlogPage = () => {
     const [editor, setEditor] = useState<Editor>(Editor.RichEditor);
     const [blog, setBlog] = useState<Blog | null>(null);
     const [blogContent, setBlogContent] = React.useState('');
+    const [blogMdxContent, setBlogMdxContent] = React.useState('');
     const searchParams = useSearchParams()
-    let [slug, setSlug] = useState<string | null>(searchParams.get('slug'));
+    const [slug, setSlug] = useState<string | null>(searchParams.get('slug'));
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         setSlug(searchParams.get('slug'));
     }, [searchParams])
 
+
     // Add this handler function
     const handleSelectEditor = (value: string) => {
         setEditor(value as Editor);
     };
 
+    const handleMdxContentChange = (value: string) => {
+        console.log({value});
+        setBlogMdxContent(value);
+    };
+
+    const mdxEditorSubmit = async (action: 'save-to-draft' | 'publish-draft' | 'unpublish-blog') => {
+
+        if (!blogMdxContent) {
+            console.log('No content to save');
+            toast.error('No content to save');
+            return;
+        }
+
+
+
+        try {
+            if (action === 'publish-draft') {
+                const response = await axios.post('/api/create-mdx', {
+                    slug,
+                    value: blogMdxContent,
+                });
+                toast.success('MDX content saved successfully');
+                console.log('Save successful:', response);
+
+            } else {
+                console.log({blogMdxContent});
+            }
+        } catch (error) {
+            console.error('Error creating file:', error);
+            toast.error('Failed to save MDX content');
+        }
+    }
+
 
     const handleblog = useCallback(async (action: 'save-to-draft' | 'publish-draft' | 'unpublish-blog') => {
         if (!slug) return;
 
-        try {
-            let response;
-            let blogContext:BlogContext = {
-                editor,
-            };
-            switch (action) {
-                case 'save-to-draft':
-                    blogContext["draftContent"] = blogContent;
-                    break;
-                case 'publish-draft':
-                    blogContext["draftContent"] = blogContent;
-                    blogContext["content"] = blogContent;
-                    break;
-                case 'unpublish-blog':
-                    blogContext["isPublished"] = false;
-                    break;
+        if( editor === Editor.MdxEditor) {
+            return mdxEditorSubmit(action);
+        } else {
+            try {
+                const blogContext:BlogContext = {
+                    editor,
+                };
+                switch (action) {
+                    case 'save-to-draft':
+                        blogContext["draftContent"] = blogContent;
+                        break;
+                    case 'publish-draft':
+                        blogContext["draftContent"] = blogContent;
+                        blogContext["content"] = blogContent;
+                        break;
+                    case 'unpublish-blog':
+                        blogContext["isPublished"] = false;
+                        break;
+                }
+
+                await blogApi.updateBlog(slug, blogContext);
+
+                toast.success('Action completed successfully');
+            } catch (error: any) {
+                toast.error(error.message);
+                console.error('Error handling blog:', error);
             }
-
-            response = await blogApi.updateBlog(slug, blogContext);
-
-            toast.success('Action completed successfully');
-        } catch (error: any) {
-            toast.error(error.message);
-            console.error('Error handling blog:', error);
         }
-    }, [slug, blogContent]);
+
+
+    }, [slug, blogContent, blogMdxContent]);
 
     const fetchBlogContent = useCallback(async () => {
         if (!slug) return;
@@ -146,7 +193,12 @@ const WriteBlogPage = () => {
                 {editor === Editor.RichEditor ? (
                     <FroalaEditor blogContent={blogContent} setBlogContent={setBlogContent} />
                 ) : (
-                    <div>MDX Editor</div>
+                    <MDEditor
+                        value={blogMdxContent}
+                        enablePreview={false}
+                        onChange={handleMdxContentChange}
+                        style={{ width: "100%", height: "80vh" }}
+                    />
                 )}
             </Container>
         </div>

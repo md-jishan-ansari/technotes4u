@@ -1,0 +1,32 @@
+# this is new mongodb blog
+
+```jsx
+{slug ? (
+            <div className="flex gap-3 mt-6 max-w-[500px] ml-auto">
+              <Button
+                type="button" fullWidth variant="dark" onClick={form.handleSubmit((data) => handleSubmit(data, false))}
+              >
+                Save
+              </Button>
+              <Button
+                type="button"
+                fullWidth
+                variant="dark"
+                onClick={form.handleSubmit((data) => handleSubmit(data, true))}
+              >
+                Save & Next
+              </Button>
+            </div>
+          ) : (
+            <div className="mt-6 max-w-[300px] ml-auto">
+              <Button
+                type="button"
+                fullWidth
+                variant="dark"
+                onClick={form.handleSubmit((data) => handleSubmit(data, true))}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+```

@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Blog, Category } from '@/src/types/types';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 

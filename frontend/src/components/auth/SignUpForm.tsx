@@ -12,7 +12,6 @@ import Button from '../Button';
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormMessage,

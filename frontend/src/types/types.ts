@@ -32,6 +32,7 @@ export type Category = {
     viewCount: number;
     createdAt: Date;
     updatedAt: Date;
+    editor: Editor;
 }
 
 export type Blog = Category & {

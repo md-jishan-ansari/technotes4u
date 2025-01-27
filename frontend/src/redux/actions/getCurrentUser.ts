@@ -22,7 +22,8 @@ export default async function getCurrentUser(): Promise<SafeUser | null> {
     }
 
     const authtoken = cookieStore.get('authtoken');
-    const decoded = jwt.verify(authtoken?.value || "", process.env.JWT_SECRET) as JwtPayload;
+    const jwtSecret = process.env.JWT_SECRET as string;
+    const decoded = jwt.verify(authtoken?.value || "", jwtSecret) as unknown as JwtPayload;
 
     const user: SafeUser = {
         authtoken: authtoken?.value,

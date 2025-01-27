@@ -7,6 +7,8 @@ import Button from '@/src/components/Button';
 import { ErrorBoundary } from 'react-error-boundary'
 import { useAppSelector } from '@/src/redux/hooks';
 
+import { useParams } from 'next/navigation'
+
 const BlogCategories = React.lazy(() => import('./BlogCategories'))
 const MemoizedBlogCategories = React.memo(BlogCategories)
 
@@ -37,10 +39,14 @@ const LoadingFallback = () => (
 
 
 const BlogCategoriesWrapper = () => {
+  const params = useParams()
   const [isOpen, setIsOpen] = useState(true);
+  const [activeSlug, setActiveSlug] = useState<string | null>(
+    typeof params.slug === 'string' ? params.slug : null
+  );
   const [openCategories, setOpenCategories] = useState<string[]>([]);
 
-  const { categories, loading, activeSlug } = useAppSelector(state => state.blog);
+  const { categories } = useAppSelector(state => state.blog);
 
   const activeParentMap = useMemo(() => {
     const parentMap = new Set<string>()
@@ -63,6 +69,10 @@ const BlogCategoriesWrapper = () => {
     buildParentMap(categories)
     return parentMap
   }, [categories, activeSlug])
+
+  useEffect(() => {
+    setActiveSlug(typeof params.slug === 'string' ? params.slug : null);
+  }, [params])
 
   useEffect(() => {
     if (categories) {
@@ -91,7 +101,7 @@ const BlogCategoriesWrapper = () => {
     )
   ), [categories, activeSlug, openCategories]);
 
-  console.log({openCategories});
+
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
 

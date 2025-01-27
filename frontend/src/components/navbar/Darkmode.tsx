@@ -1,6 +1,5 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useEffect } from 'react';
 
@@ -9,9 +8,7 @@ import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 
 const Darkmode = () => {
   const dispatch = useAppDispatch();
-  const theme = useAppSelector(state => state?.theme?.theme)
-  let pathname = usePathname();
-  pathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  const theme = useAppSelector(state => state?.theme?.theme);
 
   console.log({theme});
 

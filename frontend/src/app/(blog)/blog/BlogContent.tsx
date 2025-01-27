@@ -1,7 +1,7 @@
 "use client";
 import FroalaBlog from '@/src/components/froalaEditor/FroalaBlog';
 import { useAppDispatch } from '@/src/redux/hooks';
-import { fetchSingleBlog, setActiveSlug } from '@/src/redux/slices/blogSlice';
+import { fetchSingleBlog } from '@/src/redux/slices/blogSlice';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { CategoryIcon } from '../BlogCategories';
@@ -12,10 +12,6 @@ import Button from '@/src/components/Button';
 const BlogContent = ({slug}: {slug: string}) => {
     const [blog, setBlog] = useState<any>();
     const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        dispatch(setActiveSlug({slug}));
-    }, []);
 
     useEffect(() => {
         if(slug) {
@@ -62,6 +58,7 @@ const BlogContent = ({slug}: {slug: string}) => {
             </div>
 
             <FroalaBlog blogContent={blog?.content} slug={slug} />
+
         </Container>
     )
 }

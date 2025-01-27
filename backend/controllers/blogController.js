@@ -243,6 +243,7 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
             viewCount: true,
             createdAt: true,
             updatedAt: true,
+            editor: true,
         },
         orderBy: [
             {

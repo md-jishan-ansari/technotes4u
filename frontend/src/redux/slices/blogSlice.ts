@@ -1,5 +1,5 @@
 
-import { createSlice, createAsyncThunk, PayloadAction, ActionReducerMapBuilder  } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, ActionReducerMapBuilder  } from '@reduxjs/toolkit';
 import { Blog, Category } from '@/src/types/types';
 import { blogApi } from '@/src/redux/actions/services/api';
 
@@ -7,7 +7,6 @@ interface BlogState {
   categories: any;
   categorylist: Category[];
   blogs: Blog[];
-  activeSlug: string | null;
   loading: boolean;
   error: string | null;
 }
@@ -16,7 +15,6 @@ const initialState: BlogState = {
   categories: [],
   categorylist: [],
   blogs: [],
-  activeSlug: null,
   loading: false,
   error: null
 };
@@ -94,11 +92,7 @@ const singleBlogFeature = {
 const blogSlice = createSlice({
   name: 'blog',
   initialState,
-  reducers: {
-    setActiveSlug: (state, action: PayloadAction<{ slug: string }>) => {
-      state.activeSlug = action.payload.slug;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     categoriesFeature.reducers(builder);
 
@@ -109,8 +103,6 @@ const blogSlice = createSlice({
 export const fetchCategories = categoriesFeature.thunk;
 export const fetchSingleBlog = singleBlogFeature.thunk;
 
-export const {
-  setActiveSlug
-} = blogSlice.actions;
+export const {} = blogSlice.actions;
 
 export default blogSlice.reducer;

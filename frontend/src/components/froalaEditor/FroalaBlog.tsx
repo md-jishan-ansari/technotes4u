@@ -1,12 +1,12 @@
 "use client";
-import Link from 'next/link';
 import React, { useEffect } from 'react'
 
-const FroalaBlog = ({blogContent, slug}: {blogContent: string, slug?: string}) => {
+const FroalaBlog = ({blogContent}: {blogContent: string, slug?: string}) => {
 
     useEffect(() => {
-        require('froala-editor/css/froala_style.min.css');
-        require('froala-editor/css/froala_editor.pkgd.min.css');
+        // Load CSS and plugins only on the client side
+        import('froala-editor/css/froala_style.min.css');
+        import('froala-editor/css/froala_editor.pkgd.min.css');
     }, []);
 
     return (

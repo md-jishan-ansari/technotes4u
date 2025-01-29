@@ -243,7 +243,7 @@ const WriteBlogPage = () => {
                 </nav>
             </Container>
         </div>
-        <div className="prose dark:prose-invert lg:prose-xl fixed top-[110px] left-0 w-full overflow-auto max-w-full">
+        <div className="prose dark:prose-invert lg:prose-xl fixed top-[110px] z-[100] left-0 w-full overflow-auto max-w-full">
             <Container>
                 {editor === Editor.RichEditor ? (
                     <FroalaEditor blogContent={blogContent} setBlogContent={setBlogContent} />
@@ -252,7 +252,7 @@ const WriteBlogPage = () => {
                         value={blogMdxContent}
                         enablePreview={false}
                         onChange={debouncedHandleMdxContentChange}
-                        style={{ width: "100%", height: "80vh" }}
+                        style={{ width: "100%", height: "calc(100vh - 180px)" }}
                     />
                 )}
             </Container>

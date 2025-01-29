@@ -10,7 +10,7 @@ const codeOptions = {
 };
 
 export const renderMDX = async (content: string) => {
-  console.log({content});
+
   return serialize(content, {
     mdxOptions: {
       remarkPlugins: [remarkGfm],

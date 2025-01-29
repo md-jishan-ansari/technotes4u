@@ -12,15 +12,12 @@ import { useParams } from 'next/navigation'
 const BlogCategories = React.lazy(() => import('./BlogCategories'))
 const MemoizedBlogCategories = React.memo(BlogCategories)
 
-const SIDEBAR_WIDTH = 'md:w-[350px]'
-const SIDEBAR_MAX_WIDTH = 'max-w-[450px]'
-
 const sidebarBaseClasses = `
-  w-full ${SIDEBAR_WIDTH} ${SIDEBAR_MAX_WIDTH}
+  w-full md:w-[400px] max-w-[450px]
   h-[100vh] overflow-y-auto
   bg-background border border-t-0
   dark:border-neutral-700
-  fixed z-[100] md:z-40
+  sticky z-[100] md:z-40
   top-0 let-0
   pt-0 md:pt-[68px]
   transition-[left] duration-300

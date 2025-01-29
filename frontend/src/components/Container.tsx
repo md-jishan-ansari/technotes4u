@@ -12,7 +12,7 @@ const Container: React.FC<Props> = ({children, className=""}) => {
         w-full
         mx-auto
         px-2
-        py-3
+        py-4
         lg:px-6
         xl:px-20
         ${className}

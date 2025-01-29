@@ -73,7 +73,6 @@ const SignUpForm:React.FC<signUpFormProps> = ({currentUser}) => {
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         const {name, email, password, confirmPassword} = data;
-        console.log({data});
 
         signIn('credentials', {
             name,

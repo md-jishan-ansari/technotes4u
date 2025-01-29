@@ -1,10 +1,10 @@
 import React from 'react'
-import BlogContent from '../BlogDraftContent'
+import BlogContent from '../../blog/BlogContent'
 
 const Blog = ({params}: {params: {slug: string}}) => {
 
   return (
-    <BlogContent slug={params.slug} />
+    <BlogContent slug={params.slug} isdraft={true} />
   )
 }
 

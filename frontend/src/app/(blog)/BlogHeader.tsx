@@ -7,15 +7,27 @@ import { CategoryIcon } from './BlogCategories';
 import Link from 'next/link';
 import Button from '@/src/components/Button';
 import { Eye, Pencil } from 'lucide-react';
+import { MdOutlinePublish } from 'react-icons/md';
+import { Blog, Editor } from '@/src/types/types';
 
-const BlogHeader = () => {
+const PREVIEW_URLS: Record<Editor, string> = {
+    [Editor.RichEditor]: '/blogdraft/',
+    [Editor.MdxEditor]: '/bigblogdraft/'
+}
+
+const BlogHeader = ({isdraft = false}: {isdraft?: boolean}) => {
     const params = useParams()
+    const [previewUrl, setPreviewUrl] = useState<string>("");
     const [activeSlug, setActiveSlug] = useState<string | null>(
         typeof params.slug === 'string' ? params.slug : null
     );
 
-    const [blog, setBlog] = useState<any>();
+    const [blog, setBlog] = useState<Blog | null>();
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        setActiveSlug(typeof params.slug === 'string' ? params.slug : null);
+    }, [params])
 
     useEffect(() => {
         if (activeSlug) {
@@ -27,10 +39,16 @@ const BlogHeader = () => {
         }
     }, [params, dispatch]);
 
+    useEffect(() => {
+        if(blog) {
+            setPreviewUrl(`${PREVIEW_URLS[blog?.editor]}${params.slug}`)
+        }
+    }, [blog]);
+
 
     return (
         blog &&
-        <div className='flex justify-between items-center'>
+        <div className='flex justify-between items-center mb-7'>
             <div className="flex items-center gap-2">
                 {blog.iconImage && <CategoryIcon iconImage={blog.iconImage} size={40} />}
                 <h3 className="text-3xl font-bold">
@@ -38,16 +56,19 @@ const BlogHeader = () => {
                 </h3>
             </div>
             <div className="flex justify-end gap-2">
-                <Link href={`/blogdraft/${blog.slug}`} >
-                    <Button
-                        variant="primaryGhost"
-                        size="xs"
-                        rounded="rounded-lg"
-                    >
-                        <Eye className="w-3 h-3 mr-1" />
-                        View Draft
-                    </Button>
-                </Link>
+                {!isdraft &&
+                    <Link href={previewUrl} >
+                        <Button
+                            variant="primaryGhost"
+                            size="xs"
+                            rounded="rounded-lg"
+                        >
+                            <Eye className="w-3 h-3 mr-1" />
+                            View Draft
+                        </Button>
+                    </Link>
+                }
+
                 <Link href={`/admin/write/blog/?slug=${blog.slug}`} >
                     <Button
                         variant="primaryGhost"
@@ -58,6 +79,12 @@ const BlogHeader = () => {
                         Edit
                     </Button>
                 </Link>
+
+                {isdraft &&
+                    <Button variant="primary" size="xs" onClick={() => {}}>
+                        <MdOutlinePublish size="16" className="mr-1" /> Publish
+                    </Button>
+                }
             </div>
         </div>
     )

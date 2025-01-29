@@ -65,6 +65,7 @@ const EditorActions = React.memo(({ onAction, isLoading }: {
         </Button>
     </div>
 ))
+EditorActions.displayName = 'EditorActions'
 
 const WriteBlogPage = () => {
     const [editor, setEditor] = useState<Editor>(Editor.RichEditor);

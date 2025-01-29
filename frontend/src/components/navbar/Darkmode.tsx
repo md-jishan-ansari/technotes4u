@@ -3,12 +3,12 @@
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useEffect } from 'react';
 
-import { changeTheme, setThemeFromLocalStorage } from "../../redux/slices/themeSlice";
+import { changeTheme, setThemeFromLocalStorage } from "../../redux/slices/generalSlice";
 import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 
 const Darkmode = () => {
   const dispatch = useAppDispatch();
-  const theme = useAppSelector(state => state?.theme?.theme);
+  const theme = useAppSelector(state => state?.general?.theme);
 
   console.log({theme});
 

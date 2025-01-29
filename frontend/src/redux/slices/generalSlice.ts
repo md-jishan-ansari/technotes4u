@@ -1,20 +1,22 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-type ThemeState = {
-  theme: 'light' | 'dark'
+type GeneralState = {
+  theme: 'light' | 'dark',
+  shownavbar: boolean
 };
 
 const applyTheme = (theme: 'light' | 'dark'): void => {
   document.documentElement.classList.toggle('dark', theme === 'dark');
 };
 
-const initialState: ThemeState = {
-  theme: 'light'
+const initialState: GeneralState = {
+  theme: 'light',
+  shownavbar: true
 };
 
-const themeSlice = createSlice({
-  name: 'theme',
+const generalSlice = createSlice({
+  name: 'general',
   initialState,
   reducers: {
     changeTheme: (state) => {
@@ -24,14 +26,17 @@ const themeSlice = createSlice({
       applyTheme(state.theme);
     },
     setThemeFromLocalStorage: (state) => {
-      const savedTheme = localStorage.getItem('theme') as ThemeState['theme'] | null;
+      const savedTheme = localStorage.getItem('theme') as GeneralState['theme'] | null;
       if (savedTheme && ['light', 'dark'].includes(savedTheme)) {
         state.theme = savedTheme;
         applyTheme(state.theme);
       }
+    },
+    toggleNavbar: (state, action) => {
+      state.shownavbar = action.payload.navbarstate;
     }
   },
 });
 
-export const { changeTheme, setThemeFromLocalStorage } = themeSlice.actions;
-export default themeSlice.reducer;
+export const { changeTheme, setThemeFromLocalStorage, toggleNavbar } = generalSlice.actions;
+export default generalSlice.reducer;

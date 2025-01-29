@@ -2,19 +2,16 @@
 import FroalaBlog from '@/src/components/froalaEditor/FroalaBlog';
 import { useAppDispatch } from '@/src/redux/hooks';
 import { fetchSingleBlog } from '@/src/redux/slices/blogSlice';
-import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
-import { CategoryIcon } from '../BlogCategories';
 import Container from '@/src/components/Container';
-import { Pencil, Eye } from 'lucide-react';
-import Button from '@/src/components/Button';
 import BlogHeader from '../BlogHeader';
 
-const BlogContent = ({slug}: {slug: string}) => {
+const BlogContent = ({slug, isdraft = false}: {slug: string, isdraft?: boolean}) => {
     const [blog, setBlog] = useState<any>();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+
         if(slug) {
             dispatch(fetchSingleBlog(slug))
                 .unwrap()
@@ -26,12 +23,24 @@ const BlogContent = ({slug}: {slug: string}) => {
 
     return (
         blog &&
-        <Container>
+        <div className="flex gap-4">
+            <div className="w-full mt-[68px]">
+                <Container>
+                    <BlogHeader isdraft={isdraft} />
+                    <FroalaBlog blogContent={isdraft ? blog?.draftContent : blog?.content} slug={slug} />
+                </Container>
+            </div>
 
-            <BlogHeader />
-            <FroalaBlog blogContent={blog?.content} slug={slug} />
-
-        </Container>
+            <div className="w-[300px]
+                sticky
+                top-0
+                right-0
+                h-[100vh]
+                pt-[84px]
+            ">
+                Table of content
+            </div>
+        </div>
     )
 }
 

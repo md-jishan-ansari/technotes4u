@@ -6,25 +6,47 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import NavbarMenus from './NavbarMenus';
 import { useEffect, useState } from 'react';
 import { SafeUser } from '@/src/types/types';
+import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
+import { toggleNavbar } from '@/src/redux/slices/generalSlice';
+import { usePathname } from 'next/navigation';
 
 interface NavbarContentProps {
     currentUser?: SafeUser | null;
 }
 
 const NavbarContent:React.FC<NavbarContentProps> = ({ currentUser }) => {
-    const [show, setShow] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
+    const [isBlogPage, setIsBlogPage] = useState(false);
+    const shownavbar = useAppSelector(state => state.general.shownavbar);
+    const dispatch = useAppDispatch();
+    const pathname = usePathname();
 
     const controlNavbar = () => {
       if (typeof window !== 'undefined') {
         if (window.scrollY > lastScrollY) { // scrolling down
-          setShow(false);
+          dispatch(toggleNavbar({navbarstate: false}));
         } else { // scrolling up
-          setShow(true);
+          dispatch(toggleNavbar({navbarstate: true}));
         }
         setLastScrollY(window.scrollY);
       }
     };
+
+    console.log({pathname});
+
+
+    useEffect(() => {
+      const blogroutes = [
+        '/bigblog',
+        '/bigblogdraft',
+        '/blog',
+        '/blogdraft',
+      ];
+
+      setIsBlogPage(blogroutes.some(route => {
+        return pathname.startsWith(route);
+      }));
+    }, [pathname]);
 
     useEffect(() => {
       if (typeof window !== 'undefined') {
@@ -37,7 +59,7 @@ const NavbarContent:React.FC<NavbarContentProps> = ({ currentUser }) => {
 
     return (
         // <header className="sticky top-0 left-0 h-[68px]  w-100 z-50 shadow-sm dark:border dark:border-neutral-700 flex justify-start flex-nowrap w-full bg-background text-sm py-3">
-        <header className={`sticky transition-transform duration-300 ${show ? 'translate-y-0' : '-translate-y-full'} top-0 left-0 h-[68px] w-100 z-50 shadow-sm dark:border dark:border-neutral-700 flex justify-start flex-nowrap w-full bg-background text-sm py-3`}>
+        <header className={`${isBlogPage ? "fixed" : "sticky"} transition-transform duration-300 ${shownavbar ? 'translate-y-0' : '-translate-y-full'} top-0 left-0 h-[68px] w-100 z-50 shadow-sm dark:border dark:border-neutral-700 flex justify-start flex-nowrap w-full bg-background text-sm py-3`}>
             <nav className="xl:px-10 w-full mx-auto px-4 flex items-center justify-between">
                 <div className="flex items-center justify-between">
                     <Link href="/" className="flex-none text-xl font-semibold dark:text-white focus:outline-none focus:opacity-80" aria-label="Brand">

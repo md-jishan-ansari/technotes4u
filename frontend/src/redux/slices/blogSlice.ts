@@ -87,6 +87,7 @@ const singleBlogFeature = {
         state.error = action.payload as string || 'Failed to fetch blog';
       });
   }
+
 };
 
 const blogSlice = createSlice({
@@ -106,3 +107,4 @@ export const fetchSingleBlog = singleBlogFeature.thunk;
 export const {} = blogSlice.actions;
 
 export default blogSlice.reducer;
+

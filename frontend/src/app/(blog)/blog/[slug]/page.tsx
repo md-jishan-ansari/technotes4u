@@ -9,3 +9,4 @@ const Blog = ({params}: {params: {slug: string}}) => {
 }
 
 export default Blog
+

@@ -7,7 +7,7 @@ import { useAppSelector } from '../redux/hooks';
 
 export default function ToastifyContainer() {
     const [toasterTheme, setToasterTheme] = useState('colored');
-    const theme = useAppSelector(state => state.theme.theme)
+    const theme = useAppSelector(state => state.general.theme)
 
     useEffect(() => {
         if (theme === 'dark') {

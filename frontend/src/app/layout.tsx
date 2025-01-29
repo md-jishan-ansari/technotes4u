@@ -4,7 +4,7 @@ import "./globals.css";
 import { Inter } from 'next/font/google';
 import ReduxProvider from "../redux/ReduxProvider";
 import Navbar from "../components/navbar/Navbar";
-// import Footer from "../components/footer/Footer";
+import Footer from "../components/footer/Footer";
 import ToastifyContainer from "../components/ToastifyContainer";
 import PrelineScript from "../components/ PrelineScript";
 
@@ -37,7 +37,7 @@ export default function RootLayout({
           <div className="flex flex-col min-h-screen">
               <Navbar />
               {children}
-              {/* <Footer /> */}
+              <Footer />
           </div>
         </ReduxProvider>
       </body>

@@ -11,11 +11,8 @@ interface PreProps {
 const Pre = ({ children, raw, ...props }: PreProps) => {
   const lang = props["data-language"] || "shell";
 
-  console.log({children})
-  console.log({raw})
-
   return (
-    <pre {...props} className={"p-4"}>
+    <pre {...props} className={"p-4 max-w-full overflow-x-auto"}>
       <div className={"code-header"}>
         {lang}
         <CopyButton text={raw} />

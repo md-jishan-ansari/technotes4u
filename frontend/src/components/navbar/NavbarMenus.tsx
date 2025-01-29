@@ -24,6 +24,7 @@ import { useAppDispatch } from "@/src/redux/hooks";
 import { isAdmin } from "@/src/lib/utils";
 
 import { SiLibreofficewriter } from "react-icons/si";
+import { TfiWrite } from "react-icons/tfi";
 
 interface NavbarMenusProps {
     currentUser?: SafeUser | null;
@@ -45,7 +46,7 @@ const NavbarMenus:React.FC<NavbarMenusProps> = ({ currentUser }) => {
             variant="secondaryGhost"
             size="sm"
           >
-            <SiLibreofficewriter size="16" className="mr-1" />
+            <TfiWrite size="16" className="mr-1" />
             Write
           </Button>
         </Link>

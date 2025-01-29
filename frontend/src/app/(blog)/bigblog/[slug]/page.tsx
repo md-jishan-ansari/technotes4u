@@ -3,6 +3,7 @@ import { renderMDX } from '@/src/mdx/lib/mdx';
 import { getAllPosts, getPostBySlug } from '@/src/mdx/lib/posts';
 import { generateTOC } from '@/src/mdx/lib/toc';
 import dynamic from 'next/dynamic';
+import BlogHeader from '../../BlogHeader';
 
 
 // Import the client component wrapper
@@ -24,7 +25,7 @@ export default async function BlogPost({ params }: { params: { slug: string } })
 
   return (
     <article className="prose dark:prose-invert max-w-none">
-
+      <BlogHeader />
       <TOC toc={toc} />
       <div className="mdx-content p-4">
         <div  className='col-span-12  lg:col-span-8 font-in prose max-w-max

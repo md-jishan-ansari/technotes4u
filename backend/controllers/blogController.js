@@ -370,7 +370,7 @@ export const updateBlog = CatchAsync(async (req, res, next) => {
         });
     }
 
-    const {blogContext} = req. body
+    const {blogContext} = req. body;
 
     const updatedBlog = await prisma.blog.update({
         where: {

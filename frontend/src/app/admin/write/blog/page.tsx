@@ -38,6 +38,8 @@ interface BlogContext {
     editor: Editor;
     draftContent?: string;
     content?: string;
+    mdxdraftContent?: string;
+    mdxcontent?: string;
     isPublished?: boolean;
 }
 
@@ -47,13 +49,24 @@ const WriteBlogPage = () => {
     const [blog, setBlog] = useState<Blog | null>(null);
     const [blogContent, setBlogContent] = React.useState('');
     const [blogMdxContent, setBlogMdxContent] = React.useState('');
+    const [previewUrl, setPreviewUrl] = useState("");
     const searchParams = useSearchParams()
-    const [slug, setSlug] = useState<string | null>(searchParams.get('slug'));
+    const [slug, setSlug] = useState<string | null>(searchParams.get('slug') || "");
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        setSlug(searchParams.get('slug'));
+        setSlug(searchParams.get('slug') || "");
     }, [searchParams])
+
+    useEffect(() => {
+        let url = ""
+        {editor === Editor.RichEditor ? (
+            url = `/blogdraft/${slug}`
+        ) : (
+            url = `/bigblogdraft/${slug}`
+        )}
+        setPreviewUrl(url);
+    }, [editor]);
 
 
     // Add this handler function
@@ -76,17 +89,35 @@ const WriteBlogPage = () => {
 
 
 
+
         try {
+
+            const blogContext:BlogContext = {
+                editor,
+            };
+            switch (action) {
+                case 'save-to-draft':
+                    blogContext["mdxdraftContent"] = blogMdxContent;
+                    break;
+                case 'publish-draft':
+                    blogContext["mdxdraftContent"] = blogMdxContent;
+                    blogContext["mdxcontent"] = blogMdxContent;
+                    blogContext["isPublished"] = true;
+                    break;
+                case 'unpublish-blog':
+                    blogContext["isPublished"] = false;
+                    break;
+            }
+
+            await blogApi.updateBlog(slug, blogContext);
+
             if (action === 'publish-draft') {
-                const response = await axios.post('/api/create-mdx', {
+                const response = await axios.post('/api/create-mdx-blog', {
                     slug,
                     value: blogMdxContent,
                 });
                 toast.success('MDX content saved successfully');
                 console.log('Save successful:', response);
-
-            } else {
-                console.log({blogMdxContent});
             }
         } catch (error) {
             console.error('Error creating file:', error);
@@ -112,6 +143,7 @@ const WriteBlogPage = () => {
                     case 'publish-draft':
                         blogContext["draftContent"] = blogContent;
                         blogContext["content"] = blogContent;
+                        blogContext["isPublished"] = true;
                         break;
                     case 'unpublish-blog':
                         blogContext["isPublished"] = false;
@@ -175,7 +207,7 @@ const WriteBlogPage = () => {
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
-                        <Link target="_blank" href={`/blogdraft/${slug}`}>
+                        <Link target="_blank" href={previewUrl}>
                             <Button variant="primaryGhost" size="sm" >
                                 <MdOutlineRemoveRedEye size="16" className="mr-1" />
                                 Preview Draft

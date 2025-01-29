@@ -69,6 +69,9 @@ model Blog {
   description   String?   // For both blog and Blog descriptions
   content       String?   // For blog content
   draftContent  String?   // For draftblog content
+  mdxcontent       String?   // For blog content of mdx editor
+  mdxdraftContent  String?   // For draftblog content of mdx editor
+
 
   // Status and metadata
   isFeatured    Boolean   @default(false)

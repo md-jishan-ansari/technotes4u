@@ -2,13 +2,16 @@ import fs from 'fs';
 import path from 'path';
 import { NextResponse } from "next/server";
 
-export async function POST(request) {
+export async function POST(request: any) {
   let payload = await request.json();
   let { slug, value } = payload;
 
   if (!slug) {
     return NextResponse.json({ result: "request field not found" }, { status: 400 });
   }
+
+  console.log('slug:', slug);
+  console.log('slug:', value);
 
   if (slug && value) {
     try {

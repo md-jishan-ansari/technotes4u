@@ -38,6 +38,8 @@ export type Category = {
 export type Blog = Category & {
     content?: string | null;
     draftContent?: string | null;
+    mdxcontent?: string | null;
+    mdxdraftContent?: string | null;
     isMdxEditor: boolean;
 }
 

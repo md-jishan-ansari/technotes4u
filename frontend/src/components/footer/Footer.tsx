@@ -1,10 +1,18 @@
+"use client";
 import React from 'react'
 import Container from '@/src/components/Container'
 import Link from 'next/link'
 
 import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube  } from "react-icons/fa";
+import { usePathname } from 'next/navigation';
 
 const Footer = () => {
+  const pathname = usePathname();
+
+  if(pathname.startsWith("/admin")) {
+    return null;
+  }
+
   return (
     <div className='bg-slate-700 py-12 text-slate-200 mt-auto'>
       <Container>

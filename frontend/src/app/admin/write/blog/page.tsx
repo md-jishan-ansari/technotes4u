@@ -1,28 +1,20 @@
 "use client";
+import React, { useEffect, useState, useCallback  } from 'react'
+import dynamic from "next/dynamic";
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { debounce } from 'lodash';
+
 import Button from '@/src/components/Button'
 import Container from '@/src/components/Container'
 import FroalaEditor from '@/src/components/froalaEditor/FroalaEditor'
 import { Blog, Editor } from '@/src/types/types'
 import { blogApi } from '@/src/redux/actions/services/api'
-import { useSearchParams } from 'next/navigation';
-import React, { useEffect, useState, useCallback  } from 'react'
-import { toast } from 'react-toastify';
 import { useAppDispatch } from '@/src/redux/hooks';
 import { fetchSingleBlog } from '@/src/redux/slices/blogSlice';
-import Link from 'next/link';
-import dynamic from "next/dynamic";
-
 import { MdOutlinePublish, MdOutlineUnpublished, MdDrafts, MdOutlineRemoveRedEye  } from "react-icons/md";
-
-const MDEditor = dynamic(
-    () => import("@uiw/react-markdown-editor").then((mod) => mod.default),
-    {
-      ssr: false,
-      loading: () => <div>Loading editor...</div> // Add a loading state
-    }
-  );
-
-
 import {
     Select,
     SelectContent,
@@ -32,7 +24,19 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/src/componentsSadcn/ui/select"
-import axios from 'axios';
+
+const MDEditor = dynamic(
+    () => import("@uiw/react-markdown-editor").then((mod) => mod.default),
+    {
+      ssr: false,
+      loading: () => <div>Loading editor...</div> // Add a loading state
+    }
+  );
+
+const PREVIEW_URLS = {
+    [Editor.RichEditor]: '/blogdraft/',
+    [Editor.MdxEditor]: '/bigblogdraft/'
+}
 
 interface BlogContext {
     editor: Editor;
@@ -43,6 +47,24 @@ interface BlogContext {
     isPublished?: boolean;
 }
 
+type BlogAction = 'save-to-draft' | 'publish-draft' | 'unpublish-blog'
+
+const EditorActions = React.memo(({ onAction, isLoading }: {
+    onAction: (action: BlogAction) => void
+    isLoading: boolean
+}) => (
+    <div className="flex items-center gap-3">
+        <Button variant="primary" size="sm" onClick={() => onAction('save-to-draft')} disabled={isLoading}>
+            <MdDrafts size="16" className="mr-1" /> Save to Draft
+        </Button>
+        <Button variant="primary" size="sm" onClick={() => onAction('publish-draft')} disabled={isLoading}>
+            <MdOutlinePublish size="16" className="mr-1" /> Publish
+        </Button>
+        <Button variant="danger" size="sm" onClick={() => onAction('unpublish-blog')} disabled={isLoading}>
+            <MdOutlineUnpublished size="16" className="mr-1" /> Unpublish
+        </Button>
+    </div>
+))
 
 const WriteBlogPage = () => {
     const [editor, setEditor] = useState<Editor>(Editor.RichEditor);
@@ -50,6 +72,7 @@ const WriteBlogPage = () => {
     const [blogContent, setBlogContent] = React.useState('');
     const [blogMdxContent, setBlogMdxContent] = React.useState('');
     const [previewUrl, setPreviewUrl] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const searchParams = useSearchParams()
     const [slug, setSlug] = useState<string | null>(searchParams.get('slug') || "");
     const dispatch = useAppDispatch();
@@ -59,128 +82,129 @@ const WriteBlogPage = () => {
     }, [searchParams])
 
     useEffect(() => {
-        let url = ""
-        {editor === Editor.RichEditor ? (
-            url = `/blogdraft/${slug}`
-        ) : (
-            url = `/bigblogdraft/${slug}`
-        )}
-        setPreviewUrl(url);
+        setPreviewUrl(`${PREVIEW_URLS[editor]}${slug}`)
     }, [editor]);
 
 
     // Add this handler function
-    const handleSelectEditor = (value: string) => {
-        setEditor(value as Editor);
+    const handleSelectEditor = useCallback((value: string) => {
+        setEditor(value as Editor)
+    }, [])
+
+    const debouncedHandleMdxContentChange = useCallback(
+        debounce((value: string) => {
+            setBlogMdxContent(value)
+        }, 300),
+        []
+    )
+
+    // Separate function to handle MDX publishing
+    const handleMdxPublish = async (slug: string, blogMdxContent: string) => {
+        const response = await axios.post('/api/create-mdx-blog', {
+            slug,
+            value: blogMdxContent,
+        });
+        toast.success('MDX content saved successfully');
+        return response;
     };
 
-    const handleMdxContentChange = (value: string) => {
-        console.log({value});
-        setBlogMdxContent(value);
+    // Create blog context based on action
+    const createBlogContext = (action: BlogAction, content: string, editor: Editor): BlogContext => {
+        const blogContext: BlogContext = { editor };
+
+        switch (action) {
+            case 'save-to-draft':
+                blogContext.draftContent = content;
+                break;
+            case 'publish-draft':
+                blogContext.draftContent = content;
+                blogContext.content = content;
+                blogContext.isPublished = true;
+                break;
+            case 'unpublish-blog':
+                blogContext.isPublished = false;
+                break;
+        }
+        return blogContext;
     };
 
-    const mdxEditorSubmit = async (action: 'save-to-draft' | 'publish-draft' | 'unpublish-blog') => {
+    // Create MDX blog context based on action
+    const createMdxBlogContext = (action: BlogAction, mdxContent: string, editor: Editor): BlogContext => {
+        const blogContext: BlogContext = { editor };
 
+        switch (action) {
+            case 'save-to-draft':
+                blogContext.mdxdraftContent = mdxContent;
+                break;
+            case 'publish-draft':
+                blogContext.mdxdraftContent = mdxContent;
+                blogContext.mdxcontent = mdxContent;
+                blogContext.isPublished = true;
+                break;
+            case 'unpublish-blog':
+                blogContext.isPublished = false;
+                break;
+        }
+        return blogContext;
+    };
+
+    // Enhanced mdxEditorSubmit with better error handling
+    const mdxEditorSubmit = async (action: BlogAction, slug: string, blogMdxContent: string, editor: Editor) => {
         if (!blogMdxContent) {
-            console.log('No content to save');
             toast.error('No content to save');
             return;
         }
 
-
-
-
         try {
+            if (!slug) return;
 
-            const blogContext:BlogContext = {
-                editor,
-            };
-            switch (action) {
-                case 'save-to-draft':
-                    blogContext["mdxdraftContent"] = blogMdxContent;
-                    break;
-                case 'publish-draft':
-                    blogContext["mdxdraftContent"] = blogMdxContent;
-                    blogContext["mdxcontent"] = blogMdxContent;
-                    blogContext["isPublished"] = true;
-                    break;
-                case 'unpublish-blog':
-                    blogContext["isPublished"] = false;
-                    break;
-            }
-
+            const blogContext = createMdxBlogContext(action, blogMdxContent, editor);
             await blogApi.updateBlog(slug, blogContext);
 
             if (action === 'publish-draft') {
-                const response = await axios.post('/api/create-mdx-blog', {
-                    slug,
-                    value: blogMdxContent,
-                });
-                toast.success('MDX content saved successfully');
-                console.log('Save successful:', response);
+                await handleMdxPublish(slug, blogMdxContent);
             }
         } catch (error) {
-            console.error('Error creating file:', error);
+            console.error('Error handling MDX content:', error);
             toast.error('Failed to save MDX content');
+            throw error;
         }
-    }
+    };
 
-
-    const handleblog = useCallback(async (action: 'save-to-draft' | 'publish-draft' | 'unpublish-blog') => {
+    // Enhanced handleblog function
+    const handleblog = useCallback(async (action: BlogAction) => {
         if (!slug) return;
 
-        if( editor === Editor.MdxEditor) {
-            return mdxEditorSubmit(action);
-        } else {
-            try {
-                const blogContext:BlogContext = {
-                    editor,
-                };
-                switch (action) {
-                    case 'save-to-draft':
-                        blogContext["draftContent"] = blogContent;
-                        break;
-                    case 'publish-draft':
-                        blogContext["draftContent"] = blogContent;
-                        blogContext["content"] = blogContent;
-                        blogContext["isPublished"] = true;
-                        break;
-                    case 'unpublish-blog':
-                        blogContext["isPublished"] = false;
-                        break;
-                }
-
+        setIsLoading(true);
+        try {
+            if (editor === Editor.MdxEditor) {
+                await mdxEditorSubmit(action, slug, blogMdxContent, editor);
+            } else {
+                const blogContext = createBlogContext(action, blogContent, editor);
                 await blogApi.updateBlog(slug, blogContext);
-
                 toast.success('Action completed successfully');
-            } catch (error: any) {
-                toast.error(error.message);
-                console.error('Error handling blog:', error);
             }
+        } catch (error: any) {
+            toast.error(error.message);
+            console.error('Error handling blog:', error);
+        } finally {
+            setIsLoading(false);
         }
-
-
-    }, [slug, blogContent, blogMdxContent]);
+    }, [slug, blogContent, blogMdxContent, editor]);
 
     const fetchBlogContent = useCallback(async () => {
-        if (!slug) return;
+        if (!slug) return
 
         try {
-
-            dispatch(fetchSingleBlog(slug))
-                    .unwrap()
-                    .then((blogData) => {
-                        setEditor(blogData.editor);
-                        setBlog(blogData);
-                        setBlogContent(blogData.draftContent);
-                    }
-                );
-
+            const blogData = await dispatch(fetchSingleBlog(slug)).unwrap()
+            setEditor(blogData.editor)
+            setBlog(blogData)
+            setBlogContent(blogData.draftContent)
         } catch (error) {
-            toast.error('Failed to fetch blog content');
-            console.error('Error fetching blog:', error);
+            toast.error('Failed to fetch blog content')
+            console.error('Error fetching blog:', error)
         }
-    }, [slug]);
+    }, [slug, dispatch])
 
     useEffect(() => {
         fetchBlogContent()
@@ -213,9 +237,7 @@ const WriteBlogPage = () => {
                                 Preview Draft
                             </Button>
                         </Link>
-                        <Button variant="primary" size="sm" onClick={() => handleblog("save-to-draft")} > <MdDrafts size="16" className="mr-1" /> Save to Draft </Button>
-                        <Button variant="primary" size="sm" onClick={() => handleblog("publish-draft")} > <MdOutlinePublish size="16" className="mr-1" /> Publish </Button>
-                        <Button variant="danger" size="sm" onClick={() => handleblog("unpublish-blog")} > <MdOutlineUnpublished size="16" className="mr-1" />  Unpublish </Button>
+                        <EditorActions onAction={handleblog} isLoading={isLoading} />
                     </div>
                 </nav>
             </Container>
@@ -228,7 +250,7 @@ const WriteBlogPage = () => {
                     <MDEditor
                         value={blogMdxContent}
                         enablePreview={false}
-                        onChange={handleMdxContentChange}
+                        onChange={debouncedHandleMdxContentChange}
                         style={{ width: "100%", height: "80vh" }}
                     />
                 )}
@@ -239,3 +261,12 @@ const WriteBlogPage = () => {
 }
 
 export default WriteBlogPage
+
+
+// The debounce function in this code is used to optimize performance when handling changes to the MDX editor content. Here's what it does:
+
+// The debouncedHandleMdxContentChange callback wraps the setBlogMdxContent state update in a debounce function with a 300ms delay. This means:
+
+    //1. When a user types in the MDX editor, instead of updating the state on every single keystroke
+    //2. It waits until the user stops typing for 300 milliseconds
+    //3. Only then does it update the blogMdxContent state with the latest value

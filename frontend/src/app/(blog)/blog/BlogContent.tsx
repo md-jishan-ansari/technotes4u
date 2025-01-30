@@ -5,6 +5,7 @@ import { fetchSingleBlog } from '@/src/redux/slices/blogSlice';
 import React, { useEffect, useState } from 'react'
 import Container from '@/src/components/Container';
 import BlogHeader from '../BlogHeader';
+import BlogFooter from '../BlogFooter';
 
 const BlogContent = ({slug, isdraft = false}: {slug: string, isdraft?: boolean}) => {
     const [blog, setBlog] = useState<any>();
@@ -28,6 +29,7 @@ const BlogContent = ({slug, isdraft = false}: {slug: string, isdraft?: boolean})
                 <Container>
                     <BlogHeader isdraft={isdraft} />
                     <FroalaBlog blogContent={isdraft ? blog?.draftContent : blog?.content} slug={slug} />
+                    <BlogFooter slug={slug} />
                 </Container>
             </div>
 

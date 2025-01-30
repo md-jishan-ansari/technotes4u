@@ -18,10 +18,10 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: 'bg-blue-700 text-white hover:bg-blue-800',
-  primaryOutline: 'bg-transparent border border-blue-700 text-blue-700 hover:border-blue-500 hover:text-blue-500 focus:border-blue-500 focus:text-blue-500 dark:border-blue-500 dark:text-blue-500 dark:hover:text-blue-400 dark:hover:border-blue-400',
+  primaryOutline: 'bg-transparent border border-blue-600 text-blue-600 hover:border-blue-800 hover:text-blue-800 focus:border-blue-800 focus:text-blue-800 dark:border-blue-500 dark:text-blue-500 dark:hover:text-blue-700 dark:hover:border-blue-700',
   primaryGhost: ' border border-transparent text-blue-600 hover:bg-blue-100 focus:bg-blue-100 hover:text-blue-800 focus:bg-blue-100 focus:text-blue-800 dark:text-blue-500 dark:hover:bg-blue-800/30 dark:hover:text-blue-400 dark:focus:bg-blue-800/30 dark:focus:text-blue-400',
   secondary: 'bg-gray-500 border text-white hover:bg-gray-600 focus:bg-gray-600',
-  secondaryOutline: 'bg-transparent border border-gray-800 text-gray-800 hover:border-gray-500 hover:text-gray-500 focus:outline-none focus:border-gray-500 focus:text-gray-500 dark:border-white dark:text-white dark:hover:text-neutral-300 dark:hover:border-neutral-300',
+  secondaryOutline: 'bg-transparent border border-gray-600 text-gray-600 hover:border-gray-800 hover:text-gray-800 focus:outline-none focus:border-gray-800 focus:text-gray-800 dark:border-white dark:text-white dark:hover:text-neutral-300 dark:hover:border-neutral-300',
   secondaryGhost: 'border border-transparent text-gray-800 hover:bg-gray-100 focus:bg-gray-100 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700',
   dark: 'border bg-gray-800 text-white hover:bg-gray-900 focus:bg-gray-900',
   danger: 'border border-transparent bg-red-600 text-white hover:bg-red-700 focus:bg-red-700',

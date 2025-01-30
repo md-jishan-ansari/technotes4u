@@ -273,7 +273,15 @@ const WriteBlog = () => {
 
           </div>
           {slug ? (
-            <div className="flex gap-3 mt-6 max-w-[500px] ml-auto">
+            <div className="flex gap-3 mt-6 max-w-[600px] ml-auto">
+              <Button
+                type="button"
+                fullWidth
+                variant="secondaryOutline"
+                onClick={() => router.push('/blog/' + slug)}
+              >
+                Cancle
+              </Button>
               <Button
                 type="button"
                 fullWidth

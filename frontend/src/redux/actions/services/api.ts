@@ -17,7 +17,7 @@ export const blogApi = {
   editCategory: (slug: string, data: any) => axios.post(`${BASE_URL}/api/blog/editcategory?slug=${slug}`, data),
 
   // Blog Content APIs
-  publishDraft: (slug: string, content: string) => axios.patch(`${BASE_URL}/api/blog/publish-draft/?slug=${slug}`, {content}),
+  publishDraft: (slug: string) => axios.patch(`${BASE_URL}/api/blog/publish-draft/?slug=${slug}`, {}),
 
   updateBlog: (slug: string, blogContext: any) => axios.patch(`${BASE_URL}/api/blog/updateBlog/?slug=${slug}`, {blogContext}),
 

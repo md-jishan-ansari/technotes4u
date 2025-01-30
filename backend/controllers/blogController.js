@@ -260,7 +260,6 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
 
     // Create a map for faster lookups
     const categoryMap = new Map();
-
     let topCategory;
 
     // First pass: create map of all categories
@@ -300,10 +299,27 @@ export const getAllCategories = CatchAsync(async (req, res, next) => {
 
     });
 
+    // Function to flatten the hierarchy into a general list
+    const flattenCategories = (categories) => {
+        let flatList = [];
+        categories.forEach(category => {
+            flatList.push(category);
+            if (category.children.length > 0) {
+                flatList = flatList.concat(flattenCategories(category.children));
+            }
+        });
+        return flatList;
+    };
+
+    // Create the optimized general list
+    const optimizedGeneralList = flattenCategories(rootCategories);
+
+    optimizedGeneralList.unshift(topCategory);
+
     res.status(200).json({
         success: true,
         categories: rootCategories,
-        categorylist: allCategories,
+        categorylist: optimizedGeneralList,
     });
 });
 

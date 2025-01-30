@@ -9,15 +9,22 @@ import Button from '@/src/components/Button';
 import { Eye, Pencil } from 'lucide-react';
 import { MdOutlinePublish } from 'react-icons/md';
 import { Blog, Editor } from '@/src/types/types';
+import { blogApi } from '@/src/redux/actions/services/api';
+import { toast } from 'react-toastify';
 
 const PREVIEW_URLS: Record<Editor, string> = {
     [Editor.RichEditor]: '/blogdraft/',
     [Editor.MdxEditor]: '/bigblogdraft/'
 }
+const BLOGS_URLS: Record<Editor, string> = {
+    [Editor.RichEditor]: '/blog/',
+    [Editor.MdxEditor]: '/bigblog/'
+}
 
 const BlogHeader = ({isdraft = false}: {isdraft?: boolean}) => {
     const params = useParams()
     const [previewUrl, setPreviewUrl] = useState<string>("");
+    const [blogUrl, setBlogUrl] = useState<string>("");
     const [activeSlug, setActiveSlug] = useState<string | null>(
         typeof params.slug === 'string' ? params.slug : null
     );
@@ -41,9 +48,18 @@ const BlogHeader = ({isdraft = false}: {isdraft?: boolean}) => {
 
     useEffect(() => {
         if(blog) {
-            setPreviewUrl(`${PREVIEW_URLS[blog?.editor]}${params.slug}`)
+            setPreviewUrl(`${PREVIEW_URLS[blog?.editor]}${params.slug}`);
+            setBlogUrl(`${BLOGS_URLS[blog?.editor]}${params.slug}`);
         }
     }, [blog]);
+
+    const publishBlog = () => {
+        if(activeSlug) {
+            blogApi.publishDraft(activeSlug).then(res => {
+                toast.success("Blog published successfully!");
+            })
+        }
+    }
 
 
     return (
@@ -81,9 +97,21 @@ const BlogHeader = ({isdraft = false}: {isdraft?: boolean}) => {
                 </Link>
 
                 {isdraft &&
-                    <Button variant="primary" size="xs" onClick={() => {}}>
+                <>
+                    <Link href={blogUrl} >
+                        <Button
+                            variant="primaryGhost"
+                            size="xs"
+                            rounded="rounded-lg"
+                        >
+                            <Eye className="w-3 h-3 mr-1" />
+                            View Blog
+                        </Button>
+                    </Link>
+                    <Button variant="primary" size="xs" onClick={publishBlog}>
                         <MdOutlinePublish size="16" className="mr-1" /> Publish
                     </Button>
+                </>
                 }
             </div>
         </div>

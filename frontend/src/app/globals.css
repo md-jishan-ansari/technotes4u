@@ -116,3 +116,12 @@
     height: calc(100vh - 260px);
   }
 }
+
+/* Add this to your global CSS file or a relevant CSS module */
+.custom-markdown-editor .cm-content {
+  max-width: calc(100% - 40px) !important;
+}
+
+.custom-markdown-editor .cm-content .cm-line {
+  text-wrap: auto !important;
+}

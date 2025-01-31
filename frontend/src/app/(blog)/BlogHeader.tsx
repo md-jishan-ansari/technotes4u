@@ -9,7 +9,7 @@ import Button from '@/src/components/Button';
 import { Eye, Pencil } from 'lucide-react';
 import { MdOutlinePublish } from 'react-icons/md';
 import { Blog, Editor } from '@/src/types/types';
-import { blogApi } from '@/src/redux/actions/services/api';
+import { blogApi } from '@/src/lib/actions/services/api';
 import { toast } from 'react-toastify';
 
 const PREVIEW_URLS: Record<Editor, string> = {

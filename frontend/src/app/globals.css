@@ -106,13 +106,13 @@
 }
 
 
-.fr-box.fr-basic.fr-top .fr-wrapper {
+.froala-blog-editor .fr-box.fr-basic.fr-top .fr-wrapper {
   height: calc(100vh - 240px);
   overflow: auto;
 }
 
 @media screen and (max-width: 1340px) {
-  .fr-box.fr-basic.fr-top .fr-wrapper {
+  .froala-blog-editor .fr-box.fr-basic.fr-top .fr-wrapper {
     height: calc(100vh - 260px);
   }
 }

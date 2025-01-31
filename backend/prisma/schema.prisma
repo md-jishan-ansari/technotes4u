@@ -32,6 +32,7 @@ model User {
   password      String?
   accounts      Account[]
   blogs         Blog[]
+  comments      Comment[]
   role          Role @default(USER)
 
   createdAt DateTime @default(now())
@@ -89,6 +90,7 @@ model Blog {
   parentId      String?
   parent        Blog?     @relation("BlogToBlog", fields: [parentId], references: [id], onDelete: SetNull)
   children      Blog[]    @relation("BlogToBlog")
+  commments      Comment[]
 
   // Timestamps
   createdAt     DateTime  @default(now())
@@ -101,3 +103,19 @@ model Blog {
 //     "darkUrl": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/threedsmax/threedsmax-original.svg"
 // }
 
+model Comment {
+  id        String    @id @default(cuid())
+  content   String
+  userId    String?
+  blogId    String?
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  blog      Blog?     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  // Self-referential relationship for replies
+  parentId  String?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies    Comment[] @relation("CommentReplies")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}

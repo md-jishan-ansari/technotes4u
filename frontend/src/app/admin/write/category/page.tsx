@@ -21,7 +21,7 @@ import { Input } from "@/src/componentsSadcn/ui/input"
 import Button from "@/src/components/Button"
 import SelectInput from "@/src/components/inputs/SelectInput"
 import Container from "@/src/components/Container"
-import { blogApi } from "@/src/redux/actions/services/api"
+import { blogApi } from "@/src/lib/actions/services/api"
 import { toast } from "react-toastify"
 import { fetchCategories } from "@/src/redux/slices/blogSlice"
 

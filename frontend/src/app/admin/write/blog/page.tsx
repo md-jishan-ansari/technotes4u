@@ -11,7 +11,7 @@ import Button from '@/src/components/Button'
 import Container from '@/src/components/Container'
 import FroalaEditor from '@/src/components/froalaEditor/FroalaEditor'
 import { Blog, Editor } from '@/src/types/types'
-import { blogApi } from '@/src/redux/actions/services/api'
+import { blogApi } from '@/src/lib/actions/services/api'
 import { useAppDispatch } from '@/src/redux/hooks';
 import { fetchSingleBlog } from '@/src/redux/slices/blogSlice';
 import { MdOutlinePublish, MdOutlineUnpublished, MdDrafts, MdOutlineRemoveRedEye  } from "react-icons/md";
@@ -247,7 +247,7 @@ const WriteBlogPage = () => {
         <div className="prose dark:prose-invert lg:prose-xl left-0 w-full overflow-auto max-w-full">
             <Container className='!py-0'>
                 {editor === Editor.RichEditor ? (
-                    <FroalaEditor blogContent={blogContent} setBlogContent={setBlogContent} />
+                    <FroalaEditor content={blogContent} setContent={setBlogContent} />
                 ) : (
                     <MDEditor
                         value={blogMdxContent}

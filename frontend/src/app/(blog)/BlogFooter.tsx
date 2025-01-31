@@ -1,7 +1,8 @@
 "use client";
 import Button from '@/src/components/Button'
+import Comment from '@/src/components/comments/Comment';
 import { useAppSelector } from '@/src/redux/hooks';
-import { Blog, Category, Editor } from '@/src/types/types';
+import { Category, Editor } from '@/src/types/types';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
@@ -11,8 +12,9 @@ const BLOGS_URLS: Record<Editor, string> = {
     [Editor.MdxEditor]: '/bigblog/'
 }
 
-const BlogFooter = ({ slug }: { slug: string }) => {
+const BlogFooter = ({ slug, isdraft=false }: { slug: string , isdraft?: boolean }) => {
   const [nextBlog, setNextBlog] = useState<Category | null>(null);
+  const [blog, setBlog] = useState<Category | null>(null);
   const [previousBlog, setPreviousBlog] = useState<Category | null>(null);
   const { categorylist } = useAppSelector(state => state.blog);
 
@@ -20,19 +22,21 @@ const BlogFooter = ({ slug }: { slug: string }) => {
     const currentBlogIndex = categorylist.findIndex((blog: Category) => blog.slug === slug);
 
     if (currentBlogIndex !== -1) {
+      setBlog(categorylist[currentBlogIndex]);
       setNextBlog(categorylist[currentBlogIndex + 1] || null);
 
       if (currentBlogIndex > 1)
         setPreviousBlog(categorylist[currentBlogIndex - 1] || null);
     }
+
   }, [slug]);
 
   return (
     <div>
-      <div className="flex gap-4 items-center mt-8">
+      <div className="flex gap-4 items-center my-8">
 
         {previousBlog &&
-          <Link href={`${BLOGS_URLS[previousBlog.editor]}${previousBlog.slug}`} className="w-[50%]">
+          <Link href={`${BLOGS_URLS[previousBlog.editor]}${previousBlog.slug}`} className="w-full group">
             <Button
               variant='secondaryOutline'
               fullWidth
@@ -40,11 +44,11 @@ const BlogFooter = ({ slug }: { slug: string }) => {
             >
               <div className="flex gap-2 items-center justify-between w-full">
                 <div className='w-[24px]'>
-                  <FaChevronLeft />
+                  <FaChevronLeft className='group-hover:text-blue-600' />
                 </div>
                 <div className="text-sm text-right">
                   <p className='text-xs m-0'>Previous</p>
-                  <p className='text-xl m-0 leading-7 line-clamp-1'>{previousBlog.name}</p>
+                  <p className='text-xl m-0 leading-7 line-clamp-1 group-hover:text-blue-600'>{previousBlog.name}</p>
                 </div>
               </div>
 
@@ -54,7 +58,7 @@ const BlogFooter = ({ slug }: { slug: string }) => {
 
 
         {nextBlog &&
-          <Link href={`${BLOGS_URLS[nextBlog.editor]}${nextBlog.slug}`}  className="w-[50%] ml-auto">
+          <Link href={`${BLOGS_URLS[nextBlog.editor]}${nextBlog.slug}`}  className="w-full group">
             <Button
               variant='secondaryOutline'
               fullWidth
@@ -63,10 +67,10 @@ const BlogFooter = ({ slug }: { slug: string }) => {
               <div className="flex gap-2 items-center justify-between w-full">
                 <div className="text-sm text-left">
                   <p className='text-xs m-0'>Next</p>
-                  <p className='text-xl m-0 leading-7 line-clamp-1'>{nextBlog.name}</p>
+                  <p className='text-xl m-0 leading-7 line-clamp-1 group-hover:text-blue-600'>{nextBlog.name}</p>
                 </div>
                 <div className='w-[24px]'>
-                  <FaChevronRight />
+                  <FaChevronRight className='group-hover:text-blue-600' />
                 </div>
               </div>
             </Button>
@@ -74,6 +78,8 @@ const BlogFooter = ({ slug }: { slug: string }) => {
         }
 
       </div>
+
+      {!isdraft && blog && <Comment blog={blog} />}
     </div>
   )
 }

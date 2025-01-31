@@ -1,6 +1,6 @@
 "use client";
 
-import { blogApi } from '@/src/redux/actions/services/api';
+import { blogApi } from '@/src/lib/actions/services/api';
 import dynamic from 'next/dynamic';
 
 // CSS imports
@@ -31,7 +31,7 @@ const FroalaEditorComponent = dynamic(
 
 import React, { useEffect } from 'react'
 
-const FroalaEditor = ({setBlogContent, blogContent}: any) => {
+const FroalaEditor = ({setContent, content, placeholderText}: any) => {
 
     useEffect(() => {
         // Load CSS and plugins only on the client side
@@ -212,7 +212,17 @@ const FroalaEditor = ({setBlogContent, blogContent}: any) => {
                   .catch(error => {
                     console.error('Error deleting image:', error);
                   });
-                }
+                },
+                'paste.beforeCleanup': function (clipboardHTML: string) {
+                    // Keep formatting only if it's from Word
+                    if (!clipboardHTML.includes('urn:schemas-microsoft-com:office:')) {
+                      // Strip color and background-color styles
+                      return clipboardHTML
+                      .replace(/(?:color|background-color):\s*[^;]+;/g, '')
+
+                    }
+                    return clipboardHTML;
+                  },
               },
 
               // Additional Features
@@ -220,13 +230,14 @@ const FroalaEditor = ({setBlogContent, blogContent}: any) => {
               attribution: false,
               quickInsertButtons: ["image", "table"],
 
+              pasteDeniedAttrs: ['style', 'color', 'background', 'background-color'],
               wordPasteModal: true,
               pastePlain: false,
               wordPasteKeepFormatting: true
 
             }}
-            model={blogContent}
-            onModelChange={setBlogContent}
+            model={content}
+            onModelChange={setContent}
           />
         </div>
       </>

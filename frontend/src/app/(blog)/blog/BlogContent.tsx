@@ -1,11 +1,13 @@
 "use client";
-import FroalaBlog from '@/src/components/froalaEditor/FroalaBlog';
+
 import { useAppDispatch } from '@/src/redux/hooks';
 import { fetchSingleBlog } from '@/src/redux/slices/blogSlice';
 import React, { useEffect, useState } from 'react'
 import Container from '@/src/components/Container';
 import BlogHeader from '../BlogHeader';
 import BlogFooter from '../BlogFooter';
+import Comment from '@/src/components/comments/AddComment';
+import FroalaContent from '@/src/components/froalaEditor/FroalaContent';
 
 const BlogContent = ({slug, isdraft = false}: {slug: string, isdraft?: boolean}) => {
     const [blog, setBlog] = useState<any>();
@@ -28,8 +30,8 @@ const BlogContent = ({slug, isdraft = false}: {slug: string, isdraft?: boolean})
             <div className="w-full mt-[68px]">
                 <Container>
                     <BlogHeader isdraft={isdraft} />
-                    <FroalaBlog blogContent={isdraft ? blog?.draftContent : blog?.content} slug={slug} />
-                    <BlogFooter slug={slug} />
+                    <FroalaContent content={isdraft ? blog?.draftContent : blog?.content} />
+                    <BlogFooter slug={slug} isdraft={isdraft} />
                 </Container>
             </div>
 

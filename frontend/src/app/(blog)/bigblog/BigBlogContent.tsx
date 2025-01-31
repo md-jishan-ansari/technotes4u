@@ -4,6 +4,7 @@ import BlogHeader from '../BlogHeader';
 import BlogFooter from '../BlogFooter';
 import TOC from '@/src/mdx/components/TOC';
 import dynamic from 'next/dynamic';
+import Comment from '@/src/components/comments/AddComment';
 
 // Import the client component wrapper
 const ClientMDXRemote = dynamic(() => import('@/src/mdx/components/ClientMDXRemote'), {
@@ -33,7 +34,7 @@ const BigBlogContent = ({ mdxSource, toc, slug, isdraft = false }: { mdxSource: 
 
                 </div>
               </div>
-              <BlogFooter slug={slug} />
+              <BlogFooter slug={slug} isdraft={isdraft} />
             </Container>
           </article>
 

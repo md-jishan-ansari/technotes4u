@@ -1,7 +1,7 @@
 
 import { createSlice, createAsyncThunk, ActionReducerMapBuilder  } from '@reduxjs/toolkit';
 import { Blog, Category } from '@/src/types/types';
-import { blogApi } from '@/src/redux/actions/services/api';
+import { blogApi } from '@/src/lib/actions/services/api';
 
 interface BlogState {
   categories: any;

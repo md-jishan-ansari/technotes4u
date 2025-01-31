@@ -1,5 +1,5 @@
 'use client';
-
+import { memo } from 'react';
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { useEffect } from 'react';
 
@@ -29,4 +29,4 @@ const Darkmode = () => {
   )
 }
 
-export default Darkmode
+export default memo(Darkmode);

@@ -25,8 +25,8 @@ const AddComment = ({ blogId, parentId = null, handleShowEditor }: { blogId: str
     }
 
     return (
-        <div className='flex gap-4 items-start'>
-            <Avatar size={52} />
+        <div className='flex gap-4 items-start mt-3'>
+            <Avatar size={48} />
             <div className='flex-grow'>
                 <FroalaSmallEditor
                     setContent={setComment}

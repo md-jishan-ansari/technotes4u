@@ -10,16 +10,21 @@ import { Comment } from '@/src/types/types';
 import { FaAngleDown } from "react-icons/fa6";
 import { useAppDispatch } from '@/src/redux/hooks';
 import { repliesComments } from '@/src/redux/slices/commentSlice';
+import { Accordion, AccordionContent, AccordionItem } from '@/src/componentsSadcn/ui/accordion';
 
-const CommentItem = ({ comment, depth = 1, blogId }: {comment: Comment, depth?: number, blogId: string}) => {
+const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?: number, blogId: string }) => {
     const [showReplyEditor, setShowReplyEditor] = useState(false);
+    const [isRepliesOpen, setIsRepliesOpen] = useState(false);
     const dispatch = useAppDispatch();
 
     const toggleReplyEditor = () => setShowReplyEditor(prev => !prev);
 
-    const fetchReplies = (commentId: string) => {
-        dispatch(repliesComments(commentId));
-    }
+    const handleRepliesClick = (commentId: string) => {
+        if (!isRepliesOpen) {
+            dispatch(repliesComments(commentId));
+        }
+        setIsRepliesOpen(!isRepliesOpen);
+    };
 
     return (
         <div className="flex gap-4 items-start mb-4">
@@ -46,9 +51,13 @@ const CommentItem = ({ comment, depth = 1, blogId }: {comment: Comment, depth?: 
                                     variant="primaryGhost"
                                     rounded="rounded-[20px]"
                                     size="xs"
-                                    onClick={() => fetchReplies(comment.id)}
+                                    onClick={() => handleRepliesClick(comment.id)}
                                 >
-                                    <FaAngleDown size="16" className='mr-1' /> {comment._count.replies} Replies
+                                    <FaAngleDown
+                                        size="16"
+                                        className={`mr-1 transition-transform duration-200 ${isRepliesOpen ? 'rotate-180' : ''}`}
+                                    />
+                                    {comment._count.replies} Replies
                                 </Button>
 
                                 <Button
@@ -71,11 +80,17 @@ const CommentItem = ({ comment, depth = 1, blogId }: {comment: Comment, depth?: 
                         </div>
                     )}
 
-                    <RepliesComments
-                        commentId={comment.id}
-                        blogId={blogId}
-                        depth={depth}
-                    />
+                    <Accordion type="single" collapsible value={isRepliesOpen ? comment.id : ""} className="border-none">
+                        <AccordionItem value={comment.id} className="border-none">
+                            <AccordionContent>
+                                <RepliesComments
+                                    commentId={comment.id}
+                                    blogId={blogId}
+                                    depth={depth}
+                                />
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
                 </div>
             </div>
         </div>

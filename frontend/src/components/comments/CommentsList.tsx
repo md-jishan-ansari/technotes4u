@@ -1,15 +1,23 @@
 import React, { useState } from 'react'
 
-import Comment from './Comment';
+import CommentItem  from './CommentItem';
+import { Comment } from '@/src/types/types';
 
-const CommentsList = ({ comments, depth=1, blogId }: { comments: any, depth?: number, blogId: string }) => {
+const CommentsList = ({ comments, depth=1, blogId }: { comments: Comment[], depth?: number, blogId: string }) => {
+  if (!comments?.length) return null;
 
   return (
-    comments && comments.length > 0 &&
-    comments.map((comment: any) => (
-      <Comment comment={comment} depth={depth} blogId={blogId} />
-    ))
-  )
+    <div className="space-y-4">
+      {comments.map((comment: Comment) => (
+        <CommentItem
+          key={comment.id}
+          comment={comment}
+          depth={depth}
+          blogId={blogId}
+        />
+      ))}
+    </div>
+  );
 }
 
 export default CommentsList

@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react';
 import CommentsList from './CommentsList'
 import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 import { repliesComments } from '@/src/redux/slices/commentSlice';
-import Button from '../Button';
-import AddComment from './AddComment';
 
 const RepliesComments = ({ commentId, blogId, depth }: { commentId: string, blogId: string, depth: number }) => {
 
@@ -14,9 +12,15 @@ const RepliesComments = ({ commentId, blogId, depth }: { commentId: string, blog
     dispatch(repliesComments(commentId));
   }, [commentId, dispatch]);
 
+  if (!comments?.length) return null;
+
   return (
-    <div>
-      <CommentsList comments={comments} depth={depth+1} blogId={blogId} />
+    <div className="mt-4">
+      <CommentsList
+        comments={comments}
+        depth={depth+1}
+        blogId={blogId}
+      />
     </div>
   )
 }

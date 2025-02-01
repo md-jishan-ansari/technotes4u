@@ -12,15 +12,17 @@ const CommentWrapper = ({ blog }: { blog: Category }) => {
 
   useEffect(() => {
     dispatch(fetchCommnets(blog.id));
-  }, [blog, dispatch]);
+  }, [blog.id, dispatch]);
 
   return (
-    <div>
-      <h3 className='text-2xl mb-3'> <span className='font-semibold'>239</span> Comments</h3>
+    <div className="space-y-4">
+      <h3 className='text-2xl mb-3'>
+        <span className='font-semibold'>239</span> Comments
+      </h3>
       <AddComment blogId={blog.id} />
-      <div className="mt-4">
-        <CommentsList comments={comments} blogId={blog.id} />
-      </div>
+
+      <CommentsList comments={comments} blogId={blog.id} />
+
     </div>
   )
 }

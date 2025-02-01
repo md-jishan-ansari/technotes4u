@@ -43,6 +43,22 @@ export type Blog = Category & {
     isMdxEditor: boolean;
 }
 
+export type CommentUser = {
+    id: string,
+    name: string,
+    image: string
+}
+
+export type Comment = {
+    id: string,
+    content: string,
+    createdAt: string,
+    updatedAt: string,
+    blogId: string,
+    parentId: string,
+    user: CommentUser,
+}
+
 export enum Role {
     ADMIN = "ADMIN",
     USER = "USER",

@@ -2,13 +2,14 @@
 import { createSlice, createAsyncThunk, ActionReducerMapBuilder } from '@reduxjs/toolkit';
 
 import { blogApi } from '@/src/lib/actions/services/api';
+import { Comment } from '@/src/types/types';
 
 interface CommentState {
     blogComments: {
-        [blogId: string]: any;
+        [blogId: string]: Comment[];
     };
     repliesComments: {
-        [commentId: string]: any;
+        [commentId: string]: Comment[];
     };
     loading: boolean;
     error: string | null;

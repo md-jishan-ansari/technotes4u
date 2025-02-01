@@ -25,8 +25,20 @@ export const addComment = CatchAsync(async (req, res, next) => {
             ...commentContext,
             userId: req.userId
         },
-        include: {
-            user: true
+        select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            updatedAt: true,
+            blogId: true,
+            parentId: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true
+                }
+            }
         }
     });
 
@@ -45,8 +57,20 @@ export const getComments = CatchAsync(async (req, res, next) => {
             blogId: blogId,
             parentId: null
         },
-        include: {
-            user: true
+        select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            updatedAt: true,
+            blogId: true,
+            parentId: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true
+                }
+            }
         },
         orderBy: {
             updatedAt: 'desc'  // This will sort comments newest to oldest
@@ -70,15 +94,25 @@ export const getReplies = CatchAsync(async (req, res, next) => {
         where: {
             parentId: commentId
         },
-        include: {
-            user: true
+        select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            updatedAt: true,
+            blogId: true,
+            parentId: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true
+                }
+            }
         },
         orderBy: {
             updatedAt: 'asc'
         }
     });
-
-
 
     if(!replies) {
         replies = [];

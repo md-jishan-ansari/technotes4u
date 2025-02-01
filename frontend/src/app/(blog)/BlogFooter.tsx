@@ -1,6 +1,6 @@
 "use client";
 import Button from '@/src/components/Button'
-import Comment from '@/src/components/comments/Comment';
+import CommentWrapper from '@/src/components/comments/CommentWrapper';
 import { useAppSelector } from '@/src/redux/hooks';
 import { Category, Editor } from '@/src/types/types';
 import Link from 'next/link';
@@ -81,7 +81,7 @@ const BlogFooter = ({ slug, isdraft=false }: { slug: string , isdraft?: boolean 
 
       </div>
 
-      {!isdraft && blog && <Comment blog={blog} />}
+      {!isdraft && blog && <CommentWrapper blog={blog} />}
     </div>
   )
 }

@@ -16,7 +16,7 @@ const FroalaSmallEditor = ({setContent, content = "", placeholderText}: any) => 
     useEffect(() => {
       setTimeout(() => {
         setIsClient(true);
-      }, 100)
+      }, 400)
 
       // Move the imports here since they should only run client-side
       if (typeof window !== 'undefined') {
@@ -79,17 +79,17 @@ const FroalaSmallEditor = ({setContent, content = "", placeholderText}: any) => 
                   },
                   moreParagraph: {
                     buttons: [
+                      "formatOL",
+                      "formatUL",
                       "alignLeft",
                       "alignCenter",
                       "alignRight",
                       "alignJustify",
-                      "formatOL",
-                      "formatUL",
                       "outdent",
                       "indent",
                     ],
                     align: "left",
-                    buttonsVisible: 4,
+                    buttonsVisible: 2,
                   },
                   moreRich: {
                     buttons: [

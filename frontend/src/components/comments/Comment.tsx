@@ -1,30 +1,47 @@
-"use client";
+import React, { useState } from 'react'
+
 import { Category } from '@/src/types/types'
-import React, { useEffect } from 'react'
-import AddComment from './AddComment'
-import CommentsList from './CommentsList'
-import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
-import { fetchCommnets } from '@/src/redux/slices/commentSlice';
+import Avatar from '../Avatar';
+import FroalaContent from '../froalaEditor/FroalaContent';
+import moment from 'moment';
+import RepliesComments from './RepliesComments';
+import Button from '../Button';
+import AddComment from './AddComment';
 
-const Comments = ({ blog }: { blog: Category }) => {
-  const dispatch = useAppDispatch();
-  const comments = useAppSelector(state => state.comment.blogComments[blog.id]);
+const Comment = ({ comment, depth = 1, blogId }: any) => {
+    const [showEditor, setShowEditor] = useState<boolean>(false);
+    console.log({ comment });
 
-  console.log({comments});
+    const handleShowEditor = () => {
+        setShowEditor(!showEditor);
+        console.log("showEditor", showEditor);
+    }
 
-  useEffect(() => {
-    dispatch(fetchCommnets(blog.id));
-  }, [blog, dispatch]);
+    return (
+        <div key={comment.id} className="flex gap-4 items-start mb-4">
+            <div className="w-[48px]">
+                <Avatar image={comment.user.image} size={48} />
+            </div>
+            <div className="w-[calc(100%-48px)]">
+                <div className="flex gap-2 items-center">
+                    <p className='text-xl font-semibold'>{comment.user.name}</p>
+                    <p className="text-muted-foreground"><em>{moment(comment.updatedAt).fromNow()}</em></p>
+                </div>
+                <div className="mt-1">
+                    <FroalaContent content={comment.content} />
 
-  return (
-    <div>
-      <h3 className='text-2xl mb-3'> <span className='font-semibold'>239</span> Comments</h3>
-      <AddComment blogId={blog.id} />
-      <div className="mt-4">
-        <CommentsList comments={comments} blogId={blog.id} />
-      </div>
-    </div>
-  )
+                    {depth <= 2 &&
+                        <div className='mb-4'>
+                            <Button variant="primaryGhost" rounded="rounded-[20px]" size="xs" onClick={handleShowEditor} >Reply</Button>
+                            {showEditor && <AddComment blogId={blogId} parentId={comment.id} handleShowEditor={handleShowEditor} />}
+                        </div>}
+
+                    {blogId && <RepliesComments commentId={comment.id} blogId={blogId} depth={depth} />}
+                </div>
+            </div>
+
+        </div>
+    )
 }
 
-export default Comments
+export default Comment

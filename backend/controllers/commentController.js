@@ -32,6 +32,11 @@ export const addComment = CatchAsync(async (req, res, next) => {
             updatedAt: true,
             blogId: true,
             parentId: true,
+            _count: {
+                select: {
+                    replies: true
+                }
+            },
             user: {
                 select: {
                     id: true,
@@ -64,6 +69,11 @@ export const getComments = CatchAsync(async (req, res, next) => {
             updatedAt: true,
             blogId: true,
             parentId: true,
+            _count: {
+                select: {
+                    replies: true
+                }
+            },
             user: {
                 select: {
                     id: true,
@@ -77,12 +87,29 @@ export const getComments = CatchAsync(async (req, res, next) => {
         }
     });
 
+    // Get total comments count
+    const totalCount = await prisma.comment.count({
+        where: {
+            blogId: blogId
+        }
+    });
+
+    // Get direct comments count
+    const blogCommentsCount = await prisma.comment.count({
+        where: {
+            blogId: blogId,
+            parentId: null
+        }
+    });
+
     if(!comments) {
         comments = [];
     }
 
     res.status(200).json({
         status: "success",
+        totalComments: totalCount,
+        blogCommentsCount: blogCommentsCount,
         comments: comments
     });
 });
@@ -101,6 +128,11 @@ export const getReplies = CatchAsync(async (req, res, next) => {
             updatedAt: true,
             blogId: true,
             parentId: true,
+            _count: {
+                select: {
+                    replies: true
+                }
+            },
             user: {
                 select: {
                     id: true,

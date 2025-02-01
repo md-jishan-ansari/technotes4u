@@ -7,11 +7,19 @@ import RepliesComments from './RepliesComments';
 import Button from '../Button';
 import AddComment from './AddComment';
 import { Comment } from '@/src/types/types';
+import { FaAngleDown } from "react-icons/fa6";
+import { useAppDispatch } from '@/src/redux/hooks';
+import { repliesComments } from '@/src/redux/slices/commentSlice';
 
 const CommentItem = ({ comment, depth = 1, blogId }: {comment: Comment, depth?: number, blogId: string}) => {
     const [showReplyEditor, setShowReplyEditor] = useState(false);
+    const dispatch = useAppDispatch();
 
     const toggleReplyEditor = () => setShowReplyEditor(prev => !prev);
+
+    const fetchReplies = (commentId: string) => {
+        dispatch(repliesComments(commentId));
+    }
 
     return (
         <div className="flex gap-4 items-start mb-4">
@@ -32,14 +40,26 @@ const CommentItem = ({ comment, depth = 1, blogId }: {comment: Comment, depth?: 
 
                     {depth <= 2 && (
                         <div>
-                            <Button
-                                variant="primaryGhost"
-                                rounded="rounded-[20px]"
-                                size="xs"
-                                onClick={toggleReplyEditor}
-                            >
-                                Reply
-                            </Button>
+
+                            <div className="flex gap-2 items-center">
+                                <Button
+                                    variant="primaryGhost"
+                                    rounded="rounded-[20px]"
+                                    size="xs"
+                                    onClick={() => fetchReplies(comment.id)}
+                                >
+                                    <FaAngleDown size="16" className='mr-1' /> {comment._count.replies} Replies
+                                </Button>
+
+                                <Button
+                                    variant="primaryGhost"
+                                    rounded="rounded-[20px]"
+                                    size="xs"
+                                    onClick={toggleReplyEditor}
+                                >
+                                    Reply
+                                </Button>
+                            </div>
 
                             {showReplyEditor && (
                                 <AddComment

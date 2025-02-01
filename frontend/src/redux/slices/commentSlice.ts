@@ -11,6 +11,8 @@ interface CommentState {
     repliesComments: {
         [commentId: string]: Comment[];
     };
+    totalComments: number;
+    blogCommentsCount: number;
     loading: boolean;
     error: string | null;
 }
@@ -18,6 +20,8 @@ interface CommentState {
 const initialState: CommentState = {
     blogComments: {},
     repliesComments: {},
+    totalComments: 0,
+    blogCommentsCount: 0,
     loading: false,
     error: null
 };
@@ -26,8 +30,17 @@ const commnetsFeature = {
     thunk: createAsyncThunk(
         'comments/fetchComments',  // Fixed action type name
         async (blogId: string, { getState }) => {
+            const state = getState() as { comment: CommentState };
+            const existingBlogComments = state.comment.blogComments[blogId];
+
+            if (existingBlogComments) {
+                return {
+                    isExisting: true
+                };
+            }
+
             const response = await blogApi.getComments(blogId);
-            return response.data.comments;
+            return response.data;
         }
     ),
 
@@ -39,7 +52,11 @@ const commnetsFeature = {
             })
             .addCase(commnetsFeature.thunk.fulfilled, (state, action) => {
                 state.loading = false;
-                state.blogComments[action.meta.arg] = action.payload; // Fixed to use comments array
+                if (!action.payload.isExisting) {
+                    state.blogComments[action.meta.arg] = action.payload.comments; // Fixed to use comments array
+                    state.totalComments = action.payload.totalComments;
+                    state.blogCommentsCount = action.payload.blogCommentsCount;
+                }
                 state.error = null;
             })
             .addCase(commnetsFeature.thunk.rejected, (state, action) => {
@@ -53,6 +70,16 @@ const repliesCommentsFeature = {
     thunk: createAsyncThunk(
         'comments/fetchReplies',  // Updated action type name
         async (commentId: string, { getState }) => {
+
+            const state = getState() as { comment: CommentState };
+            const existingReplyComments = state.comment.repliesComments[commentId];
+
+            if (existingReplyComments) {
+                return {
+                    isExisting: true
+                };
+            }
+
             const response = await blogApi.getReplies(commentId);
             return response.data.replies;
         }
@@ -66,7 +93,9 @@ const repliesCommentsFeature = {
             })
             .addCase(repliesCommentsFeature.thunk.fulfilled, (state, action) => {
                 state.loading = false;
-                state.repliesComments[action.meta.arg] = action.payload; // Store replies by commentId
+                if (!action.payload.isExisting) {
+                    state.repliesComments[action.meta.arg] = action.payload; // Store replies by commentId
+                }
                 state.error = null;
             })
             .addCase(repliesCommentsFeature.thunk.rejected, (state, action) => {

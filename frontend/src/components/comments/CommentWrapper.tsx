@@ -9,6 +9,7 @@ import { fetchCommnets } from '@/src/redux/slices/commentSlice';
 const CommentWrapper = ({ blog }: { blog: Category }) => {
   const dispatch = useAppDispatch();
   const comments = useAppSelector(state => state.comment.blogComments[blog.id]);
+  const {totalComments, blogCommentsCount} = useAppSelector(state => state.comment);
 
   useEffect(() => {
     dispatch(fetchCommnets(blog.id));
@@ -17,9 +18,13 @@ const CommentWrapper = ({ blog }: { blog: Category }) => {
   return (
     <div className="space-y-4">
       <h3 className='text-2xl mb-3'>
-        <span className='font-semibold'>239</span> Comments
+        <span className='font-semibold'>{totalComments}</span> Total Comments
       </h3>
       <AddComment blogId={blog.id} />
+
+      <h3 className='text-2xl mb-3'>
+        <span className='font-semibold'>{blogCommentsCount}</span> Comments
+      </h3>
 
       <CommentsList comments={comments} blogId={blog.id} />
 

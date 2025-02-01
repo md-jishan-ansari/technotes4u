@@ -56,6 +56,7 @@ export type Comment = {
     updatedAt: string,
     blogId: string,
     parentId: string,
+    _count: {replies: number},
     user: CommentUser,
 }
 

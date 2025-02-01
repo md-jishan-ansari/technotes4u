@@ -8,12 +8,16 @@ const FroalaEditorComponent = dynamic(
   { ssr: false }
 );
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const FroalaSmallEditor = ({setContent, content = "", placeholderText}: any) => {
+    const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
-        // Load CSS and plugins only on the client side
+      setIsClient(true);
+
+      // Move the imports here since they should only run client-side
+      if (typeof window !== 'undefined') {
         import('froala-editor/css/froala_style.min.css');
         import('froala-editor/css/froala_editor.pkgd.min.css');
 
@@ -28,13 +32,14 @@ const FroalaSmallEditor = ({setContent, content = "", placeholderText}: any) => 
         import('froala-editor/js/plugins/align.min.js');
         import('froala-editor/js/plugins/file.min.js');
         import('froala-editor/js/plugins/table.min.js');
-
+      }
     }, []);
+
+    if (!isClient) return null;
 
     return (
       <>
         <div className="w-full">
-          {typeof window !== 'undefined' && (
             <FroalaEditorComponent
               tag="textarea"
               config={{
@@ -156,7 +161,6 @@ const FroalaSmallEditor = ({setContent, content = "", placeholderText}: any) => 
               model={content}
               onModelChange={setContent}
             />
-          )}
         </div>
       </>
     );

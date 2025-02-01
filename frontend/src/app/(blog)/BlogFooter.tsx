@@ -19,6 +19,8 @@ const BlogFooter = ({ slug, isdraft=false }: { slug: string , isdraft?: boolean 
   const { categorylist } = useAppSelector(state => state.blog);
 
   useEffect(() => {
+    if (!categorylist || categorylist.length === 0) return;
+
     const currentBlogIndex = categorylist.findIndex((blog: Category) => blog.slug === slug);
 
     if (currentBlogIndex !== -1) {
@@ -29,7 +31,7 @@ const BlogFooter = ({ slug, isdraft=false }: { slug: string , isdraft?: boolean 
         setPreviousBlog(categorylist[currentBlogIndex - 1] || null);
     }
 
-  }, [slug]);
+  }, [slug, categorylist]);
 
   return (
     <div>

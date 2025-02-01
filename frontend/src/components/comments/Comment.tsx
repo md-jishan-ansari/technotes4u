@@ -18,9 +18,10 @@ const Comments = ({ blog }: { blog: Category }) => {
 
   return (
     <div>
-      <AddComment blog={blog} />
+      <h3 className='text-2xl mb-3'> <span className='font-semibold'>239</span> Comments</h3>
+      <AddComment blogId={blog.id} />
       <div className="mt-4">
-        <CommentsList comments={comments} />
+        <CommentsList comments={comments} blogId={blog.id} />
       </div>
     </div>
   )

@@ -55,6 +55,8 @@ export const blogApi = {
   // Comment APIs
   addComment: (commentContext: any) => axiosInstance.post(`/api/comment/add-comment`, commentContext),
 
+  getReplies: (commentId: any) => axiosInstance.get(`/api/comment/get-replies?commentid=${commentId}`),
+
   getComments: (blogId: string) => axiosInstance.get(`/api/comment/get-comments?blogid=${blogId}`),
 };
 // export const blogApi = {

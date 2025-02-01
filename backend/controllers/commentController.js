@@ -28,7 +28,6 @@ export const addComment = CatchAsync(async (req, res, next) => {
         include: {
             user: true
         }
-
     });
 
     res.status(200).json({
@@ -43,10 +42,14 @@ export const getComments = CatchAsync(async (req, res, next) => {
 
     const comments = await prisma.comment.findMany({
         where: {
-            blogId: blogId
+            blogId: blogId,
+            parentId: null
         },
         include: {
             user: true
+        },
+        orderBy: {
+            updatedAt: 'desc'  // This will sort comments newest to oldest
         }
     });
 
@@ -57,5 +60,32 @@ export const getComments = CatchAsync(async (req, res, next) => {
     res.status(200).json({
         status: "success",
         comments: comments
+    });
+});
+
+export const getReplies = CatchAsync(async (req, res, next) => {
+    const commentId = req.query.commentid;
+
+    const replies = await prisma.comment.findMany({
+        where: {
+            parentId: commentId
+        },
+        include: {
+            user: true
+        },
+        orderBy: {
+            updatedAt: 'asc'
+        }
+    });
+
+
+
+    if(!replies) {
+        replies = [];
+    }
+
+    res.status(200).json({
+        status: "success",
+        replies: replies
     });
 });

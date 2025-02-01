@@ -14,7 +14,9 @@ const FroalaSmallEditor = ({setContent, content = "", placeholderText}: any) => 
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
-      setIsClient(true);
+      setTimeout(() => {
+        setIsClient(true);
+      }, 100)
 
       // Move the imports here since they should only run client-side
       if (typeof window !== 'undefined') {

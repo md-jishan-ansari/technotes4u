@@ -13,7 +13,7 @@ const FroalaContent = ({ content }: { content: string }) => {
         <div className='prose dark:prose-invert
                         prose-md //to make font large
                         prose-p:mt-0
-                        prose-p:mb-3
+                        prose-p:mb-1
                         leading-6
                         prose-blockquote:bg-accent/20
                         prose-blockquote:p-2

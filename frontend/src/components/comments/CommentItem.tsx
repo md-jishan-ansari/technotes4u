@@ -8,20 +8,21 @@ import Button from '../Button';
 import AddComment from './AddComment';
 import { Comment } from '@/src/types/types';
 import { FaAngleDown } from "react-icons/fa6";
-import { useAppDispatch } from '@/src/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 import { repliesComments } from '@/src/redux/slices/commentSlice';
 import { Accordion, AccordionContent, AccordionItem } from '@/src/componentsSadcn/ui/accordion';
 
 const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?: number, blogId: string }) => {
     const [showReplyEditor, setShowReplyEditor] = useState(false);
     const [isRepliesOpen, setIsRepliesOpen] = useState(false);
+    const replies = useAppSelector(state => state.comment.repliesComments[comment.id]);
     const dispatch = useAppDispatch();
 
     const toggleReplyEditor = () => setShowReplyEditor(prev => !prev);
 
-    const handleRepliesClick = (commentId: string) => {
+    const handleRepliesClick = async (commentId: string) => {
         if (!isRepliesOpen) {
-            dispatch(repliesComments(commentId));
+            await dispatch(repliesComments(commentId));
         }
         setIsRepliesOpen(!isRepliesOpen);
     };
@@ -80,17 +81,35 @@ const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?:
                         </div>
                     )}
 
-                    <Accordion type="single" collapsible value={isRepliesOpen ? comment.id : ""} className="border-none">
-                        <AccordionItem value={comment.id} className="border-none">
-                            <AccordionContent>
-                                <RepliesComments
-                                    commentId={comment.id}
-                                    blogId={blogId}
-                                    depth={depth}
-                                />
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
+                    {comment._count.replies > 0 && (
+                        <Accordion
+                            type="single"
+                            collapsible
+                            value={isRepliesOpen ? comment.id : ""}
+                            className="border-none"
+                            key={`accordion-${comment.id}`}
+                        >
+                            <AccordionItem
+                                value={comment.id}
+                                className="border-none"
+                            >
+                                <AccordionContent forceMount={isRepliesOpen ? true : undefined}>
+                                    <div
+                                        className={`overflow-hidden transition-[max-height] duration-300 ease-in-out`}
+                                        style={{
+                                            maxHeight: isRepliesOpen && replies ? '9999px' : '0'
+                                        }}
+                                    >
+                                        <RepliesComments
+                                            commentId={comment.id}
+                                            blogId={blogId}
+                                            depth={depth}
+                                        />
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    )}
                 </div>
             </div>
         </div>

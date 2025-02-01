@@ -11,33 +11,34 @@ const FroalaEditorComponent = dynamic(
 import React, { useEffect, useState } from 'react'
 
 const FroalaSmallEditor = ({setContent, content = "", placeholderText}: any) => {
-    const [isClient, setIsClient] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
-      setTimeout(() => {
-        setIsClient(true);
-      }, 5000)
+      const loadResources = async () => {
+        if (typeof window !== 'undefined') {
+          await Promise.all([
+            import('froala-editor/css/froala_style.min.css'),
+            import('froala-editor/css/froala_editor.pkgd.min.css'),
+            import('froala-editor/js/plugins/paragraph_format.min.js'),
+            import('froala-editor/js/plugins/word_paste.min.js'),
+            import('froala-editor/js/plugins/video.min.js'),
+            import('froala-editor/js/plugins/font_size.min.js'),
+            import('froala-editor/js/plugins/colors.min.js'),
+            import('froala-editor/js/plugins/image.min.js'),
+            import('froala-editor/js/plugins/link.min.js'),
+            import('froala-editor/js/plugins/lists.min.js'),
+            import('froala-editor/js/plugins/align.min.js'),
+            import('froala-editor/js/plugins/file.min.js'),
+            import('froala-editor/js/plugins/table.min.js')
+          ]);
+          setIsReady(true);
+        }
+      };
 
-      // Move the imports here since they should only run client-side
-      if (typeof window !== 'undefined') {
-        import('froala-editor/css/froala_style.min.css');
-        import('froala-editor/css/froala_editor.pkgd.min.css');
-
-        import('froala-editor/js/plugins/paragraph_format.min.js');
-        import('froala-editor/js/plugins/word_paste.min.js');
-        import('froala-editor/js/plugins/video.min.js');
-        import('froala-editor/js/plugins/font_size.min.js');
-        import('froala-editor/js/plugins/colors.min.js');
-        import('froala-editor/js/plugins/image.min.js');
-        import('froala-editor/js/plugins/link.min.js');
-        import('froala-editor/js/plugins/lists.min.js');
-        import('froala-editor/js/plugins/align.min.js');
-        import('froala-editor/js/plugins/file.min.js');
-        import('froala-editor/js/plugins/table.min.js');
-      }
+      loadResources();
     }, []);
 
-    if (!isClient) return null;
+    if (!isReady) return null;
 
     return (
       <>

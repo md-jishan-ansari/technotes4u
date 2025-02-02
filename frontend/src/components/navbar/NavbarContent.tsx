@@ -5,13 +5,13 @@ import Darkmode from './Darkmode';
 import { RxHamburgerMenu } from "react-icons/rx";
 import NavbarMenus from './NavbarMenus';
 import { useCallback, useEffect, useState } from 'react';
-import { SafeUser } from '@/src/types/types';
+import { User } from '@/src/types/types';
 import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 import { toggleNavbar } from '@/src/redux/slices/generalSlice';
 import { usePathname } from 'next/navigation';
 
 interface NavbarContentProps {
-  currentUser?: SafeUser | null;
+  currentUser?: User | null;
 }
 
 const NavbarContent: React.FC<NavbarContentProps> = ({ currentUser }) => {

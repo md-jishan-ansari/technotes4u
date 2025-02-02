@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { SafeUser } from '@/src/types/types';
+import { User } from '@/src/types/types';
 import Button from '../Button';
 
 import {
@@ -44,7 +44,7 @@ const formSchema = z
 type FormData = z.infer<typeof formSchema>;
 
 interface signUpFormProps {
-    currentUser: SafeUser | null
+    currentUser: User | null
 }
 
 const SignUpForm:React.FC<signUpFormProps> = ({currentUser}) => {

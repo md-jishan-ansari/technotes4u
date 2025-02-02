@@ -10,7 +10,7 @@ import {signIn } from "next-auth/react"
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Button from '../Button';
-import { SafeUser } from '@/src/types/types';
+import { User } from '@/src/types/types';
 
 import {
     Form,
@@ -35,7 +35,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 interface signInFormProps {
-    currentUser: SafeUser | null
+    currentUser: User | null
 }
 
 const SignInForm:React.FC<signInFormProps> = ({currentUser}) => {

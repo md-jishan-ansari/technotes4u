@@ -3,24 +3,21 @@ import { useEffect, useState } from 'react'
 import FroalaSmallEditor from '../froalaEditor/FroalaSmallEditor'
 import Avatar from '../Avatar';
 import Button from '../Button';
-import { useAppDispatch } from '@/src/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 import { addCommnet, editComment } from '@/src/redux/slices/commentSlice';
 import { Comment, User } from '@/src/types/types';
 import axios from 'axios';
+import { getUser } from '@/src/redux/slices/generalSlice';
 const AddComment = ({ blogId, existingComment=null, parentId = null, handleShowEditor }: { blogId: string, existingComment?: Comment | null, parentId?: string | null, handleShowEditor?: any }) => {
-    const [currentUser, setCurrentUser] = useState<User | null>(null);
+
     const [comment, setComment] = useState<string>("");
     const [isCommentEdited, setIsCommentEdited] = useState(false);
+    const safeUser = useAppSelector(state => state.general.safeUser);
     const dispatch = useAppDispatch();
 
     useEffect( () => {
-        (async () => {
-            const res = await axios.get("/api/auth/getCurrentUser");
-            setCurrentUser(res.data);
-        })();
+        dispatch(getUser());
     }, [])
-
-    console.log(currentUser);
 
     const handleComment = () => {
         if (!comment.trim()) return;
@@ -56,8 +53,12 @@ const AddComment = ({ blogId, existingComment=null, parentId = null, handleShowE
 
     return (
         <div className='flex gap-4 items-start mt-3'>
-            {!isCommentEdited && <Avatar image={currentUser?.image} size={48} />}
-            <div className='flex-grow'>
+            {!isCommentEdited &&
+                <div className="w-[48px]">
+                    <Avatar image={safeUser?.image} size={48} />
+                </div>
+            }
+            <div style={{width: isCommentEdited ? "100%" : "calc(100% - 48px)"}} className='flex-grow'>
                 <FroalaSmallEditor
                     setContent={setComment}
                     content={comment}

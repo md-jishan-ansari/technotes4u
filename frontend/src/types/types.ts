@@ -6,7 +6,7 @@ export type User = {
     role?: Role;
 }
 
-export type SafeUser = User
+export type SafeUser = Omit<User, "authtoken" | "role">
 
 // The SafeUser type is created using TypeScript utility types:
 

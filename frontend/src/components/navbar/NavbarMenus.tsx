@@ -19,7 +19,7 @@ import Link from "next/link";
 
 import { fetchCategories } from '@/src/redux/slices/blogSlice';
 import { useEffect } from "react";
-import { SafeUser } from "@/src/types/types";
+import { User } from "@/src/types/types";
 import { useAppDispatch } from "@/src/redux/hooks";
 import { isAdmin } from "@/src/lib/utils";
 
@@ -27,7 +27,7 @@ import { SiLibreofficewriter } from "react-icons/si";
 import { TfiWrite } from "react-icons/tfi";
 
 interface NavbarMenusProps {
-    currentUser?: SafeUser | null;
+    currentUser?: User | null;
 }
 
 const NavbarMenus:React.FC<NavbarMenusProps> = ({ currentUser }) => {

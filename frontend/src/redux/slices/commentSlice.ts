@@ -353,7 +353,6 @@ const deleteCommentFeature = {
                     }
                 }
 
-
                 // Update parent comment's reply count if this was a reply
                 if (isReply && parentId) {
                     // Check in main comments

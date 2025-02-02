@@ -8,17 +8,18 @@ import Comment from '@/src/components/comments/AddComment';
 
 // Import the client component wrapper
 const ClientMDXRemote = dynamic(() => import('@/src/mdx/components/ClientMDXRemote'), {
-    ssr: false
+  ssr: false
 });
 
 const BigBlogContent = ({ mdxSource, toc, slug, isdraft = false }: { mdxSource: any, toc: any, slug: string, isdraft: boolean }) => {
-    return (
-        <div className="flex gap-4">
-          <article className="w-full mt-[68px]">
-            <Container>
-                <BlogHeader isdraft={isdraft} />
-              <div className="mdx-content">
-                <div className='prose dark:prose-invert
+
+  return (
+    <div className="flex gap-4">
+      <article className="w-full mt-[68px]">
+        <Container>
+          <BlogHeader isdraft={isdraft} />
+          <div className="mdx-content">
+            <div className='prose dark:prose-invert
                         prose-lg //to make font large
                         prose-blockquote:bg-accent/20
                         prose-blockquote:p-2
@@ -30,26 +31,31 @@ const BigBlogContent = ({ mdxSource, toc, slug, isdraft = false }: { mdxSource: 
                         prose-li:marker:text-accent
                         max-w-none
                       '>
-                  <ClientMDXRemote source={mdxSource} />
+              <ClientMDXRemote source={mdxSource} />
 
-                </div>
-              </div>
-              <BlogFooter slug={slug} isdraft={isdraft} />
-            </Container>
-          </article>
+            </div>
+          </div>
+          <BlogFooter slug={slug} isdraft={isdraft} />
+        </Container>
+      </article>
 
-          <div className="w-[300px]
+      <div className="w-[300px]
                     sticky
                     top-0
                     right-0
                     h-[100vh]
                     pt-[84px]
-                ">
-                    Table of content
+                "
+      >
+        {toc.length > 0 &&
+          <>
+            <p className="text-xl mb-2">Table of content</p>
             <TOC toc={toc} />
-          </div>
-        </div>
-      );
+          </>
+        }
+      </div>
+    </div>
+  );
 }
 
 export default BigBlogContent

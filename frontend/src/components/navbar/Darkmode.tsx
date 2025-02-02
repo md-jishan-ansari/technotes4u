@@ -10,8 +10,6 @@ const Darkmode = () => {
   const dispatch = useAppDispatch();
   const theme = useAppSelector(state => state?.general?.theme);
 
-  console.log({theme});
-
   useEffect(() => {
     dispatch(setThemeFromLocalStorage());
     // toast.success('Theme changed successfully');

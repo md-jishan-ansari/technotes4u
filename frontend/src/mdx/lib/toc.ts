@@ -8,6 +8,8 @@ export interface TOCItem {
 }
 
 export const generateTOC = (content: string): TOCItem[] => {
+  if (!content) return [];
+
   const slugger = new GithubSlugger();
   const regexp = /\n(?<flag>#{1,6})\s+(?<content>.+)/g;
   const headings = Array.from(content.matchAll(regexp));
@@ -15,7 +17,9 @@ export const generateTOC = (content: string): TOCItem[] => {
   const finalHeadings: TOCItem[] = [];
 
   headings.forEach(({ groups }) => {
-    const { flag, content } = groups!;
+    if (!groups) return;
+
+    const { flag, content } = groups;
     const level = flag.length;
 
     if (level <= 2) {
@@ -25,17 +29,15 @@ export const generateTOC = (content: string): TOCItem[] => {
         level,
         child: [],
       });
-    } else {
+    } else if (finalHeadings.length > 0) {
       const lastIndex = finalHeadings.length - 1;
-      if (finalHeadings[lastIndex]) {
-        finalHeadings[lastIndex].child?.push({
-          text: content,
-          slug: slugger.slug(content),
-          level,
-        });
-      }
+      finalHeadings[lastIndex].child?.push({
+        text: content,
+        slug: slugger.slug(content),
+        level,
+      });
     }
   });
 
   return finalHeadings;
-};
+}

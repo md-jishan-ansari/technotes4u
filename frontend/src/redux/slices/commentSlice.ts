@@ -10,12 +10,13 @@ interface CommentState {
             comments: Comment[];
             totalComments: number;
             blogCommentsCount: number;
+            start: number;
         }
     };
     repliesComments: {
         [commentId: string]: {
             replies: Comment[];
-            totalReplies: number;
+            start: number;
         }
     };
     loading: boolean;
@@ -32,18 +33,19 @@ const initialState: CommentState = {
 const commnetsFeature = {
     thunk: createAsyncThunk(
         'comments/fetchComments',  // Fixed action type name
-        async (blogId: string, { getState }) => {
+        async ({ blogId, start }: { blogId: string, start: number }, { getState }) => {
             const state = getState() as { comment: CommentState };
             const existingBlogComments = state.comment.blogComments[blogId];
 
-            if (existingBlogComments) {
+            if (start > 0 && existingBlogComments) {
+                const response = await blogApi.getComments(blogId, start);
                 return {
                     isExisting: true,
-                    comments: existingBlogComments
+                    ...response.data
                 };
             }
 
-            const response = await blogApi.getComments(blogId);
+            const response = await blogApi.getComments(blogId, 0);
             return response.data;
         }
     ),
@@ -56,17 +58,20 @@ const commnetsFeature = {
             })
             .addCase(commnetsFeature.thunk.fulfilled, (state, action) => {
                 state.loading = false;
+                const { blogId, start } = action.meta.arg;
 
                 if (!action.payload.isExisting) {
-                    state.blogComments[action.meta.arg] = {
+                    state.blogComments[blogId] = {
                         comments: action.payload.comments,
                         totalComments: action.payload.totalComments,
-                        blogCommentsCount: action.payload.blogCommentsCount
+                        blogCommentsCount: action.payload.blogCommentsCount,
+                        start: 0
                     };
                 } else {
-                    state.blogComments[action.meta.arg] = {
-                        ...state.blogComments[action.meta.arg],
-                        comments: [...state.blogComments[action.meta.arg].comments, ...action.payload.comments]
+                    state.blogComments[blogId] = {
+                        ...state.blogComments[blogId],
+                        comments: [...state.blogComments[blogId].comments, ...action.payload.comments],
+                        start
                     };
                 }
                 state.error = null;
@@ -81,19 +86,20 @@ const commnetsFeature = {
 const repliesCommentsFeature = {
     thunk: createAsyncThunk(
         'comments/fetchReplies',  // Updated action type name
-        async (commentId: string, { getState }) => {
+        async ({ commentId, start }: { commentId: string, start: number }, { getState }) => {
 
             const state = getState() as { comment: CommentState };
             const existingReplyComments = state.comment.repliesComments[commentId];
 
-            if (existingReplyComments) {
+            if (start > 0 && existingReplyComments) {
+                const response = await blogApi.getReplies(commentId, start);
                 return {
                     isExisting: true,
-                    replies: existingReplyComments
+                    ...response.data
                 };
             }
 
-            const response = await blogApi.getReplies(commentId);
+            const response = await blogApi.getReplies(commentId, 0);
             return response.data;
         }
     ),
@@ -106,15 +112,18 @@ const repliesCommentsFeature = {
             })
             .addCase(repliesCommentsFeature.thunk.fulfilled, (state, action) => {
                 state.loading = false;
+                const { commentId, start } = action.meta.arg;
+
                 if (!action.payload.isExisting) {
-                    state.repliesComments[action.meta.arg] = {
+                    state.repliesComments[commentId] = {
                         replies: action.payload.replies,
-                        totalReplies: action.payload.totalReplies
+                        start: 0
                     };
                 } else {
-                    state.repliesComments[action.meta.arg] = {
-                        ...state.repliesComments[action.meta.arg],
-                        replies: [...state.repliesComments[action.meta.arg].replies, ...action.payload.replies]
+                    state.repliesComments[commentId] = {
+                        ...state.repliesComments[commentId],
+                        replies: [...state.repliesComments[commentId].replies, ...action.payload.replies],
+                        start
                     };
                 }
                 state.error = null;

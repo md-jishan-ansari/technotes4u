@@ -56,8 +56,8 @@ export const addComment = CatchAsync(async (req, res, next) => {
 
 export const getComments = CatchAsync(async (req, res, next) => {
     const blogId = req.query.blogid;
-    const start = req.query.start || 0;
-    const limit = req.query.limit || 3;
+    const start = Number(req.query.start || 0);
+    const limit = Number(req.query.limit || 3);
 
     const comments = await prisma.comment.findMany({
         where: {
@@ -120,8 +120,8 @@ export const getComments = CatchAsync(async (req, res, next) => {
 
 export const getReplies = CatchAsync(async (req, res, next) => {
     const commentId = req.query.commentid;
-    const start = req.query.start || 0;
-    const limit = req.query.limit || 3;
+    const start = Number(req.query.start || 0);
+    const limit = Number(req.query.limit || 3);
 
     const replies = await prisma.comment.findMany({
         where: {

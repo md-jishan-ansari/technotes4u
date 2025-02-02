@@ -55,9 +55,9 @@ export const blogApi = {
   // Comment APIs
   addComment: (commentContext: any) => axiosInstance.post(`/api/comment/add-comment`, commentContext),
 
-  getReplies: (commentId: any) => axiosInstance.get(`/api/comment/get-replies?commentid=${commentId}`),
+  getReplies: (commentId: any, start: number) => axiosInstance.get(`/api/comment/get-replies?commentid=${commentId}&start=${start}`),
 
-  getComments: (blogId: string) => axiosInstance.get(`/api/comment/get-comments?blogid=${blogId}`),
+  getComments: (blogId: string, start: number) => axiosInstance.get(`/api/comment/get-comments?blogid=${blogId}&start=${start}`),
 };
 // export const blogApi = {
 //   // Category APIs

@@ -20,12 +20,15 @@ const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?:
 
     const toggleReplyEditor = () => setShowReplyEditor(prev => !prev);
 
+    // Update this function
     const handleRepliesClick = async (commentId: string) => {
         if (!isRepliesOpen) {
-            await dispatch(repliesComments(commentId));
+            await dispatch(repliesComments({ commentId, start: 0 })); // Add the start parameter
         }
         setIsRepliesOpen(!isRepliesOpen);
     };
+
+
 
     return (
         <div className="flex gap-4 items-start mb-4">

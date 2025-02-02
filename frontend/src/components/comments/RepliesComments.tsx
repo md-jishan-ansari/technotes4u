@@ -12,7 +12,7 @@ const RepliesComments = ({ commentId, blogId, depth, isMoreButtonVisible = true 
   if (!repliesData?.replies) return null;
 
   const handleShowMore = () => {
-    const nextStart = repliesData.start + limit;
+    const nextStart = repliesData.start + Math.min(limit, repliesData.replies.length);
     dispatch(repliesComments({ commentId, start: nextStart }));
   };
 

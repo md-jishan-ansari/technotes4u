@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 
 import Avatar from '../Avatar';
 import FroalaContent from '../froalaEditor/FroalaContent';
@@ -9,11 +9,50 @@ import AddComment from './AddComment';
 import { Comment } from '@/src/types/types';
 import { FaAngleDown } from "react-icons/fa6";
 import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
-import { repliesComments } from '@/src/redux/slices/commentSlice';
+import { deleteComment, repliesComments } from '@/src/redux/slices/commentSlice';
 import { Accordion, AccordionContent, AccordionItem } from '@/src/componentsSadcn/ui/accordion';
 import LatestRepliesComments from './LatestRepliesComments';
 
+const CommentActions = memo(({ onEdit, onReply, onDelete, showReply = true, haveReplies }: any) => (
+    <div className="flex gap-2 items-center">
+        {showReply && (
+            <Button
+                variant="primaryGhost"
+                rounded="rounded-[20px]"
+                size="xs"
+                onClick={onReply}
+            >
+                Reply
+            </Button>
+        )}
+        {!haveReplies &&
+            <>
+                <Button
+                    variant="primaryGhost"
+                    rounded="rounded-[20px]"
+                    size="xs"
+                    onClick={onEdit}
+                >
+                    Edit
+                </Button>
+                <Button
+                    variant="primaryGhost"
+                    rounded="rounded-[20px]"
+                    size="xs"
+                    onClick={onDelete}
+                >
+                    delete
+                </Button>
+            </>
+        }
+
+    </div>
+))
+
+
+
 const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?: number, blogId: string }) => {
+    const [editComment, setEditComment] = useState<boolean>(false);
     const [showReplyEditor, setShowReplyEditor] = useState(false);
     const [isRepliesOpen, setIsRepliesOpen] = useState(false);
 
@@ -21,15 +60,25 @@ const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?:
     const dispatch = useAppDispatch();
 
     const toggleReplyEditor = () => setShowReplyEditor(prev => !prev);
+    const handleEditClick = useCallback(() => setEditComment(true), []);
 
     // Update this function
-    const handleRepliesClick = async (commentId: string) => {
+    const handleRepliesClick = useCallback(async (commentId: string) => {
         if (!isRepliesOpen) {
-            const start = repliesData?.start || 0;
-            await dispatch(repliesComments({ commentId, start }));
+            const start = repliesData?.start || 0
+            await dispatch(repliesComments({ commentId, start }))
         }
-        setIsRepliesOpen(!isRepliesOpen);
-    };
+        setIsRepliesOpen(!isRepliesOpen)
+    }, [isRepliesOpen, repliesData?.start, dispatch])
+
+    const handleDelete = useCallback(() => {
+        if (comment._count.replies === 0) {
+            dispatch(deleteComment({ commentId: comment.id, blogId }));
+        }
+    }, [comment.id, comment._count.replies, blogId, dispatch]);
+
+    const isEdited = comment.createdAt !== comment.updatedAt
+    const haveReplies = comment._count.replies > 0
 
     return (
         <div className="flex gap-4 items-start mb-4">
@@ -43,12 +92,26 @@ const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?:
                     <p className='text-xl font-semibold'>{comment.user.name}</p>
                     <p className="text-muted-foreground">
                         <em>{moment(comment.updatedAt).fromNow()}</em>
+                        {isEdited && <span className='text-xs ml-1'>( edited )</span>}
                     </p>
                 </div>
                 <div className="mt-1 space-y-3">
-                    <FroalaContent content={comment.content} />
 
-                    {depth <= 2 && (
+
+                    {editComment ? (
+                        <AddComment
+                            blogId={blogId}
+                            parentId={comment.id}
+                            existingComment={editComment ? comment : null}
+                            handleShowEditor={() => {
+                                setEditComment(false);
+                            }}
+                        />
+                    ) : (
+                        <FroalaContent content={comment.content} />
+                    )}
+
+                    {depth <= 2 ? (
                         <div>
 
                             <div className="flex gap-2 items-center">
@@ -65,23 +128,32 @@ const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?:
                                     {comment._count.replies} Replies
                                 </Button>
 
-                                <Button
-                                    variant="primaryGhost"
-                                    rounded="rounded-[20px]"
-                                    size="xs"
-                                    onClick={toggleReplyEditor}
-                                >
-                                    Reply
-                                </Button>
+                                <CommentActions
+                                    onEdit={handleEditClick}
+                                    onReply={toggleReplyEditor}
+                                    onDelete={handleDelete}
+                                    haveReplies={haveReplies}
+                                />
                             </div>
 
                             {showReplyEditor && (
                                 <AddComment
                                     blogId={blogId}
                                     parentId={comment.id}
-                                    handleShowEditor={toggleReplyEditor}
+                                    handleShowEditor={() => {
+                                        toggleReplyEditor();
+                                    }}
                                 />
                             )}
+                        </div>
+                    ) : (
+                        <div className="flex gap-2 items-center">
+                            <CommentActions
+                                onEdit={handleEditClick}
+                                onDelete={handleDelete}
+                                showReply={false}
+                                haveReplies={haveReplies}
+                            />
                         </div>
                     )}
 
@@ -121,8 +193,6 @@ const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?:
                             </AccordionItem>
                         </Accordion>
                     )}
-
-
                 </div>
             </div>
         </div>

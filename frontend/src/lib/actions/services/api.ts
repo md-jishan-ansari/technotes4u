@@ -55,40 +55,13 @@ export const blogApi = {
   // Comment APIs
   addComment: (commentContext: any) => axiosInstance.post(`/api/comment/add-comment`, commentContext),
 
+  editComment: (commentId: string, commentContext: any) => axiosInstance.patch(`/api/comment/edit-comment?commentid=${commentId}`, commentContext),
+
+  deleteComment: (commentId: string) => axiosInstance.delete(`/api/comment/delete-comment?commentid=${commentId}`),
+
   getReplies: (commentId: any, start: number, limit: number) =>
     axiosInstance.get(`/api/comment/get-replies?commentid=${commentId}&start=${start}&limit=${limit}`),
 
   getComments: (blogId: string, start: number, limit: number) =>
     axiosInstance.get(`/api/comment/get-comments?blogid=${blogId}&start=${start}&limit=${limit}`),
 };
-// export const blogApi = {
-//   // Category APIs
-//   getAllCategories: () => axios.get(`${BASE_URL}/api/blog/getallcategories`),
-
-//   getSingleBlog: ({slug, blogId}: {slug?: string, blogId?: string}) => {
-//     const param = slug ? `slug=${slug}` : blogId ? `blogid=${blogId}` : '';
-
-//     return axios.get(`${BASE_URL}/api/blog/getblog?${param}`);
-//   },
-
-//   createCategory: (data: any) => axios.post(`${BASE_URL}/api/blog/createcategory`, data),
-
-//   editCategory: (slug: string, data: any) => axios.post(`${BASE_URL}/api/blog/editcategory?slug=${slug}`, data),
-
-//   // Blog Content APIs
-//   publishDraft: (slug: string) => axios.patch(`${BASE_URL}/api/blog/publish-draft/?slug=${slug}`, {}),
-
-//   updateBlog: (slug: string, blogContext: any) => axios.patch(`${BASE_URL}/api/blog/updateBlog/?slug=${slug}`, {blogContext}),
-
-//   // Image APIs
-//   uploadImage: (formData: FormData) => axios.post(`${BASE_URL}/api/blog/upload-image`, formData),
-
-//   deleteImage: (imageUrl: string) => axios.delete(`${BASE_URL}/api/blog/delete-image`, {
-//       data: { imageUrl }
-//   }),
-
-
-
-//   // Comment APIs
-//   addComment: (commentContext: any) => axios.post(`${BASE_URL}/api/comment/add-comment`, commentContext),
-// };

@@ -1,5 +1,5 @@
 import express from "express";
-import { addComment, getComments, getReplies } from "../controllers/commentController.js";
+import { addComment, getComments, getReplies, editComment, deleteComment } from "../controllers/commentController.js";
 import { authorization } from "../middleware/userMiddleware.js";
 
 
@@ -13,5 +13,9 @@ router.get("/get-replies", getReplies);
 router.use("/", authorization);
 
 router.post("/add-comment", addComment);
+
+router.patch("/edit-comment", editComment);
+
+router.delete("/delete-comment", deleteComment);
 
 export default router;

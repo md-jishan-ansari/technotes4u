@@ -54,6 +54,116 @@ export const addComment = CatchAsync(async (req, res, next) => {
     });
 });
 
+export const deleteComment = CatchAsync(async (req, res, next) => {
+    const commentId = req.query.commentid;
+
+    const comment = await prisma.comment.findFirst({
+        where: {
+            id: commentId
+        },
+        include: {
+            _count: {
+                select: {
+                    replies: true
+                }
+            }
+        }
+    });
+
+    if (!comment) {
+        return res.status(404).json({
+            success: false,
+            message: "Comment not found"
+        });
+    }
+
+    if (comment._count.replies > 0) {
+        return res.status(400).json({
+            success: false,
+            message: "Cannot delete comment with replies"
+        });
+    }
+
+    await prisma.comment.delete({
+        where: {
+            id: commentId
+        }
+    });
+
+    res.status(200).json({
+        status: "success",
+        message: "Comment deleted successfully"
+    });
+});
+
+export const editComment = CatchAsync(async (req, res, next) => {
+    console.log(req.body);
+
+    const commentId = req.query.commentid
+    const commentContext = req.body;
+
+    const blog = await prisma.blog.findFirst({
+        where: {
+            id: commentContext.blogId
+        }
+    });
+
+    if (!blog) {
+        return res.status(404).json({
+            success: false,
+            message: "Blog not found"
+        });
+    }
+
+    const existingComment = await prisma.comment.findFirst({
+        where: {
+            id: commentId
+        }
+    });
+
+    if(!existingComment) {
+        return res.status(404).json({
+            success: false,
+            message: "Comment not found"
+        });
+    }
+
+    const comment = await prisma.comment.update({
+        where: {
+            id: commentId
+        },
+        data: {
+            ...commentContext
+        },
+        select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            updatedAt: true,
+            blogId: true,
+            parentId: true,
+            _count: {
+                select: {
+                    replies: true
+                }
+            },
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true
+                }
+            }
+        }
+    });
+
+    res.status(200).json({
+        status: "success",
+        message: "Comment added successfully",
+        comment: comment
+    });
+});
+
 export const getComments = CatchAsync(async (req, res, next) => {
     const blogId = req.query.blogid;
     const start = Number(req.query.start || 0);
@@ -85,7 +195,7 @@ export const getComments = CatchAsync(async (req, res, next) => {
             }
         },
         orderBy: {
-            updatedAt: 'desc'  // This will sort comments newest to oldest
+            createdAt: 'desc'  // This will sort comments newest to oldest
         },
         skip: start,    // Add offset
         take: limit     // Add limit
@@ -148,7 +258,7 @@ export const getReplies = CatchAsync(async (req, res, next) => {
             }
         },
         orderBy: {
-            updatedAt: 'asc'
+            createdAt: 'asc'
         },
         skip: start,    // Add offset
         take: limit     // Add limit

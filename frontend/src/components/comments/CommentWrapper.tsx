@@ -21,7 +21,7 @@ const CommentWrapper = ({ blog }: { blog: Category }) => {
   }, [blog.id, dispatch]);
 
   const handleShowMore = () => {
-    const nextStart = start + limit;
+    const nextStart = start + Math.min(limit, comments.length);
     dispatch(fetchCommnets({ blogId: blog.id, start: nextStart }));
   };
 

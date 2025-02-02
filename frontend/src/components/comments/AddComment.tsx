@@ -1,32 +1,51 @@
 "use client"
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FroalaSmallEditor from '../froalaEditor/FroalaSmallEditor'
 import Avatar from '../Avatar';
 import Button from '../Button';
 import { useAppDispatch } from '@/src/redux/hooks';
-import { addCommnet } from '@/src/redux/slices/commentSlice';
-const AddComment = ({ blogId, parentId = null, handleShowEditor }: { blogId: string, parentId?: string | null, handleShowEditor?: any }) => {
+import { addCommnet, editComment } from '@/src/redux/slices/commentSlice';
+import { Comment } from '@/src/types/types';
+const AddComment = ({ blogId, existingComment=null, parentId = null, handleShowEditor }: { blogId: string, existingComment?: Comment | null, parentId?: string | null, handleShowEditor?: any }) => {
     const [comment, setComment] = useState<string>("");
+    const [isCommentEdited, setIsCommentEdited] = useState(false);
     const dispatch = useAppDispatch();
 
     const handleComment = () => {
         if (!comment.trim()) return;
 
-        const commentContext: { content: string, blogId: string, parentId?: string | null } = {
-            content: comment,
-            blogId,
-            ...(parentId && { parentId })
-        };
-
-        dispatch(addCommnet(commentContext));
+        if (isCommentEdited && existingComment) {
+            dispatch(editComment({
+                commentId: existingComment.id,
+                content: comment,
+                blogId
+            }));
+        } else {
+            const commentContext: { content: string, blogId: string, parentId?: string | null } = {
+                content: comment,
+                blogId,
+                ...(parentId && { parentId })
+            };
+            dispatch(addCommnet(commentContext));
+        }
 
         setComment("");
         handleShowEditor?.();
     }
 
+    useEffect(() => {
+        if (existingComment) {
+            setComment(existingComment.content);
+            setIsCommentEdited(true);
+        } else {
+            setComment("");
+            setIsCommentEdited(false);
+        }
+    }, [existingComment]);
+
     return (
         <div className='flex gap-4 items-start mt-3'>
-            <Avatar size={48} />
+            {!isCommentEdited && <Avatar size={48} />}
             <div className='flex-grow'>
                 <FroalaSmallEditor
                     setContent={setComment}
@@ -40,7 +59,7 @@ const AddComment = ({ blogId, parentId = null, handleShowEditor }: { blogId: str
                         className='mt-2'
                         onClick={handleComment}
                     >
-                        Comment
+                        {isCommentEdited ? "Save" : "Comment"}
                     </Button>
 
                     {parentId && (

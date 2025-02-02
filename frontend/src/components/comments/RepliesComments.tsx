@@ -3,14 +3,14 @@ import { useAppSelector } from '@/src/redux/hooks';
 
 const RepliesComments = ({ commentId, blogId, depth }: { commentId: string, blogId: string, depth: number }) => {
 
-  const comments = useAppSelector(state => state.comment.repliesComments[commentId]);
+  const repliesData = useAppSelector(state => state.comment.repliesComments[commentId]);
 
-  if (!comments?.length) return null;
+  if (!repliesData?.replies) return null;
 
   return (
     <div className="mt-4">
       <CommentsList
-        comments={comments}
+        comments={repliesData.replies}
         depth={depth+1}
         blogId={blogId}
       />

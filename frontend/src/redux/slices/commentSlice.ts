@@ -6,13 +6,18 @@ import { Comment } from '@/src/types/types';
 
 interface CommentState {
     blogComments: {
-        [blogId: string]: Comment[];
+        [blogId: string]: {
+            comments: Comment[];
+            totalComments: number;
+            blogCommentsCount: number;
+        }
     };
     repliesComments: {
-        [commentId: string]: Comment[];
+        [commentId: string]: {
+            replies: Comment[];
+            totalReplies: number;
+        }
     };
-    totalComments: number;
-    blogCommentsCount: number;
     loading: boolean;
     error: string | null;
 }
@@ -20,8 +25,6 @@ interface CommentState {
 const initialState: CommentState = {
     blogComments: {},
     repliesComments: {},
-    totalComments: 0,
-    blogCommentsCount: 0,
     loading: false,
     error: null
 };
@@ -35,7 +38,8 @@ const commnetsFeature = {
 
             if (existingBlogComments) {
                 return {
-                    isExisting: true
+                    isExisting: true,
+                    comments: existingBlogComments
                 };
             }
 
@@ -52,10 +56,18 @@ const commnetsFeature = {
             })
             .addCase(commnetsFeature.thunk.fulfilled, (state, action) => {
                 state.loading = false;
+
                 if (!action.payload.isExisting) {
-                    state.blogComments[action.meta.arg] = action.payload.comments; // Fixed to use comments array
-                    state.totalComments = action.payload.totalComments;
-                    state.blogCommentsCount = action.payload.blogCommentsCount;
+                    state.blogComments[action.meta.arg] = {
+                        comments: action.payload.comments,
+                        totalComments: action.payload.totalComments,
+                        blogCommentsCount: action.payload.blogCommentsCount
+                    };
+                } else {
+                    state.blogComments[action.meta.arg] = {
+                        ...state.blogComments[action.meta.arg],
+                        comments: [...state.blogComments[action.meta.arg].comments, ...action.payload.comments]
+                    };
                 }
                 state.error = null;
             })
@@ -76,12 +88,13 @@ const repliesCommentsFeature = {
 
             if (existingReplyComments) {
                 return {
-                    isExisting: true
+                    isExisting: true,
+                    replies: existingReplyComments
                 };
             }
 
             const response = await blogApi.getReplies(commentId);
-            return response.data.replies;
+            return response.data;
         }
     ),
 
@@ -94,7 +107,15 @@ const repliesCommentsFeature = {
             .addCase(repliesCommentsFeature.thunk.fulfilled, (state, action) => {
                 state.loading = false;
                 if (!action.payload.isExisting) {
-                    state.repliesComments[action.meta.arg] = action.payload; // Store replies by commentId
+                    state.repliesComments[action.meta.arg] = {
+                        replies: action.payload.replies,
+                        totalReplies: action.payload.totalReplies
+                    };
+                } else {
+                    state.repliesComments[action.meta.arg] = {
+                        ...state.repliesComments[action.meta.arg],
+                        replies: [...state.repliesComments[action.meta.arg].replies, ...action.payload.replies]
+                    };
                 }
                 state.error = null;
             })
@@ -125,17 +146,25 @@ const addCommnetFeature = {
                 const { blogId, parentId } = action.meta.arg;
 
                 if (parentId) {
-                    // Handle reply
                     if (!state.repliesComments[parentId]) {
-                        state.repliesComments[parentId] = [];
+                        state.repliesComments[parentId] = {
+                            replies: [],
+                            totalReplies: 0
+                        };
                     }
-                    state.repliesComments[parentId].push(action.payload);
+                    state.repliesComments[parentId].replies.push(action.payload);
+                    state.repliesComments[parentId].totalReplies++;
                 } else {
-                    // Handle regular comment
                     if (!state.blogComments[blogId]) {
-                        state.blogComments[blogId] = [];
+                        state.blogComments[blogId] = {
+                            comments: [],
+                            totalComments: 0,
+                            blogCommentsCount: 0
+                        };
                     }
-                    state.blogComments[blogId].unshift(action.payload);
+                    state.blogComments[blogId].comments.unshift(action.payload);
+                    state.blogComments[blogId].totalComments++;
+                    state.blogComments[blogId].blogCommentsCount++;
                 }
                 state.error = null;
             })

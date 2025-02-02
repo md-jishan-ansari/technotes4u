@@ -15,7 +15,7 @@ import { Accordion, AccordionContent, AccordionItem } from '@/src/componentsSadc
 const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?: number, blogId: string }) => {
     const [showReplyEditor, setShowReplyEditor] = useState(false);
     const [isRepliesOpen, setIsRepliesOpen] = useState(false);
-    const replies = useAppSelector(state => state.comment.repliesComments[comment.id]);
+    const repliesData = useAppSelector(state => state.comment.repliesComments[comment.id]);
     const dispatch = useAppDispatch();
 
     const toggleReplyEditor = () => setShowReplyEditor(prev => !prev);
@@ -97,7 +97,7 @@ const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?:
                                     <div
                                         className={`overflow-hidden transition-[max-height] duration-300 ease-in-out`}
                                         style={{
-                                            maxHeight: isRepliesOpen && replies ? '9999px' : '0'
+                                            maxHeight: isRepliesOpen && repliesData?.replies ? '9999px' : '0'
                                         }}
                                     >
                                         <RepliesComments

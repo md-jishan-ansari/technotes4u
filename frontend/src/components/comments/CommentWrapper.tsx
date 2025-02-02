@@ -5,11 +5,15 @@ import AddComment from './AddComment'
 import CommentsList from './CommentsList'
 import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 import { fetchCommnets } from '@/src/redux/slices/commentSlice';
+import { LuCornerDownRight } from "react-icons/lu";
+import Button from '../Button';
 
 const CommentWrapper = ({ blog }: { blog: Category }) => {
   const dispatch = useAppDispatch();
-  const comments = useAppSelector(state => state.comment.blogComments[blog.id]);
-  const {totalComments, blogCommentsCount} = useAppSelector(state => state.comment);
+  const comments = useAppSelector(state => state.comment.blogComments[blog.id]?.comments || []);
+  const { totalComments, blogCommentsCount } = useAppSelector(state =>
+    state.comment.blogComments[blog.id] || { totalComments: 0, blogCommentsCount: 0 }
+  );
 
   useEffect(() => {
     dispatch(fetchCommnets(blog.id));
@@ -27,7 +31,9 @@ const CommentWrapper = ({ blog }: { blog: Category }) => {
       </h3>
 
       <CommentsList comments={comments} blogId={blog.id} />
-
+      <Button variant='primaryGhost' size="xs" rounded="rounded-full">
+        <LuCornerDownRight className='mr-1' /> Show more comments
+      </Button>
     </div>
   )
 }

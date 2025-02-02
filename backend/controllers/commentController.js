@@ -56,6 +56,8 @@ export const addComment = CatchAsync(async (req, res, next) => {
 
 export const getComments = CatchAsync(async (req, res, next) => {
     const blogId = req.query.blogid;
+    const start = req.query.start || 0;
+    const limit = req.query.limit || 3;
 
     const comments = await prisma.comment.findMany({
         where: {
@@ -84,7 +86,9 @@ export const getComments = CatchAsync(async (req, res, next) => {
         },
         orderBy: {
             updatedAt: 'desc'  // This will sort comments newest to oldest
-        }
+        },
+        skip: start,    // Add offset
+        take: limit     // Add limit
     });
 
     // Get total comments count
@@ -116,6 +120,8 @@ export const getComments = CatchAsync(async (req, res, next) => {
 
 export const getReplies = CatchAsync(async (req, res, next) => {
     const commentId = req.query.commentid;
+    const start = req.query.start || 0;
+    const limit = req.query.limit || 3;
 
     const replies = await prisma.comment.findMany({
         where: {
@@ -143,7 +149,9 @@ export const getReplies = CatchAsync(async (req, res, next) => {
         },
         orderBy: {
             updatedAt: 'asc'
-        }
+        },
+        skip: start,    // Add offset
+        take: limit     // Add limit
     });
 
     if(!replies) {

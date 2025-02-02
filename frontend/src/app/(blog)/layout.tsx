@@ -1,6 +1,5 @@
 import React from 'react'
 import BlogCategoriesWrapper from './BlogCategoriesWrapper'
-import Container from '@/src/components/Container'
 
 interface Props {
     children: React.ReactNode

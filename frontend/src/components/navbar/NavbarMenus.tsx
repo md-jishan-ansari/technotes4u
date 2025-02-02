@@ -23,7 +23,6 @@ import { User } from "@/src/types/types";
 import { useAppDispatch } from "@/src/redux/hooks";
 import { isAdmin } from "@/src/lib/utils";
 
-import { SiLibreofficewriter } from "react-icons/si";
 import { TfiWrite } from "react-icons/tfi";
 
 interface NavbarMenusProps {

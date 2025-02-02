@@ -55,7 +55,7 @@ const BlogHeader = ({isdraft = false}: {isdraft?: boolean}) => {
 
     const publishBlog = () => {
         if(activeSlug) {
-            blogApi.publishDraft(activeSlug).then(res => {
+            blogApi.publishDraft(activeSlug).then(() => {
                 toast.success("Blog published successfully!");
             })
         }

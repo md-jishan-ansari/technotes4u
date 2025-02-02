@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react'
 import Container from '@/src/components/Container';
 import BlogHeader from '../BlogHeader';
 import BlogFooter from '../BlogFooter';
-import Comment from '@/src/components/comments/AddComment';
 import FroalaContent from '@/src/components/froalaEditor/FroalaContent';
 
 const BlogContent = ({slug, isdraft = false}: {slug: string, isdraft?: boolean}) => {
@@ -42,7 +41,7 @@ const BlogContent = ({slug, isdraft = false}: {slug: string, isdraft?: boolean})
                 h-[100vh]
                 pt-[84px]
             ">
-                Table of content
+                Like button
             </div>
         </div>
     )

@@ -49,6 +49,7 @@ const CommentActions = memo(({ onEdit, onReply, onDelete, showReply = true, have
     </div>
 ))
 
+CommentActions.displayName = 'CommentActions';
 
 
 const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?: number, blogId: string }) => {

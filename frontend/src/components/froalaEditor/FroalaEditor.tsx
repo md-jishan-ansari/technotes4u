@@ -11,7 +11,7 @@ const FroalaEditorComponent = dynamic(
 import React, { useEffect, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary';
 
-const FroalaEditor = ({ setContent, content, placeholderText }: any) => {
+const FroalaEditor = ({ setContent, content, placeholderText="Start writing your content..." }: any) => {
   const [isReady, setIsReady] = useState(false);
 
   const loadResources = async () => {
@@ -74,7 +74,7 @@ const FroalaEditor = ({ setContent, content, placeholderText }: any) => {
           <FroalaEditorComponent
             tag="textarea"
             config={{
-              placeholderText: "Start writing your content...",
+              placeholderText: placeholderText,
               heightMin: 500,
               spellcheck: false,
 

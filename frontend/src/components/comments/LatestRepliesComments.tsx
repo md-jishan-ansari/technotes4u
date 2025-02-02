@@ -1,8 +1,5 @@
-import { LuCornerDownRight } from 'react-icons/lu';
-import Button from '../Button';
 import CommentsList from './CommentsList'
-import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
-import { repliesComments } from '@/src/redux/slices/commentSlice';
+import { useAppSelector } from '@/src/redux/hooks';
 
 const LatestRepliesComments = ({ commentId, blogId }: { commentId: string, blogId: string }) => {
     const latestRepliesComments = useAppSelector(state => state.comment.latestRepliesComments[commentId]);

@@ -5,8 +5,7 @@ import Avatar from '../Avatar';
 import Button from '../Button';
 import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 import { addCommnet, editComment } from '@/src/redux/slices/commentSlice';
-import { Comment, User } from '@/src/types/types';
-import axios from 'axios';
+import { Comment } from '@/src/types/types';
 import { getUser } from '@/src/redux/slices/generalSlice';
 const AddComment = ({ blogId, existingComment=null, parentId = null, handleShowEditor }: { blogId: string, existingComment?: Comment | null, parentId?: string | null, handleShowEditor?: any }) => {
 

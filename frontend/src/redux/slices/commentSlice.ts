@@ -45,7 +45,7 @@ const commnetsFeature = {
             const limit = state.comment.limit;
 
             // Add new check for same start value
-            if (start > 0 && existingBlogComments && start === existingBlogComments.start) {
+            if (existingBlogComments && start === existingBlogComments.start) {
                 return {
                     noNeedToChange: true
                 };
@@ -103,7 +103,6 @@ const commnetsFeature = {
 
                 }
 
-
                 state.error = null;
             })
             .addCase(commnetsFeature.thunk.rejected, (state, action) => {
@@ -123,7 +122,7 @@ const repliesCommentsFeature = {
             const limit = state.comment.limit;
 
             // Add new check for same start value
-            if (start > 0 && existingReplyComments && start === existingReplyComments.start) {
+            if (existingReplyComments && start === existingReplyComments.start) {
                 return {
                     noNeedToChange: true
                 };
@@ -194,7 +193,7 @@ const repliesCommentsFeature = {
 const addCommnetFeature = {
     thunk: createAsyncThunk(
         'comments/addComment',
-        async ({ blogId, content, parentId }: { blogId: string, content: string, parentId?: string | null }, { getState }) => {
+        async ({ blogId, content, parentId }: { blogId: string, content: string, parentId?: string | null }, { }) => {
             const response = await blogApi.addComment({ blogId, content, parentId });
             return response.data.comment;
         }
@@ -259,7 +258,7 @@ const addCommnetFeature = {
 const editCommentFeature = {
     thunk: createAsyncThunk(
         'comments/editComment',
-        async ({ commentId, content, blogId }: { commentId: string, content: string, blogId: string }, { getState }) => {
+        async ({ commentId, content, blogId }: { commentId: string, content: string, blogId: string }, { }) => {
             const response = await blogApi.editComment(commentId, { content });
             return { comment: response.data.comment, blogId };
         }

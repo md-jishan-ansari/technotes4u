@@ -11,10 +11,12 @@ import { FaAngleDown } from "react-icons/fa6";
 import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 import { repliesComments } from '@/src/redux/slices/commentSlice';
 import { Accordion, AccordionContent, AccordionItem } from '@/src/componentsSadcn/ui/accordion';
+import LatestRepliesComments from './LatestRepliesComments';
 
 const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?: number, blogId: string }) => {
     const [showReplyEditor, setShowReplyEditor] = useState(false);
     const [isRepliesOpen, setIsRepliesOpen] = useState(false);
+
     const repliesData = useAppSelector(state => state.comment.repliesComments[comment.id]);
     const dispatch = useAppDispatch();
 
@@ -23,12 +25,11 @@ const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?:
     // Update this function
     const handleRepliesClick = async (commentId: string) => {
         if (!isRepliesOpen) {
-            await dispatch(repliesComments({ commentId, start: 0 })); // Add the start parameter
+            const start = repliesData?.start || 0;
+            await dispatch(repliesComments({ commentId, start }));
         }
         setIsRepliesOpen(!isRepliesOpen);
     };
-
-
 
     return (
         <div className="flex gap-4 items-start mb-4">
@@ -84,6 +85,12 @@ const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?:
                         </div>
                     )}
 
+                    <LatestRepliesComments
+                        commentId={comment.id}
+                        blogId={blogId}
+                    />
+
+
                     {comment._count.replies > 0 && (
                         <Accordion
                             type="single"
@@ -107,12 +114,15 @@ const CommentItem = ({ comment, depth = 1, blogId }: { comment: Comment, depth?:
                                             commentId={comment.id}
                                             blogId={blogId}
                                             depth={depth}
+                                            isMoreButtonVisible={comment._count.replies > repliesData?.replies?.length}
                                         />
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
                     )}
+
+
                 </div>
             </div>
         </div>

@@ -11,6 +11,7 @@ import Button from '../Button';
 const CommentWrapper = ({ blog }: { blog: Category }) => {
   const dispatch = useAppDispatch();
   const comments = useAppSelector(state => state.comment.blogComments[blog.id]?.comments || []);
+  const limit = useAppSelector(state => state.comment.limit);
   const { totalComments, blogCommentsCount, start = 0 } = useAppSelector(state =>
     state.comment.blogComments[blog.id] || { totalComments: 0, blogCommentsCount: 0, start: 0 }
   );
@@ -20,7 +21,7 @@ const CommentWrapper = ({ blog }: { blog: Category }) => {
   }, [blog.id, dispatch]);
 
   const handleShowMore = () => {
-    const nextStart = start + 3;
+    const nextStart = start + limit;
     dispatch(fetchCommnets({ blogId: blog.id, start: nextStart }));
   };
 
@@ -37,14 +38,17 @@ const CommentWrapper = ({ blog }: { blog: Category }) => {
 
       <CommentsList comments={comments} blogId={blog.id} />
 
-      <Button
+      {blogCommentsCount > comments.length && (
+        <Button
           variant='primaryGhost'
           size="xs"
           rounded="rounded-full"
           onClick={handleShowMore}
         >
-        <LuCornerDownRight className='mr-1' /> Show more comments
-      </Button>
+          <LuCornerDownRight className='mr-1' /> Show more comments
+        </Button>
+      )}
+
     </div>
   )
 }

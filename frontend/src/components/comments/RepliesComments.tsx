@@ -4,14 +4,15 @@ import CommentsList from './CommentsList'
 import { useAppDispatch, useAppSelector } from '@/src/redux/hooks';
 import { repliesComments } from '@/src/redux/slices/commentSlice';
 
-const RepliesComments = ({ commentId, blogId, depth }: { commentId: string, blogId: string, depth: number }) => {
+const RepliesComments = ({ commentId, blogId, depth, isMoreButtonVisible = true }: { commentId: string, blogId: string, depth: number, isMoreButtonVisible?:boolean }) => {
   const dispatch = useAppDispatch();
+  const limit = useAppSelector(state => state.comment.limit);
   const repliesData = useAppSelector(state => state.comment.repliesComments[commentId]);
 
   if (!repliesData?.replies) return null;
 
   const handleShowMore = () => {
-    const nextStart = repliesData.start + 3;
+    const nextStart = repliesData.start + limit;
     dispatch(repliesComments({ commentId, start: nextStart }));
   };
 
@@ -23,14 +24,17 @@ const RepliesComments = ({ commentId, blogId, depth }: { commentId: string, blog
         blogId={blogId}
       />
 
-      <Button
+      {isMoreButtonVisible &&
+        <Button
           variant='primaryGhost'
           size="xs"
           rounded="rounded-full"
           onClick={handleShowMore}
         >
-        <LuCornerDownRight className='mr-1' /> Show more comments
-      </Button>
+          <LuCornerDownRight className='mr-1' /> Show more replies
+        </Button>
+      }
+
     </div>
   )
 }
